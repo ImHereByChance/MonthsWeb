@@ -1,0 +1,413 @@
+:root {
+    --basedark: #718AAD;
+    --baselight: #A2C7FA;
+    --additdark: #4174BB;
+    --additlight: #579BFA;
+    --extradark: #50617A;
+}
+
+/*MAIN */
+html {
+    overflow-y: hidden;
+}
+
+html, body, #main-container {
+    height: 100%;
+    width: 100%;
+    font-family: arial;
+    display: flex;
+}
+
+#main-container {
+    display: flex;
+    align-items: stretch;
+    background: cornflowerblue;
+    flex-grow: 1;
+}
+
+/*COMMON ELEMENTS */
+
+button {
+    cursor: pointer;
+}
+
+button > * {
+  pointer-events: none;
+}
+
+input, select, textarea {
+    outline: none;
+}
+
+input:focus-within,
+select:focus-within,
+textarea:focus-within {
+    outline: 1px solid var(--additdark); 
+    border: 2px solid rgba(255, 255, 255, 0);
+    box-shadow: 0px 0px 2px 1px #00adff;
+}
+
+.button-icon24 {
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: 0.3s;
+    padding: 0;
+    background-color: #ffffff00;
+    margin: 2px;
+}
+
+.button-icon12 {
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: 0.3s;
+    padding: 0;
+    background-color: #ffffff00;
+}
+
+.button-icon24:focus {
+    outline: none;
+    border: 1px dashed var(--baselight);
+    }
+
+.button-icon24:active {
+    outline: none;
+    border: 1px dashed aliceblue;
+}
+
+.svg-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.svg-icon12 {
+  width: 12px;
+  height: 12px;
+}
+
+.svg-icon path,
+.svg-icon polygon,
+.svg-icon rect {
+  fill: var(--additdark);
+}
+
+.svg-icon12 circle, .svg-icon circle  {
+  stroke: #4691f6;
+  stroke-width: 1;
+}
+
+/*CALENDAR*/
+#c-calendar {
+    max-width: 336px;
+    flex-grow: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--additdark);
+}
+
+#c-topbar {
+    flex-basis: 48px;
+    background-color: var(--additlight);
+    display: flex;
+    justify-content: space-between;
+}
+
+#c-daysFrame {
+    height: 288px;
+    width: 336px;
+    display: flex;
+    flex-wrap: wrap;
+    margin: auto;
+    background-color: #a85e5e;
+}
+
+/*DAY BUTTON*/
+.c-daysFrame__dayButton {
+    height: 48px; 
+    width: 48px;  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    border: #579bfa9e solid 1px;
+    transition: 0.3s;
+}
+
+.c-daysFrame__dayButton:hover {
+    background-color: var(--additlight);
+    border-color: var(--baselight);
+    box-shadow: inset 0px 0px 6px 0px var(--baselight);
+}
+
+.c-daysFrame__dayButton:focus {
+    outline: none;
+    border: 1px solid var(--baselight);
+    box-shadow: 1px 1px 1px 1px aliceblue;
+}
+
+.c-daysFrame__dayButton:active {
+}
+
+.--no-tasks {
+    background-color: var(--additdark);
+}
+.--tasks-done {
+    background-color: #5689d6;
+}
+.--got-tasks {
+    background-color: #355f9e;
+}
+
+.--out-month {
+    color: #a2c0eb;
+}
+
+.c-topbar__swtcMonthBt {
+    height: 43px;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s;
+}
+
+.c-topbar__swtcMonthBt:hover path {
+    fill: var(--baselight);
+    transition: 0.2s;
+}
+
+#c-topbar__monthLabel {
+    display: flex;
+    align-items: center;
+    color: aliceblue;
+}
+
+/*TASK PANEL*/
+#tp-taskpanel {
+    flex-grow: 1;
+    background: var(--additdark);
+    display: flex;
+    flex-direction: column;
+}
+
+#tp-topbar {
+    min-height: 48px;
+    background-color: var(--additlight);
+    display: flex;
+    justify-content: space-between;
+    color: aliceblue;
+}
+
+#tp-dateLabel {
+    align-self: center;
+    margin-left: 4rem;
+}
+
+#tp-createTaskBt {
+    height: 44px;
+    width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s;
+    background-color: var(--additlight);
+    margin-right: 20px;
+}
+
+#tp-createTaskBt .svg-icon {
+    width:36px;
+    height: 36px;
+}
+
+#tp-createTaskBt
+    .svg-icon path,
+    .svg-icon polygon,
+    .svg-icon rect,
+    .svg-icon circle {
+    stroke: var(--baselight);
+    transition: 0.2s;
+}
+
+#tp-createTaskBt:hover > 
+    .svg-icon path,
+    .svg-icon polygon,
+    .svg-icon rect,
+    .svg-icon circle{
+    stroke: #fffedf;
+}
+
+/*container where located taskitelms*/
+#tp-taskList {
+    flex-basis: 30%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 10px 5px;
+    overflow-y: scroll;
+    text-align: center;
+    color: #bfc9d2;
+    border-left: 1px solid var(--basedark);
+}
+
+/*single task item*/
+.tp-taskitem {
+    background-color: var(--baselight);
+    border-radius: 2px;
+    transition: 0.2s;
+    border: solid 1px var(--additlight);
+    margin-bottom: 5px;
+    margin-left: 5px;
+    flex-basis: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    text-align: initial;
+    color: black;
+}
+
+.tp-taskitem:hover {
+    border-color: var(--baselight);
+    background-color: #dbebff;
+}
+
+.tp-taskitem 
+.button-icon24:active, .button-icon24:focus {
+    border: 1px dashed var(--extradark);
+}
+
+.tp-taskitem .button-icon12:focus {
+    border: 1px dashed var(--extradark);
+    background: rgb(0, 255, 13);   
+}
+
+.tp-taskCheckout {
+    margin-left: 5px;
+}
+
+/*section with task-settings, task-title and task-description*/
+.tp-taskitemMain {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0px 5px;
+}
+
+.tp-taskitemTitle {
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    flex-grow: 1;
+    font-size: 14px;
+    margin: 3px;
+}
+
+.tp-taskitemDescr {
+    border-radius: 2px;
+    background-color: #c9d2ef;
+    overflow-wrap: anywhere;
+    flex-grow: 1;
+    font-size: 14px;
+    margin: 3px;
+}
+
+.ti-SaveTaskBt:hover path {
+    fill: #2aa9c6;
+}
+
+.ti-CloseEditorBt:hover path {
+    fill: #5c698f;
+}
+
+/*buttons, that displais in to the right of tp-taskitem when it is not unfold*/
+.tp-taskitemRightBtns * {
+    display: flex;
+    flex-direction: column;
+    transition: 0.2s;
+}
+
+.tp-taskitemRightBtns .button-icon24 {
+    display: none
+}
+
+.tp-RightBtnsDelTask:hover path {
+    fill:crimson;
+}
+
+.tp-RightBtnsEditTask:hover path{
+    fill: var(--baselight);
+    fill: #202e5f;
+}
+
+.tp-taskitem:hover > .tp-taskitemRightBtns .button-icon24 {
+    display: flex;
+}
+
+/*container for the 'save changes' and the 'close task redactor' buttons*/
+.tp-taskitemSaveClose{
+    align-self: flex-end;
+    margin-top: 3px;
+}
+
+.tp-taskTimeSettings {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+/*container for wraping a task-item settings element and its label*/
+.tp-SettingsElement {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.tp-SettingsElement label {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.tp-taskFilesArea {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px;
+    border: solid 1px var(--extradark);
+    border-radius: 2px;
+    margin-bottom: 5px;
+}
+
+.tp-taskFileSet {
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    font-size: 12;
+}
+
+.tp-taskFile {
+    display: flex;
+    align-items: center;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-right: 5px;
+    background-color: aliceblue;
+    border-radius: 4px;
+    padding: 3px;
+    max-height: 14px;
+}
+
+.tp-taskFileAdd {
+}
+
+.tp-taskFile
+.svg-icon12 path,
+.svg-icon12 polygon,
+.svg-icon12 rect,
+.svg-icon12 circle,
+.tp-taskFileDelete {
+  fill: red;
+}
+
+
+

@@ -22,8 +22,8 @@ class Interval(models.Model):
         return self.related_task.ID
 
     def __str__(self) -> str:
-        return f"""interval "{self.interval}" 
-                   for the task: <{self.related_task.ID}>"""
+        return f'interval "{self.interval}" for the task:\
+                 <{self.related_task.ID}>'
 
 
 class File(models.Model):
@@ -36,8 +36,8 @@ class File(models.Model):
         return self.related_task.ID
 
     def __str__(self) -> str:
-        return f"""interval "{self.interval}" 
-                   for the task: <{self.related_task.ID}>"""
+        return f'file "{self.link}" attached to the task:\
+                 <{self.related_task.ID}>'
 
 
 class Completion(models.Model):
@@ -50,13 +50,13 @@ class Completion(models.Model):
         return self.related_task.ID
 
     def __str__(self) -> str:
-        return f"""interval "{self.interval}" 
-                   for the task: <{self.related_task.ID}>"""
+        return f'completion of the task: <{self.related_task.ID},\
+                 {self.date_when}>'
 
 
 class Autoshift(models.Model):
     ID = models.AutoField(primary_key=20)
-    value = CharField(max_length=1)
+    value = CharField(max_length=3)
     related_task = models.OneToOneField(Task, on_delete=models.CASCADE)
 
     @property
@@ -64,5 +64,6 @@ class Autoshift(models.Model):
         return self.related_task.ID
 
     def __str__(self) -> str:
-        return f"""interval "{self.interval}" 
-                   for the task: <{self.related_task.ID}>"""
+        return f'Autoshift "{self.value}" for the task:\
+                 <{self.related_task.ID}>'
+
