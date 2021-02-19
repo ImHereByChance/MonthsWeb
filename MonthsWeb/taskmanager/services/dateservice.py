@@ -124,7 +124,7 @@ class IntervalHandler:
     """TODO: docstring for this class"""
 
     @staticmethod
-    def get_from_montharray(monthdates_objs, intervalled_tasks):
+    def get_from_montharray(datetime_objects, intervalled_tasks):
         """ Takes a list of datetime.datetime objects as the first argument
         and a list of tuples containing interval task data retrieved from
         the database.
@@ -144,7 +144,7 @@ class IntervalHandler:
         is_match = IntervalHandler.is_match  # shorter name for readability
 
         list_of_matched = []
-        for date_obj in monthdates_objs:
+        for date_obj in datetime.objects:
             for tup in intervalled_tasks:
                 interval = tup[0]
                 task_fields = tup[1:]

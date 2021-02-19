@@ -3,13 +3,21 @@ from django.db.models.fields import AutoField, CharField
 
 
 class Task(models.Model):
+    """The model, which stores the main fields of the task 
+    (ID, creation date (initdate), title, description. 
+    All other specific fields joins to it, such as the 
+    task repetition interval or files attached to the task.
+    """
     ID = models.AutoField(primary_key=True)
-    initdate = models.CharField(max_length=50)
+    initdate = models.DateTimeField(auto_now=False, auto_now_add=False)
     title = models.CharField(max_length=80)
     description = models.CharField(max_length=800, blank=True)
 
     def __str__(self) -> str:
-        return f'"{self.title}", id: {self.ID}'
+        """Truncates self.title to 8 chars and concatenates self.ID
+        (i.g. '<"Title ta"; task 1>')
+        """
+        return f'id {self.ID}'
 
 
 class Interval(models.Model):
@@ -17,41 +25,27 @@ class Interval(models.Model):
     interval = models.CharField(max_length=150)
     related_task = models.OneToOneField(Task, on_delete=models.CASCADE)
 
-    @property
-    def task_id(self):
-        return self.related_task.ID
-
     def __str__(self) -> str:
-        return f'interval "{self.interval}" for the task:\
-                 <{self.related_task.ID}>'
+        return f'"{self.interval}" for task_id '\
+               f'{self.related_task_id}'
 
 
 class File(models.Model):
     ID = models.AutoField(primary_key=True)
     link = models.CharField(max_length=400)
-    related_task = models.OneToOneField(Task, on_delete=models.CASCADE)
-
-    @property
-    def task_id(self):
-        return self.related_task.ID
+    related_task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'file "{self.link}" attached to the task:\
-                 <{self.related_task.ID}>'
+        return f'id {self.ID} for task_id {self.related_task_id}'
 
 
 class Completion(models.Model):
     ID = models.AutoField(primary_key=20)
-    date_when = CharField(max_length=20)
-    related_task = models.OneToOneField(Task, on_delete=models.CASCADE)
-
-    @property
-    def task_id(self):
-        return self.related_task.ID
+    date_when = models.DateTimeField(auto_now=False, auto_now_add=False)
+    related_task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'completion of the task: <{self.related_task.ID},\
-                 {self.date_when}>'
+        return f'for the task_id {self.related_task_id} {self.date_when}'
 
 
 class Autoshift(models.Model):
@@ -59,11 +53,5 @@ class Autoshift(models.Model):
     value = CharField(max_length=3)
     related_task = models.OneToOneField(Task, on_delete=models.CASCADE)
 
-    @property
-    def task_id(self):
-        return self.related_task.ID
-
     def __str__(self) -> str:
-        return f'Autoshift "{self.value}" for the task:\
-                 <{self.related_task.ID}>'
-
+        return (f'"{self.value}" for the task_id {self.related_task.ID}')

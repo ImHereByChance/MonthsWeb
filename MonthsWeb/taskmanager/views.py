@@ -8,7 +8,7 @@ def index(request):
     return render(request, 'taskmanager/index.html')
 
 def test_target(request):
-    """tmp vie for testing perposes"""
+    """tmp view for testing perposes"""
     
     dct = {'date': '2021-01-12 00:00:00', 'ID': 78, 
         'initdate': '2021-01-12 00:00:00', 'title': 'sf', 
