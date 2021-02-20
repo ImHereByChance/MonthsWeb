@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db.models import query, CharField
 from django.db.models.fields import related_descriptors
 from django.db.models.functions import Cast
@@ -6,11 +7,13 @@ from .. import models
 
 
 class Database_handler:
+
     @staticmethod
     def get_monthly_tasks(dates_period):
-        """Takes a tuple of two datestrings and retrieves from database all 
-        fields of the tasks, that matches this time period (except the fields,
-        which can be multiple for each task.ID: "completion" and "file")
+        """Takes a tuple of two datetime objects and retrieves from database 
+        all the tasks (all fields including fields from related tables), that 
+        matches this time period (except the fields, which can be multiple for
+        each task.ID: "completion" and "file")
         """
         query_set = models.Task.objects\
             .select_related('interval', 'autoshift')\
@@ -24,15 +27,16 @@ class Database_handler:
     
     @staticmethod
     def get_intervalled_tasks(dates_period):
-        """ Takes a tuple containing start- and end- date strings of the chosen
-        time period which are formatted as YYYY-MM-DD HH:HH:SS. Finds all tasks
-        with intervals that match given range of dates and returns a list of
-        tuples where in each tuple the first element is interval-string and
-        remain elements are fields of the task: ID, date of the task's creation,
-        title, task description
+        """ Takes a tuple of two datetime objects, where the first is the 
+        beginning- and the second is the end- of the time period. The method 
+        finds all interval-based tasks that matches the period and returns a 
+        list of tuples. The first element of each tuple is interval-string 
+        (e.g. "every_day", "every_month" etc.) and remaining elements are 
+        fields of the task such as: ID, date of the task's creation, title,
+        task, description.
         """
-        _, date_until = dates_period
-    
+        _, date_until = dates_period  # needs only the "date until"
+        
         query_set = models.Task.objects\
             .select_related('interval')\
             .values_list(
@@ -41,8 +45,8 @@ class Database_handler:
                 Cast('initdate', output_field=CharField()), 
                 'description')\
             .filter(interval__isnull=False, initdate__lt=date_until)\
-            .exclude(interval__interval='no')\
-
+            .exclude(interval__interval='no')
+        
         return list(query_set)
 
     @staticmethod
@@ -64,30 +68,30 @@ class Database_handler:
         
         return str(query_set)
     
-    @staticmethod
-    def add_overall_task(overall_dict):
+    @classmethod
+    def add_overall_task(cls, overall_dict):
         """Takes a dict of all fields of the task (arg "overall_dict") 
         and inserts them into related sql tables.
         """
-        task_creation_time = timezone.now()
+        required_keys = ['initdate', 'title', 'description',
+                         'interval', 'autoshift']
+        if not all(k in overall_dict.keys() for k in required_keys):
+            raise KeyError('failed to add the task to database, missing one ',
+                          f'or more of the required keys: {required_keys}')
+
+        task_creation_time = timezone.datetime.\
+                                fromisoformat(overall_dict['initdate'])
 
         new_task = models.Task.objects.create(
             initdate=task_creation_time,
             title=overall_dict['title'],
             description=overall_dict['description']
         )
-        if 'interval' in overall_dict.keys():
-            models.Interval.objects.create(
+        models.Interval.objects.create(
                 interval=overall_dict['interval'],
                 related_task=new_task   
             )
-        if 'completion' in overall_dict.keys():
-            models.Completion.objects.create(
-                date_when=task_creation_time,
-                related_task=new_task
-            )
-        if 'autoshift' in overall_dict.keys():
-            models.Autoshift.objects.create(
+        models.Autoshift.objects.create(
                 value=overall_dict['autoshift'],
                 related_task=new_task
             )
@@ -95,11 +99,49 @@ class Database_handler:
 
     @staticmethod
     def update_overall_task(overall_dict):
-        pass
+        """ Takes a dict of all fields of the task and adds them into
+        related sql tables.
+        """
+        # Check input
+        required_keys = ['ID', 'initdate', 'title', 'description',
+                         'interval', 'autoshift']
+        if not all(k in overall_dict.keys() for k in required_keys):
+            raise KeyError('failed to update the Task, missing one ',
+                          f'or more of the required keys: {required_keys}')
         
+        # Prepare some fields
+        task_id = overall_dict['ID']
+        initdate_object = timezone.datetime\
+            .fromisoformat(overall_dict['initdate'])  # ISOstring to datetime
+        
+        # Updating tables
+        models.Task.objects.filter(pk=task_id)\
+            .update_or_create(initdate=initdate_object,
+                   title=overall_dict['title'],
+                   description=overall_dict['description'])
+        
+        if 'interval' in overall_dict.keys():
+            models.Interval.objects.filter(related_task_id=task_id)\
+                .update(interval=overall_dict['interval'])
+        
+        if 'autoshift' in overall_dict.keys():
+            models.Autoshift.objects.filter(related_task_id=task_id)\
+                .update(autoshift=overall_dict['autoshift'])
+        
+    @staticmethod
+    def delete_task(task):
+        """ Delete task by id from core table 'task' and other tables related
+        via foreign key. As an argument can be provided a dict, that contains
+        {'ID': id_integer} key: value pair or direct integer ID value
+        """
+        if isinstance(task, dict):
+            task_id = task['ID']
+        elif isinstance(task, int):
+            task_id = task
+        else:
+            raise ValueError('the argument must be type of dict or int')
 
-    def delete_task(self):
-        pass
+        models.Task.objects.filter(ID=task_id).delete()
 
     def check_uncheck_task(self):
         pass

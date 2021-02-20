@@ -14,9 +14,6 @@ class Task(models.Model):
     description = models.CharField(max_length=800, blank=True)
 
     def __str__(self) -> str:
-        """Truncates self.title to 8 chars and concatenates self.ID
-        (i.g. '<"Title ta"; task 1>')
-        """
         return f'id {self.ID}'
 
 

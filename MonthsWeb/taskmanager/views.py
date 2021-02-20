@@ -10,9 +10,6 @@ def index(request):
 def test_target(request):
     """tmp view for testing perposes"""
     
-    dct = {'date': '2021-01-12 00:00:00', 'ID': 78, 
-        'initdate': '2021-01-12 00:00:00', 'title': 'sf', 
-        'description': 'fsf', 'interval': 'no', 'autoshift': 'no', 
-        'completion': False, 'files': []}
-    Database_handler.add_overall_task(dct)
-    return HttpResponse('vse')
+    Database_handler.delete_task(11)
+    
+    return HttpResponse('success')
