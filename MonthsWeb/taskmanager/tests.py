@@ -1,4 +1,7 @@
+from typing import overload
 from django.test import TestCase
+from django.db.models.fields import CharField
+from django.db.models.functions import Cast
 from django.utils import timezone
 from django.db import IntegrityError
 from .models import (Task, Completion, File)
@@ -112,7 +115,7 @@ class TestDatabase_handler(TestCase):
         )
         completion_3 = Completion.objects.create(
             date_completed=timezone.datetime.fromisoformat(
-                "2021-03-06T10:10:59.354+00:00"),
+                "2021-02-20T18:13:45.436+00:00"),
             related_task=task_1
         )
 
@@ -181,16 +184,52 @@ class TestDatabase_handler(TestCase):
         tuples_list = Database_handler.get_additional_fields(id_set)
 
         expected_output = [
-           (1, '2021-03-06 10:10:59.354+00', None, None, None), 
-           (2, '2021-02-21 16:41:30.981+00', None, None, None), 
-           (2, '2021-03-06 10:10:59.981+00', None, None, None), 
-           (3, None, 1, 'file1/for/task/3', 3), 
-           (3, None, 2, 'file2/for/task/3', 3), 
-           (4, None, None, None, None)        
+            (10, None, None, None, None),
+            (8, '2021-03-06 10:10:59.981+00', None, None, None),
+            (9, None, 4, 'file2/for/task/3', 9),
+            (9, None, 3, 'file1/for/task/3', 9),
+            (7, '2021-02-20 18:13:45.436+00', None, None, None),
+            (8, '2021-02-21 16:41:30.981+00', None, None, None)
         ]
-
-        print('outp:', tuples_list)
-        print()
-        print('expt:', expected_output)
-
         self.assertEquals(set(tuples_list), set(expected_output))
+
+    def test_add_overall_task(self):
+        # without files
+        task1_dict = {
+            'id': None, 
+            'date': "2021-02-01T00:00:00.000+00:00", 
+            'init_date': "2021-02-01T00:00:00.000+00:00", 
+            'title': 'created task#1', 
+            'description': 'no files', 
+            'interval': 'no', 
+            'autoshift': False, 
+        }
+        Database_handler.add_overall_task(task1_dict)
+        
+        task1_dict_from_db = Task.objects\
+            .select_related('completion')\
+            .annotate(
+                date=Cast('init_date', output_field=CharField()),
+            )\
+            .values(
+                'id',
+                'date',
+                'title',
+                'description',
+                'interval',
+                'autoshift',
+            )\
+            .filter(title='created task#1')[0]
+        
+        # test equals of dates separately
+        self.assertEquals(
+            timezone.datetime.fromisoformat(task1_dict['init_date']),
+            timezone.datetime.fromisoformat(task1_dict_from_db['date'] + ':00')
+        )
+        # other fields excluding dates and id
+        del task1_dict['id']
+        del task1_dict['init_date']
+        del task1_dict['date']
+        del task1_dict_from_db['id']
+        del task1_dict_from_db['date']
+        self.assertEquals(task1_dict, task1_dict_from_db)

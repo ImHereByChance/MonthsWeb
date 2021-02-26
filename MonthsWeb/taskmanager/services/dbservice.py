@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Iterable
+from typing import Iterable, overload
 from django.db.models import query, CharField
-from django.db.models.fields import related_descriptors
+from django.db.models.fields import AutoField, related_descriptors
 from django.db.models.functions import Cast
 from django.utils import timezone
 from .. import models
@@ -58,42 +58,37 @@ class Database_handler:
         Returns a list of tuples containing the task's ID, task's completion
         date, and files associated with the task.
         """
-        # TODO: fix multiple files for single task situation 
         query_set = models.Task.objects\
             .select_related('completion', 'file')\
-            .values_list(                           # as a string     
-                'id', 
+            .values_list(     
+                'id',                              # as a string ↴
                 Cast('completion__date_completed', output_field=CharField()), 
                 'file__id',
                 'file__link',
-                'file__related_task_id'
-            )\
+                'file__related_task_id')\
             .filter(id__in=task_IDs_list)
         
         return list(query_set)
     
-    @classmethod
-    def add_overall_task(cls, overall_dict):
+    @staticmethod
+    def add_overall_task(overall_dict):
         """Takes a dict of all fields of the task (arg "overall_dict") 
         and inserts them into related sql tables.
         """
+        # isostring to datetime object
+        task_creation_time = timezone.datetime.fromisoformat(
+                                                    overall_dict['init_date'])
 
-        task_creation_time = timezone.datetime.\
-                                fromisoformat(overall_dict['initdate'])
+        if overall_dict['autoshift'] == 'no':
+            overall_dict['autoshift'] = False
+        elif overall_dict['autoshift'] == 'yes':
+            overall_dict['autoshift'] = True
 
-        new_task = models.Task.objects.create(
-            initdate=task_creation_time,
-            title=overall_dict['title'],
-            description=overall_dict['description']
-        )
-        models.Interval.objects.create(
-                interval=overall_dict['interval'],
-                related_task=new_task   
-        )
-        models.Autoshift.objects.create(
-                value=overall_dict['autoshift'],
-                related_task=new_task
-        )
+        models.Task.objects.create(init_date=task_creation_time,
+                                   title=overall_dict['title'],
+                                   description=overall_dict['description'],
+                                   interval=overall_dict['interval'],
+                                   autoshift=overall_dict['autoshift'])
         # TODO: adding in db attached files
 
     @staticmethod
