@@ -73,7 +73,7 @@ class Database_handler:
     @staticmethod
     def add_overall_task(overall_dict):
         """Takes a dict of all fields of the task (arg "overall_dict") 
-        and inserts them into related sql tables.
+        and inserts them into database.
         """
         # isostring to datetime object
         task_creation_time = timezone.datetime.fromisoformat(
@@ -93,35 +93,31 @@ class Database_handler:
 
     @staticmethod
     def update_overall_task(overall_dict):
-        """ Takes a dict of all fields of the task and adds them into
-        related sql tables.
-        """
-        # Check input
-        required_keys = ['ID', 'initdate', 'title', 'description',
-                         'interval', 'autoshift']
-        if not all(k in overall_dict.keys() for k in required_keys):
-            raise KeyError('failed to update the Task, missing one ',
-                          f'or more of the required keys: {required_keys}')
+        """ Takes a dict of all fields of the task and updates it by id."""
+        # copy to not to mutate original dict
+        updated_dict = {k:v for k,v in overall_dict.items()}
         
-        # Prepare some fields
-        task_id = overall_dict['ID']
-        initdate_object = timezone.datetime\
-            .fromisoformat(overall_dict['initdate'])  # ISOstring to datetime
+        # filter unrequired 
+        unrequired = []
+        for key in updated_dict.keys():
+            if key not in ['id', 'init_date', 'title',
+                           'description', 'interval', 'autoshift']:
+                unrequired.append(key)
+        if unrequired:
+            for k in unrequired: del updated_dict[k] 
+
+        # ISOstring to datetime
+        if updated_dict['init_date']:
+            updated_dict['init_date'] = timezone.datetime\
+                .fromisoformat(overall_dict['init_date'])
+
+        # Update fields
+        models.Task.objects\
+            .filter(id=overall_dict['id'])\
+            .update(**updated_dict)
         
-        # Updating tables
-        models.Task.objects.filter(pk=task_id)\
-            .update_or_create(initdate=initdate_object,
-                   title=overall_dict['title'],
-                   description=overall_dict['description'])
-        
-        if 'interval' in overall_dict.keys():
-            models.Interval.objects.filter(related_task_id=task_id)\
-                .update(interval=overall_dict['interval'])
-        
-        if 'autoshift' in overall_dict.keys():
-            models.Autoshift.objects.filter(related_task_id=task_id)\
-                .update(autoshift=overall_dict['autoshift'])
-        
+        # TODO: attached files
+
     @staticmethod
     def delete_task(task):
         """ Delete task by id from core table 'task' and other tables related

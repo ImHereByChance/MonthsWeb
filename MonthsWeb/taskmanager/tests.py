@@ -233,3 +233,27 @@ class TestDatabase_handler(TestCase):
         del task1_dict_from_db['id']
         del task1_dict_from_db['date']
         self.assertEquals(task1_dict, task1_dict_from_db)
+
+    def test_update_overall_task(self):
+        # without attached files
+        task = Task.objects.get(title='test task 1')
+        expected_output = {
+            'id': task.id,
+            'date': '2021-02-16T00:00:00.000+00:00',
+            'init_date': '2021-02-16T00:00:00.000+00:00',
+            'title': 'updateted task#1',
+            'description': '+interval',
+            'interval': 'every_month',
+            'autoshift': False
+        }
+        Database_handler.update_overall_task(expected_output)
+        updated_dict = Task.objects.values().filter(id=task.id)[0]
+        
+        del expected_output['date']
+        expected_output['init_date'] = timezone.datetime.fromisoformat(
+            expected_output['init_date']
+        )
+
+        self.assertEquals(expected_output, updated_dict)
+
+
