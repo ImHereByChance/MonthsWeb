@@ -1,54 +1,59 @@
 from django.db import models
-from django.db.models.fields import AutoField, CharField
+from django.db.models import Q
 
 
 class Task(models.Model):
     """The model, which stores the main fields of the task 
-    (ID, creation date (initdate), title, description. 
+    (ID, creation date (init_date), title, description,
+    task repetition interval(interval), autoshift.
     All other specific fields joins to it, such as the 
-    task repetition interval or files attached to the task.
+    dates when task was mareked as completed or files attached to the task.
     """
-    ID = models.AutoField(primary_key=True)
-    initdate = models.DateTimeField(auto_now=False, auto_now_add=False)
+    # task creation date
+    init_date = models.DateTimeField(auto_now=False, auto_now_add=False)
+    # title and description of the task
     title = models.CharField(max_length=80)
     description = models.CharField(max_length=800, blank=True)
+    # task repetition interval (e.g. "every_day", "every_month" etc.)
+    interval = models.CharField(max_length=150, default='no')
+    # a value representing whether the task should be moved to the next date
+    # if it is not completed on time 
+    autoshift = models.BooleanField(default=False)
+    
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    ~Q(interval='no') & 
+                    Q(autoshift=False)
+                ) | (
+                    Q(interval='no') & 
+                    Q(autoshift=True)
+                ) | (
+                    Q(interval='no') &
+                    Q(autoshift=False)
+                ),
+                name='only_interval_or_autoshift',
+            )
+        ]
 
     def __str__(self) -> str:
-        return f'id {self.ID}'
-
-
-class Interval(models.Model):
-    ID = models.AutoField(primary_key=True)
-    interval = models.CharField(max_length=150)
-    related_task = models.OneToOneField(Task, on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        return f'"{self.interval}" for task_id '\
-               f'{self.related_task_id}'
+        return f'id {self.id}'
 
 
 class File(models.Model):
-    ID = models.AutoField(primary_key=True)
+    # address to access the task
     link = models.CharField(max_length=400)
     related_task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'id {self.ID} for task_id {self.related_task_id}'
+        return f'id {self.id} for task_id {self.related_task_id}'
 
 
 class Completion(models.Model):
-    ID = models.AutoField(primary_key=20)
-    date_when = models.DateTimeField(auto_now=False, auto_now_add=False)
+    # date when the related task completed
+    date_completed = models.DateTimeField(auto_now=False, auto_now_add=False)
     related_task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'for the task_id {self.related_task_id} {self.date_when}'
-
-
-class Autoshift(models.Model):
-    ID = models.AutoField(primary_key=20)
-    value = CharField(max_length=3)
-    related_task = models.OneToOneField(Task, on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        return (f'"{self.value}" for the task_id {self.related_task.ID}')
+        return f'for the task_id {self.related_task_id} {self.date_completed}'

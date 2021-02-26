@@ -144,7 +144,7 @@ class IntervalHandler:
         is_match = IntervalHandler.is_match  # shorter name for readability
 
         list_of_matched = []
-        for date_obj in datetime.objects:
+        for date_obj in datetime_objects:
             for tup in intervalled_tasks:
                 interval = tup[0]
                 task_fields = tup[1:]
@@ -196,6 +196,7 @@ class IntervalHandler:
     # otherwise returns False. Date when the Task was created (initdate)
     # not included and will return as False.
 
+    # TODO: overwrite all the methods below to classmethods
     @staticmethod
     def _every_day(initdate, checkdate):
         if initdate.date() >= checkdate.date():
