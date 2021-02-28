@@ -45,12 +45,29 @@ class TestModels(TestCase):
                                 autoshift=True)        # of them
 
     def test_completion_constraint(self):
-        print(Task.objects.values('title').filter(id=52))
-        existing_model = Completion.objects.select_related('related_task').get(related_task__title='test task 2')
+        existing_model = Completion.objects\
+            .select_related('related_task')\
+            .get(related_task__title='test task 2')
         with self.assertRaises(IntegrityError):
             # only one for the same date
             Completion.objects.create(
                 date_completed=existing_model.date_completed,
+                related_task=existing_model.related_task    
+            )
+        with self.assertRaises(IntegrityError):
+            slightly_different_time = timezone.datetime.fromisoformat(
+                "2021-02-20T17:30:30.000+00:00"
+            )
+            Completion.objects.create(
+                date_completed=slightly_different_time,
+                related_task=existing_model.related_task    
+            )
+        with self.assertRaises(IntegrityError):
+            slightly_different_time = timezone.datetime.fromisoformat(
+                "2021-02-20T15:30:30.000+00:00"
+            )
+            Completion.objects.create(
+                date_completed=slightly_different_time,
                 related_task=existing_model.related_task    
             )
 

@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models import Count
 from django.db.models.fields import DateField
+from django.db import IntegrityError
 
 
 class Task(models.Model):
@@ -47,8 +48,7 @@ class Task(models.Model):
 class File(models.Model):
     # address to access the task
     link = models.CharField(max_length=400)
-    related_task = models.ForeignKey(Task, on_delete=models.CASCADE, 
-                                           unique_for_date='related_task')
+    related_task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f'id {self.id} for task_id {self.related_task_id}'
@@ -58,19 +58,14 @@ class Completion(models.Model):
     # date when the related task completed
     date_completed = models.DateTimeField(auto_now=False, auto_now_add=False)
     related_task = models.ForeignKey(Task, on_delete=models.CASCADE)
-
+    
     def __str__(self) -> str:
         return f'for the task_id {self.related_task_id} {self.date_completed}'
-
-    class Meta:
-        
-        constraints = [
-            models.CheckConstraint(
-                check=(
-                    Q(date_completed__date__in=
-                        Q(id__gt=0)
-                    )
-                ),
-                name='one_for_date',
-            )
-        ]    
+    
+    def save(self, *args, **kwargs):
+        if Completion.objects\
+        .filter(date_completed__date=self.date_completed)\
+        .exists():
+            raise IntegrityError('can be only one Completion model ',
+                                 'for one Task and date')
+        super(Completion, self).save(*args, **kwargs)
