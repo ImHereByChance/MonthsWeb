@@ -71,14 +71,14 @@ class Database_handler:
         return list(query_set)
     
     @staticmethod
-    def add_overall_task(overall_dict):
+    def add_overall_task(overall_dict: dict):
         """Takes a dict of all fields of the task (arg "overall_dict") 
         and inserts them into database.
         """
         # isostring to datetime object
         task_creation_time = timezone.datetime.fromisoformat(
                                                     overall_dict['init_date'])
-
+        # TODO: fix
         if overall_dict['autoshift'] == 'no':
             overall_dict['autoshift'] = False
         elif overall_dict['autoshift'] == 'yes':
@@ -89,22 +89,24 @@ class Database_handler:
                                    description=overall_dict['description'],
                                    interval=overall_dict['interval'],
                                    autoshift=overall_dict['autoshift'])
+        
         # TODO: adding in db attached files
 
     @staticmethod
-    def update_overall_task(overall_dict):
+    def update_overall_task(overall_dict: dict):
         """ Takes a dict of all fields of the task and updates it by id."""
         # copy to not to mutate original dict
         updated_dict = {k:v for k,v in overall_dict.items()}
         
-        # filter unrequired 
-        unrequired = []
+        # filter non required fields that may cause KeyError
+        non_required = []
         for key in updated_dict.keys():
             if key not in ['id', 'init_date', 'title',
                            'description', 'interval', 'autoshift']:
-                unrequired.append(key)
-        if unrequired:
-            for k in unrequired: del updated_dict[k] 
+                non_required.append(key)
+        if non_required:
+            for k in non_required: 
+                del updated_dict[k] 
 
         # ISOstring to datetime
         if updated_dict['init_date']:
@@ -120,21 +122,44 @@ class Database_handler:
 
     @staticmethod
     def delete_task(task):
-        """ Delete task by id from core table 'task' and other tables related
-        via foreign key. As an argument can be provided a dict, that contains
-        {'ID': id_integer} key: value pair or direct integer ID value
+        """ Delete task by id from database (including all related to it via
+        foreign key). As an argument can be provided a dict, that contains
+        {'id': <integer id>} key-value pair or direct integer id value
         """
         if isinstance(task, dict):
-            task_id = task['ID']
+            task_id = task['id']
         elif isinstance(task, int):
             task_id = task
         else:
-            raise ValueError('the argument must be type of dict or int')
+            raise TypeError('the argument must be type of dict or int')
 
-        models.Task.objects.filter(ID=task_id).delete()
+        models.Task.objects.filter(id=task_id).delete()
 
-    def check_uncheck_task(self):
-        pass
-
+    @staticmethod
+    def check_uncheck_task(task_dict: dict):
+        """ Creates an entry in the "Completion" table if
+        task_dict['completion'] have a value (it must be a datetime str
+        formated as "2020-01-01 00:00:00"). If task_dict['completion'] == False
+        - deletes appropriate entry about task complition.
+        """
+        task_id = task_dict['id']
+        completion = task_dict['completion']
+        task_date = timezone.datetime.fromisoformat(task_dict['date'])
+        if completion:
+            completion = timezone.datetime.fromisoformat(completion)
+            models.Completion.objects.create(
+                date_completed=completion,
+                related_task_id=task_id)
+        else:
+            try:
+                r = models.Completion.objects.filter(
+                    date_completed__date=task_date.date(),
+                    related_task_id=task_id).delete()
+                print('->', r)
+            except models.Completion.DoesNotExist:
+                print('PASS')
+                pass
+    
+    @staticmethod
     def shift_tasks(self):
         pass

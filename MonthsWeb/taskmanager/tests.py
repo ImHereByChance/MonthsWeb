@@ -10,6 +10,7 @@ from .services.dbservice import Database_handler
 
 class TestModels(TestCase):
     def setUp(self):
+        # do not delete, only add
         task_1 = Task.objects.create(
             init_date=timezone.datetime.fromisoformat(
                 "2021-02-21T16:26:03.850+00:00"),
@@ -30,13 +31,28 @@ class TestModels(TestCase):
             description='task with autoshift value True',
             autoshift=True
         )
+        completion_1 = Completion.objects.create(
+            date_completed=timezone.datetime.fromisoformat(
+                "2021-02-20T16:41:30.981+00:00"),
+            related_task=task_2
+        )
 
     def test_task_creation_constraint(self):
         with self.assertRaises(IntegrityError):
             Task.objects.create(init_date=timezone.now(),
                                 title='nevermind',
-                                interval='every_day',
-                                autoshift=True)
+                                interval='every_day',  # should be only one
+                                autoshift=True)        # of them
+
+    def test_completion_constraint(self):
+        print(Task.objects.values('title').filter(id=52))
+        existing_model = Completion.objects.select_related('related_task').get(related_task__title='test task 2')
+        with self.assertRaises(IntegrityError):
+            # only one for the same date
+            Completion.objects.create(
+                date_completed=existing_model.date_completed,
+                related_task=existing_model.related_task    
+            )
 
     # deletes some initialized in seUp() objects. Run it only after all
     # other testcases!
@@ -89,9 +105,21 @@ class TestDatabase_handler(TestCase):
         task_5 = Task.objects.create(
             init_date=timezone.datetime.fromisoformat(
                 "2021-01-01T17:59:22.900+00:00"),
-            title='test task 4',
+            title='test task 5',
             description='with interval from previous month',
             interval='every_month'
+        )
+        task_6 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2026-01-01T17:59:22.900+00:00"),
+            title='test task 6',
+            description='far away.. just to delete',
+        )
+        task_7 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2028-01-01T17:59:22.900+00:00"),
+            title='test task 7',
+            description='far away.. just to delete',
         )
 
         file_1 = File.objects.create(
@@ -160,7 +188,7 @@ class TestDatabase_handler(TestCase):
             ('every_week', 133, '2021-02-20 14:01:40.981+00', 'test task 2',
              'task with interval value "every_week"', False),
 
-            ('every_month', 136, '2021-01-01 17:59:22.9+00', 'test task 4',
+            ('every_month', 136, '2021-01-01 17:59:22.9+00', 'test task 5',
              'with interval from previous month', False)
         ]
 
@@ -191,6 +219,11 @@ class TestDatabase_handler(TestCase):
             (7, '2021-02-20 18:13:45.436+00', None, None, None),
             (8, '2021-02-21 16:41:30.981+00', None, None, None)
         ]
+
+        # get rid of any is-s
+        tuples_list = [tuple(tup[i] for i in (1, 3)) for tup in tuples_list]
+        expected_output = [tuple(tup[i] for i in (1, 3)) for tup in expected_output]
+        # now check
         self.assertEquals(set(tuples_list), set(expected_output))
 
     def test_add_overall_task(self):
@@ -256,4 +289,42 @@ class TestDatabase_handler(TestCase):
 
         self.assertEquals(expected_output, updated_dict)
 
+    def test_delete_task(self):
+        # delete by overall dict
+        task_dict = Task.objects.values().filter(title='test task 6')[0]
+        Database_handler.delete_task(task_dict)
+        # check 
+        query_deleted_task = Task.objects.filter(title='test task 6')
+        self.assertEquals(list(query_deleted_task), list(Task.objects.none()))
 
+        # by explicit integer id
+        task_id = Task.objects.get(title='test task 7').id
+        Database_handler.delete_task(task_id)
+        #check
+        query_deleted_task = Task.objects.filter(title='test task 7')
+        self.assertEquals(list(query_deleted_task), list(Task.objects.none()))
+
+    def test_check_uncheck_task(self):
+        # CASE#1
+        task_id = Task.objects.get(title='test task 4').id
+        completion = timezone.datetime.fromisoformat(
+            '2021-03-01T19:53:22.900+00:00')
+        date = timezone.datetime.fromisoformat('2021-03-01T17:59:22.900+00:00')
+        task_dict = {
+            'id': task_id,
+            'completion': '2021-03-01T19:53:22.900+00:00',
+            'date': '2021-03-01T17:59:22.900+00:00'
+        }
+        
+        Database_handler.check_uncheck_task(task_dict)
+        created = Completion.objects.get(related_task_id=task_id,
+                                         date_completed=completion)
+        
+        self.assertEquals(created.related_task_id, task_id)
+
+        #CASE#2: must delete the previous
+        task_dict['completion'] = False
+        Database_handler.check_uncheck_task(task_dict)
+        test_query = Completion.objects.filter(related_task_id=task_id,
+                                               date_completed=completion)
+        self.assertFalse(test_query)

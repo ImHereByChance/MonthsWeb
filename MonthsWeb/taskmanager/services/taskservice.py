@@ -177,7 +177,7 @@ class Package():
         monthdates_objs = DatesHandler.get_monthdates(date_string,
                                                       as_objects=True)
         monthdates = [DatesHandler.to_localestring(obj)
-                      for obj in monthdates_objs]
+                             for obj in monthdates_objs]
 
         tasks_objs = self.task_service.get_monthly_tasks(date_string,
                                                          monthdates_objs)

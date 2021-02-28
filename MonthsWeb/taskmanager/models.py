@@ -1,5 +1,7 @@
 from django.db import models
 from django.db.models import Q
+from django.db.models import Count
+from django.db.models.fields import DateField
 
 
 class Task(models.Model):
@@ -11,8 +13,9 @@ class Task(models.Model):
     """
     # task creation date
     init_date = models.DateTimeField(auto_now=False, auto_now_add=False)
-    # title and description of the task
+    # title of the task
     title = models.CharField(max_length=80)
+    # description of the task
     description = models.CharField(max_length=800, blank=True)
     # task repetition interval (e.g. "every_day", "every_month" etc.)
     interval = models.CharField(max_length=150, default='no')
@@ -44,7 +47,8 @@ class Task(models.Model):
 class File(models.Model):
     # address to access the task
     link = models.CharField(max_length=400)
-    related_task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    related_task = models.ForeignKey(Task, on_delete=models.CASCADE, 
+                                           unique_for_date='related_task')
 
     def __str__(self) -> str:
         return f'id {self.id} for task_id {self.related_task_id}'
@@ -57,3 +61,16 @@ class Completion(models.Model):
 
     def __str__(self) -> str:
         return f'for the task_id {self.related_task_id} {self.date_completed}'
+
+    class Meta:
+        
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    Q(date_completed__date__in=
+                        Q(id__gt=0)
+                    )
+                ),
+                name='one_for_date',
+            )
+        ]    
