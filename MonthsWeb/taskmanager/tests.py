@@ -1,6 +1,6 @@
 from typing import overload
 from django.test import TestCase
-from django.db.models.fields import CharField
+from django.db.models.fields import AutoField, CharField
 from django.db.models.functions import Cast
 from django.utils import timezone
 from django.db import IntegrityError
@@ -138,7 +138,13 @@ class TestDatabase_handler(TestCase):
             title='test task 7',
             description='far away.. just to delete',
         )
-
+        task_8 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-04-01T17:59:22.900+00:00"),
+            title='test task 8',
+            description='autoshift in the following month',
+            autoshift=True
+        )
         file_1 = File.objects.create(
             link='file1/for/task/3',
             related_task=task_3
@@ -345,3 +351,32 @@ class TestDatabase_handler(TestCase):
         test_query = Completion.objects.filter(related_task_id=task_id,
                                                date_completed=completion)
         self.assertFalse(test_query)
+
+        #CASE#3: intervalled task
+        task = Task.objects.get(title='test task 2')
+        completion = timezone.datetime.fromisoformat(
+            "2021-02-27T14:01:40.981+00:00")
+        task_dict = {
+            'id': task.id,
+            'completion': "2021-02-27T14:01:40.981+00:00",
+            'date': '2021-02-20T00:00:00.000+00:00'
+        }
+
+        Database_handler.check_uncheck_task(task_dict)
+        created = Completion.objects.get(related_task_id=task.id,
+                                         date_completed=completion)
+
+        self.assertEquals(created.related_task_id, task.id)
+
+    def test_shift_tasks(self):
+        today = timezone.datetime.fromisoformat(
+            "2021-02-26T00:00:00.900+00:00")
+
+        Database_handler.shift_tasks(today)
+
+        shifted = Task.objects.filter(init_date__date=today.date(), autoshift=True)
+        self.assertEquals(shifted.count(), 1)
+        shifted_task = shifted[0]
+        self.assertEquals(shifted_task.title, 'test task 3')
+        
+        

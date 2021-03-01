@@ -4,8 +4,9 @@ from django.db.models import query, CharField
 from django.db.models.base import Model
 from django.db.models.fields import AutoField, related_descriptors
 from django.db.models.functions import Cast
+from django.db.models import Q
 from django.utils import timezone
-from .. import models
+from ..models import Task, File, Completion
 
 
 class Database_handler:
@@ -17,7 +18,7 @@ class Database_handler:
         matches this time period (except the fields, which can be multiple for 
         each task.ID: "completion" and "file")
         """
-        values_list = models.Task.objects\
+        values_list = Task.objects\
             .values_list('id',
                          Cast('init_date', output_field=CharField()),
                          'title',
@@ -40,7 +41,7 @@ class Database_handler:
         """
         _, date_until = dates_period  # needs only end-date of period
 
-        values_list = models.Task.objects\
+        values_list = Task.objects\
             .values_list('interval',
                          'id',
                          # as a string
@@ -60,7 +61,7 @@ class Database_handler:
         Returns a list of tuples containing the task's ID, task's completion
         date, and files associated with the task.
         """
-        query_set = models.Task.objects\
+        query_set = Task.objects\
             .select_related('completion', 'file')\
             .values_list(
                 'id',                              # as a string ↴
@@ -86,11 +87,11 @@ class Database_handler:
         elif overall_dict['autoshift'] == 'yes':
             overall_dict['autoshift'] = True
 
-        models.Task.objects.create(init_date=task_creation_time,
-                                   title=overall_dict['title'],
-                                   description=overall_dict['description'],
-                                   interval=overall_dict['interval'],
-                                   autoshift=overall_dict['autoshift'])
+        Task.objects.create(init_date=task_creation_time,
+                            title=overall_dict['title'],
+                            description=overall_dict['description'],
+                            interval=overall_dict['interval'],
+                            autoshift=overall_dict['autoshift'])
 
         # TODO: adding in db attached files
 
@@ -116,7 +117,7 @@ class Database_handler:
                 .fromisoformat(overall_dict['init_date'])
 
         # Update fields
-        models.Task.objects\
+        Task.objects\
             .filter(id=overall_dict['id'])\
             .update(**updated_dict)
 
@@ -135,7 +136,7 @@ class Database_handler:
         else:
             raise TypeError('the argument must be type of dict or int')
 
-        models.Task.objects.filter(id=task_id).delete()
+        Task.objects.filter(id=task_id).delete()
 
     @staticmethod
     def check_uncheck_task(task_dict: dict):
@@ -149,17 +150,26 @@ class Database_handler:
         task_date = timezone.datetime.fromisoformat(task_dict['date'])
         if completion:
             completion = timezone.datetime.fromisoformat(completion) 
-            models.Completion.objects.create(
+            Completion.objects.create(
                 date_completed=completion,
                 related_task_id=task_id)
         else:
             try:
-                models.Completion.objects.filter(
+                Completion.objects.filter(
                     date_completed__date=task_date.date(),
                     related_task_id=task_id).delete()
-            except models.Completion.DoesNotExist:
+            except Completion.DoesNotExist:
                 pass
 
     @staticmethod
-    def shift_tasks(self):
-        pass
+    def shift_tasks(today):
+        """Changes the date of the uncompleted Tasks with Autoshift=True 
+        to the given date (shifts them to today if them not completed yet)"""
+        nested_query = Completion.objects.values_list('id', flat=True)\
+            .filter(date_completed__date__lt=today.date())
+        query = Task.objects\
+            .prefetch_related('completion')\
+            .filter(init_date__date__lt=today.date())\
+            .exclude(autoshift=False)\
+            .exclude(id__in=nested_query)\
+            .update(init_date=today)

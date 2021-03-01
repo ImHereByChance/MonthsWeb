@@ -66,6 +66,7 @@ class Completion(models.Model):
         if Completion.objects\
         .filter(date_completed__date=self.date_completed)\
         .exists():
-            raise IntegrityError('can be only one Completion model ',
-                                 'for one Task and date')
+            raise IntegrityError(
+                'must be only one Completion model for one Task and date')
+        
         super(Completion, self).save(*args, **kwargs)
