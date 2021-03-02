@@ -1,18 +1,24 @@
-from datetime import datetime
-from typing import Iterable, overload
-from django.db.models import query, CharField
-from django.db.models.base import Model
-from django.db.models.fields import AutoField, related_descriptors
+from django.db.models import CharField
 from django.db.models.functions import Cast
-from django.db.models import Q
 from django.utils import timezone
 from ..models import Task, File, Completion
+from collections import namedtuple
 
 
 class DatabaseHandler:
+    # fields, stored in the taskmanager.models.Task 
+    Core_fields = namedtuple(typename='Core_fields',
+                             field_names=('id, init_date, title, description,'
+                                          'interval, autoshift'))
+    # fields, stored in the related to taskmanager.models.Task via Foreign key
+    # models: taskmanager.models.Completion and taskmanager.models.File
+    Additional_fields = namedtuple(typename='Additional_fields',
+                                   field_names=('id, completion,' 
+                                                'file__id, file__link,' 
+                                                'file__related_task_id'))
 
-    @staticmethod
-    def get_monthly_tasks(dates_period: tuple):
+    @classmethod
+    def get_monthly_tasks(cls, dates_period: tuple):
         """Takes a tuple of two datetime objects and retrieves from database
         all the tasks (all fields including fields from related tables), that
         matches this time period (except the fields, which can be multiple for 
@@ -20,48 +26,47 @@ class DatabaseHandler:
         """
         values_list = Task.objects\
             .values_list('id',
-                         Cast('init_date', output_field=CharField()),
+                         'init_date',
                          'title',
                          'description',
                          'interval',
                          'autoshift')\
             .filter(init_date__range=dates_period)
 
-        return values_list
+        return [cls.Core_fields(*tup) for tup in list(values_list)]
 
-    @staticmethod
-    def get_intervalled_tasks(dates_period: tuple):
+    @classmethod
+    def get_intervalled_tasks(cls, dates_period: tuple):
         """ Takes a tuple of two datetime objects, where the first is the
         beginning- and the second is the end- of the time period. The method
         finds all interval-based tasks that matches the period and returns a
-        list of tuples. The first element of each tuple is interval-string
-        (e.g. "every_day", "every_month" etc.) and remaining elements are
-        fields of the task such as: ID, date of the task's creation, title,
-        task, description.
+        list of tuples with following items: id, date of the task's creation,
+        title, task, description, interval (e.g. "every_day", "every_month" 
+        etc),  information about autoshift.
         """
         _, date_until = dates_period  # needs only end-date of period
 
         values_list = Task.objects\
-            .values_list('interval',
-                         'id',
+            .values_list('id',
                          # as a string
                          Cast('init_date', output_field=CharField()),
                          'title',
                          'description',
+                         'interval',
                          'autoshift')\
             .filter(init_date__lt=date_until)\
             .exclude(interval='no')
 
-        return values_list
+        return [cls.Core_fields(*tup) for tup in list(values_list)]
 
-    @staticmethod
-    def get_additional_fields(task_IDs_list: list):
+    @classmethod
+    def get_additional_fields(cls, task_IDs_list: list):
         """ Takes a list of task IDs and extracts data from tables that
         contains additional information about each task with the given ID.
         Returns a list of tuples containing the task's ID, task's completion
         date, and files associated with the task.
         """
-        query_set = Task.objects\
+        values_list = Task.objects\
             .select_related('completion', 'file')\
             .values_list(
                 'id',                              # as a string ↴
@@ -71,7 +76,7 @@ class DatabaseHandler:
                 'file__related_task_id')\
             .filter(id__in=task_IDs_list)
 
-        return list(query_set)
+        return [cls.Additional_fields(*tup) for tup in list(values_list)]
 
     @staticmethod
     def add_overall_task(overall_dict: dict):

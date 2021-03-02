@@ -1,4 +1,5 @@
 from .dateservice import DatesHandler, IntervalHandler
+from django.utils import timezone
 
 class TaskOverall:
     """docstring for Task"""
@@ -96,7 +97,7 @@ class TaskHandler:
 
     def get_monthly_tasks(self, date_string, monthdates_objs):
         # tuple of first and last date in the month
-        dates_period = DatesHandler.get_dates_period(monthdates_objs)
+        dates_period = (monthdates_objs[0], monthdates_objs[-1])
 
         intervalled_tasks = self.db_service.get_intervalled_tasks(dates_period)
         matched = IntervalHandler.get_from_montharray(
@@ -106,7 +107,7 @@ class TaskHandler:
         from_intervals = []
         for tup in matched:
             date, interval, task_fields = tup
-            date = DatesHandler.to_localestring(date)
+            date = DatesHandler.to_localestring(date) # TODO: fix it. DatesHandler is rewritten
             task = TaskOverall(date, *task_fields, interval=interval)
             from_intervals.append(task)
 
@@ -161,7 +162,7 @@ class TaskHandler:
         self.db_service.check_uncheck_task(task_dict)
 
     def shift_tasks(self):
-        today_str = DatesHandler.get_today()
+        today_str = DatesHandler.get_today()  # TODO: fix it. DatesHandler is rewritten
         self.db_service.shift_tasks(today_str)
 
 
@@ -176,7 +177,7 @@ class Package():
     def for_new_month(self, date_string):
         monthdates_objs = DatesHandler.get_monthdates(date_string,
                                                       as_objects=True)
-        monthdates = [DatesHandler.to_localestring(obj)
+        monthdates = [DatesHandler.to_localestring(obj)  # TODO: fix it. DatesHandler is rewritten
                              for obj in monthdates_objs]
 
         tasks_objs = self.task_service.get_monthly_tasks(date_string,
