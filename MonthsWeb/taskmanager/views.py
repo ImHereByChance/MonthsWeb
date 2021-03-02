@@ -1,7 +1,7 @@
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponse
-from .services.dbservice import Database_handler 
+from .services.dbservice import DatabaseHandler 
 
 
 def index(request):
@@ -10,6 +10,6 @@ def index(request):
 def test_target(request):
     """tmp view for testing perposes"""
     
-    Database_handler.delete_task(11)
+    DatabaseHandler.delete_task(11)
     
     return HttpResponse('success')

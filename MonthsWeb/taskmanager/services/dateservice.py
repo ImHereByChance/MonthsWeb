@@ -1,37 +1,18 @@
 import calendar
 import datetime
+import pytz
 from dateutil.rrule import *
+from django.utils import timezone
 
 
 class DatesHandler:
     """ self explanatory """
     
     @staticmethod
-    def from_localestring(locale_str):
-        """ makes datetime obj in the YYYY-MM-DD HH:MM:SS format"""
-        formatting = '%Y-%m-%d %H:%M:%S'  # e.g. "2020-11-22 18:19:45"
-        dt_obj = datetime.datetime.strptime(locale_str, formatting)
-        return dt_obj
-
-    @staticmethod
-    def to_localestring(dt_obj):
-        """ returns date string in format "YYYY-MM-DD HH:MM:SS". """
-        formatting = '%Y-%m-%d %H:%M:%S'
-        locale_str = dt_obj.strftime(formatting)
-        return locale_str
-    
-    @staticmethod
-    def get_today(with_time=False):
-        today_dt_obj = datetime.datetime.now()
-        today_with_time = DatesHandler.to_localestring(today_dt_obj)
-
-        if with_time:
-            return today_with_time
-        else:
-            return today_with_time[:11] + "00:00:00"
-
-    @staticmethod
     def is_end_of_month(dt_obj):
+        """ Checks whether a datetime.date or datetime.datetime object
+        falls on the last day of it's appropriate month.
+        """
         if dt_obj.day not in (28, 29, 30, 31):
             return False
         try:
@@ -42,38 +23,24 @@ class DatesHandler:
             return False
 
     @staticmethod
-    def get_dates_period(dates_list):
-        """ Takes list of dates as date/datetime objects or list of
-        date-strings in format "YYYY-MM-DD HH:MM:SS" and returns
-        a tuple of first and last dates of given list
-        (in format "YYYY-MM-DD HH:MM:SS") """
-        beginning, end = dates_list[0], dates_list[-1]
-
-        if type(beginning) == str and type(end) == str:
-            return beginning, end
-
-        try:
-            beginning = DatesHandler.to_localestring(beginning)
-            end = DatesHandler.to_localestring(end)
-            return (beginning, end)
-        except Exception as e:
-            print('must be given list of dates as date/datetime objects ',
-                  'or list of strings in format "YYYY-MM-DD HH:MM:SS"')
-            raise e
-
-    @staticmethod
-    def get_monthdates(date_string, as_objects=False):
+    def get_monthdates(date:str , as_objects=False):
+        """ Takes a date string in ISOformat (e.g. '2022-05-06T00:00:00+00:00')
+        or datetime.datetime/datetime.date object and returns a list of
+        appropriate month's date-strings in ISOformat or if, flag as_objects is
+        True, list of datetime.datetime.objects. Timezones support included.
         """
-        takes a date string formatted as "YYYY-MM-DD HH:MM:SS" and
-        returns a list of appropriate month's date-strings in the same format
-        """
-
-        try:
-            date = DatesHandler.from_localestring(date_string)
-        except Exception as e:
-            print(f'Invalid format of date string: {date_string}',
-                  ' - must be "YYYY-MM-DD HH:MM:SS" (str only)')
-            raise e
+        if isinstance(date, str):
+            try:
+                date = timezone.datetime.fromisoformat(date)
+            except Exception as e:
+                raise e
+        elif (isinstance(date, datetime.datetime) or
+              isinstance(date, datetime.date)):
+            pass
+        else:
+            raise TypeError('argument should be a date string in ISOformat ',
+                            '(e.g. "2022-05-06T00:00:00+00:00") or ',
+                            'datetime.datetime/datetime.date object')
 
         c = calendar.Calendar()
         datetimes_gen = c.itermonthdates(date.year, date.month)
@@ -93,7 +60,7 @@ class DatesHandler:
             next_monthdates = [i for i in next_datetimes_gen]
 
             # the last date doesn't come up on the middle of the week,
-            # therefore we need to add second week from the next week
+            # therefore need to add second week from the next week
             if date.month != last_date.month:
                 extra_days = next_monthdates[7:14]
             # the last date come up on the last day of the week
@@ -109,15 +76,22 @@ class DatesHandler:
                     extra_days = next_monthdates[0:7]
             else:
                 raise ValueError('unexpected situation while adding extra days ',
-                            'from next month to pageDaysArr')
+                                 'from next month to pageDaysArr')
             monthdates += extra_days
 
+        # list of datetime.date to django.utils.timezone() with timezone +00:00
+        aware_datetimes_list = [
+            timezone.make_aware(
+                value=datetime.datetime(date.year, date.month, date.day),
+                timezone=pytz.timezone('Etc/GMT+0')
+            )
+            for date in monthdates
+        ]
+        
         if as_objects:
-            datetimes_list = [datetime.datetime(d.year, d.month, d.day)
-                              for d in monthdates]
-            return datetimes_list
+            return aware_datetimes_list
         else:
-            return [DatesHandler.to_localestring(i) for i in monthdates]
+            return [dt.isoformat() for dt in aware_datetimes_list]
 
 
 class IntervalHandler:

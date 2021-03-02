@@ -5,7 +5,8 @@ from django.db.models.functions import Cast
 from django.utils import timezone
 from django.db import IntegrityError
 from .models import (Task, Completion, File)
-from .services.dbservice import Database_handler
+from .services.dbservice import DatabaseHandler
+from .services.dateservice import DatesHandler
 
 
 class TestModels(TestCase):
@@ -52,7 +53,7 @@ class TestModels(TestCase):
             # only one for the same date
             Completion.objects.create(
                 date_completed=existing_model.date_completed,
-                related_task=existing_model.related_task    
+                related_task=existing_model.related_task
             )
         with self.assertRaises(IntegrityError):
             slightly_different_time = timezone.datetime.fromisoformat(
@@ -60,7 +61,7 @@ class TestModels(TestCase):
             )
             Completion.objects.create(
                 date_completed=slightly_different_time,
-                related_task=existing_model.related_task    
+                related_task=existing_model.related_task
             )
         with self.assertRaises(IntegrityError):
             slightly_different_time = timezone.datetime.fromisoformat(
@@ -68,7 +69,7 @@ class TestModels(TestCase):
             )
             Completion.objects.create(
                 date_completed=slightly_different_time,
-                related_task=existing_model.related_task    
+                related_task=existing_model.related_task
             )
 
     # deletes some initialized in seUp() objects. Run it only after all
@@ -91,7 +92,7 @@ class TestModels(TestCase):
                           second=Completion.objects.none().count())
 
 
-class TestDatabase_handler(TestCase):
+class TestDatabaseHandler(TestCase):
     def setUp(self):
         task_1 = Task.objects.create(
             init_date=timezone.datetime.fromisoformat(
@@ -178,7 +179,7 @@ class TestDatabase_handler(TestCase):
                 "2021-03-14T21:59:59.999+00:00")
         )
 
-        tuples_list = Database_handler.get_monthly_tasks(dates_period)
+        tuples_list = DatabaseHandler.get_monthly_tasks(dates_period)
 
         expected_output = [
             (10, '2021-02-21 16:26:03.85+00', 'test task 1',
@@ -205,7 +206,7 @@ class TestDatabase_handler(TestCase):
                 "2021-03-14T21:59:59.999+00:00")
         )
 
-        tuples_list = Database_handler.get_intervalled_tasks(dates_period)
+        tuples_list = DatabaseHandler.get_intervalled_tasks(dates_period)
 
         expected_output = [
             ('every_week', 133, '2021-02-20 14:01:40.981+00', 'test task 2',
@@ -229,10 +230,11 @@ class TestDatabase_handler(TestCase):
                 "2021-03-14T21:59:59.999+00:00"),
         )
 
-        qs = Task.objects.values_list('id').filter(init_date__range=dates_period)
+        qs = Task.objects.values_list('id').filter(
+            init_date__range=dates_period)
         id_set = set(i[0] for i in qs)
 
-        tuples_list = Database_handler.get_additional_fields(id_set)
+        tuples_list = DatabaseHandler.get_additional_fields(id_set)
 
         expected_output = [
             (10, None, None, None, None),
@@ -245,23 +247,24 @@ class TestDatabase_handler(TestCase):
 
         # get rid of any is-s
         tuples_list = [tuple(tup[i] for i in (1, 3)) for tup in tuples_list]
-        expected_output = [tuple(tup[i] for i in (1, 3)) for tup in expected_output]
+        expected_output = [tuple(tup[i] for i in (1, 3))
+                           for tup in expected_output]
         # now check
         self.assertEquals(set(tuples_list), set(expected_output))
 
     def test_add_overall_task(self):
         # without files
         task1_dict = {
-            'id': None, 
-            'date': "2021-02-01T00:00:00.000+00:00", 
-            'init_date': "2021-02-01T00:00:00.000+00:00", 
-            'title': 'created task#1', 
-            'description': 'no files', 
-            'interval': 'no', 
-            'autoshift': False, 
+            'id': None,
+            'date': "2021-02-01T00:00:00.000+00:00",
+            'init_date': "2021-02-01T00:00:00.000+00:00",
+            'title': 'created task#1',
+            'description': 'no files',
+            'interval': 'no',
+            'autoshift': False,
         }
-        Database_handler.add_overall_task(task1_dict)
-        
+        DatabaseHandler.add_overall_task(task1_dict)
+
         task1_dict_from_db = Task.objects\
             .select_related('completion')\
             .annotate(
@@ -276,7 +279,7 @@ class TestDatabase_handler(TestCase):
                 'autoshift',
             )\
             .filter(title='created task#1')[0]
-        
+
         # test equals of dates separately
         self.assertEquals(
             timezone.datetime.fromisoformat(task1_dict['init_date']),
@@ -302,9 +305,9 @@ class TestDatabase_handler(TestCase):
             'interval': 'every_month',
             'autoshift': False
         }
-        Database_handler.update_overall_task(expected_output)
+        DatabaseHandler.update_overall_task(expected_output)
         updated_dict = Task.objects.values().filter(id=task.id)[0]
-        
+
         del expected_output['date']
         expected_output['init_date'] = timezone.datetime.fromisoformat(
             expected_output['init_date']
@@ -315,15 +318,15 @@ class TestDatabase_handler(TestCase):
     def test_delete_task(self):
         # delete by overall dict
         task_dict = Task.objects.values().filter(title='test task 6')[0]
-        Database_handler.delete_task(task_dict)
-        # check 
+        DatabaseHandler.delete_task(task_dict)
+        # check
         query_deleted_task = Task.objects.filter(title='test task 6')
         self.assertEquals(list(query_deleted_task), list(Task.objects.none()))
 
         # by explicit integer id
         task_id = Task.objects.get(title='test task 7').id
-        Database_handler.delete_task(task_id)
-        #check
+        DatabaseHandler.delete_task(task_id)
+        # check
         query_deleted_task = Task.objects.filter(title='test task 7')
         self.assertEquals(list(query_deleted_task), list(Task.objects.none()))
 
@@ -338,21 +341,21 @@ class TestDatabase_handler(TestCase):
             'completion': '2021-03-01T19:53:22.900+00:00',
             'date': '2021-03-01T17:59:22.900+00:00'
         }
-        
-        Database_handler.check_uncheck_task(task_dict)
+
+        DatabaseHandler.check_uncheck_task(task_dict)
         created = Completion.objects.get(related_task_id=task_id,
                                          date_completed=completion)
-        
+
         self.assertEquals(created.related_task_id, task_id)
 
-        #CASE#2: must delete the previous
+        # CASE#2: must delete the previous
         task_dict['completion'] = False
-        Database_handler.check_uncheck_task(task_dict)
+        DatabaseHandler.check_uncheck_task(task_dict)
         test_query = Completion.objects.filter(related_task_id=task_id,
                                                date_completed=completion)
         self.assertFalse(test_query)
 
-        #CASE#3: intervalled task
+        # CASE#3: intervalled task
         task = Task.objects.get(title='test task 2')
         completion = timezone.datetime.fromisoformat(
             "2021-02-27T14:01:40.981+00:00")
@@ -362,7 +365,7 @@ class TestDatabase_handler(TestCase):
             'date': '2021-02-20T00:00:00.000+00:00'
         }
 
-        Database_handler.check_uncheck_task(task_dict)
+        DatabaseHandler.check_uncheck_task(task_dict)
         created = Completion.objects.get(related_task_id=task.id,
                                          date_completed=completion)
 
@@ -372,11 +375,125 @@ class TestDatabase_handler(TestCase):
         today = timezone.datetime.fromisoformat(
             "2021-02-26T00:00:00.900+00:00")
 
-        Database_handler.shift_tasks(today)
+        DatabaseHandler.shift_tasks(today)
 
-        shifted = Task.objects.filter(init_date__date=today.date(), autoshift=True)
+        shifted = Task.objects.filter(
+            init_date__date=today.date(), autoshift=True)
         self.assertEquals(shifted.count(), 1)
         shifted_task = shifted[0]
         self.assertEquals(shifted_task.title, 'test task 3')
-        
-        
+
+
+class TestDatesHandler(TestCase):
+    def test__is_end_of_month(self):
+        self.assertTrue(DatesHandler.is_end_of_month(
+            timezone.datetime(2020, 12, 31)))
+
+        self.assertTrue(DatesHandler.is_end_of_month(
+            timezone.datetime(2021, 2, 28)))
+
+        self.assertTrue(DatesHandler.is_end_of_month(
+            timezone.datetime(2020, 2, 29)))
+
+        self.assertTrue(DatesHandler.is_end_of_month(
+            timezone.datetime(2020, 11, 30)))
+
+        self.assertFalse(DatesHandler.is_end_of_month(
+            timezone.datetime(2020, 2, 28)))
+
+        self.assertFalse(DatesHandler.is_end_of_month(
+            timezone.datetime(2020, 12, 30)))
+
+        self.assertFalse(DatesHandler.is_end_of_month(
+            timezone.datetime(2020, 11, 29)))
+
+        self.assertFalse(DatesHandler.is_end_of_month(
+            timezone.datetime(2021, 2, 27)))
+    
+    def test_get_monthsdays(self):
+        # CASE#1: + 1 additional week 
+        monthsdays_01_2021 = [
+            '2020-12-28T00:00:00+00:00', '2020-12-29T00:00:00+00:00',
+            '2020-12-30T00:00:00+00:00', '2020-12-31T00:00:00+00:00',
+            '2021-01-01T00:00:00+00:00', '2021-01-02T00:00:00+00:00',
+            '2021-01-03T00:00:00+00:00', '2021-01-04T00:00:00+00:00',
+            '2021-01-05T00:00:00+00:00', '2021-01-06T00:00:00+00:00',
+            '2021-01-07T00:00:00+00:00', '2021-01-08T00:00:00+00:00',
+            '2021-01-09T00:00:00+00:00', '2021-01-10T00:00:00+00:00',
+            '2021-01-11T00:00:00+00:00', '2021-01-12T00:00:00+00:00',
+            '2021-01-13T00:00:00+00:00', '2021-01-14T00:00:00+00:00',
+            '2021-01-15T00:00:00+00:00', '2021-01-16T00:00:00+00:00',
+            '2021-01-17T00:00:00+00:00', '2021-01-18T00:00:00+00:00',
+            '2021-01-19T00:00:00+00:00', '2021-01-20T00:00:00+00:00',
+            '2021-01-21T00:00:00+00:00', '2021-01-22T00:00:00+00:00',
+            '2021-01-23T00:00:00+00:00', '2021-01-24T00:00:00+00:00',
+            '2021-01-25T00:00:00+00:00', '2021-01-26T00:00:00+00:00',
+            '2021-01-27T00:00:00+00:00', '2021-01-28T00:00:00+00:00',
+            '2021-01-29T00:00:00+00:00', '2021-01-30T00:00:00+00:00',
+            '2021-01-31T00:00:00+00:00', '2021-02-01T00:00:00+00:00',
+            '2021-02-02T00:00:00+00:00', '2021-02-03T00:00:00+00:00',
+            '2021-02-04T00:00:00+00:00', '2021-02-05T00:00:00+00:00',
+            '2021-02-06T00:00:00+00:00', '2021-02-07T00:00:00+00:00'
+        ]
+        date_01_2021 = timezone.datetime.fromisoformat(
+            '2021-01-01T00:00:00+00:00')
+        gen_monthsdays_01_2021 = DatesHandler.get_monthdates(date_01_2021)
+        self.assertEquals(monthsdays_01_2021, gen_monthsdays_01_2021)
+
+        #CASE#2 + 2 additional weeks
+        monthsdays_02_2021 = [
+            '2021-02-01T00:00:00+00:00', '2021-02-02T00:00:00+00:00',
+            '2021-02-03T00:00:00+00:00', '2021-02-04T00:00:00+00:00',
+            '2021-02-05T00:00:00+00:00', '2021-02-06T00:00:00+00:00',
+            '2021-02-07T00:00:00+00:00', '2021-02-08T00:00:00+00:00',
+            '2021-02-09T00:00:00+00:00', '2021-02-10T00:00:00+00:00',
+            '2021-02-11T00:00:00+00:00', '2021-02-12T00:00:00+00:00',
+            '2021-02-13T00:00:00+00:00', '2021-02-14T00:00:00+00:00',
+            '2021-02-15T00:00:00+00:00', '2021-02-16T00:00:00+00:00',
+            '2021-02-17T00:00:00+00:00', '2021-02-18T00:00:00+00:00',
+            '2021-02-19T00:00:00+00:00', '2021-02-20T00:00:00+00:00',
+            '2021-02-21T00:00:00+00:00', '2021-02-22T00:00:00+00:00',
+            '2021-02-23T00:00:00+00:00', '2021-02-24T00:00:00+00:00',
+            '2021-02-25T00:00:00+00:00', '2021-02-26T00:00:00+00:00',
+            '2021-02-27T00:00:00+00:00', '2021-02-28T00:00:00+00:00',
+            '2021-03-01T00:00:00+00:00', '2021-03-02T00:00:00+00:00',
+            '2021-03-03T00:00:00+00:00', '2021-03-04T00:00:00+00:00',
+            '2021-03-05T00:00:00+00:00', '2021-03-06T00:00:00+00:00',
+            '2021-03-07T00:00:00+00:00', '2021-03-08T00:00:00+00:00',
+            '2021-03-09T00:00:00+00:00', '2021-03-10T00:00:00+00:00',
+            '2021-03-11T00:00:00+00:00', '2021-03-12T00:00:00+00:00',
+            '2021-03-13T00:00:00+00:00', '2021-03-14T00:00:00+00:00'
+        ]
+        date_02_2021 = timezone.datetime.fromisoformat(
+            '2021-02-01T00:00:00+00:00')
+        gen_monthsdays_02_2021 = DatesHandler.get_monthdates(date_02_2021)
+        self.assertEquals(monthsdays_02_2021, gen_monthsdays_02_2021)
+
+        # CASE#3 without additional weeks
+        monthsdays_05_2021 = [
+            '2021-04-26T00:00:00+00:00', '2021-04-27T00:00:00+00:00',
+            '2021-04-28T00:00:00+00:00', '2021-04-29T00:00:00+00:00',
+            '2021-04-30T00:00:00+00:00', '2021-05-01T00:00:00+00:00',
+            '2021-05-02T00:00:00+00:00', '2021-05-03T00:00:00+00:00',
+            '2021-05-04T00:00:00+00:00', '2021-05-05T00:00:00+00:00',
+            '2021-05-06T00:00:00+00:00', '2021-05-07T00:00:00+00:00',
+            '2021-05-08T00:00:00+00:00', '2021-05-09T00:00:00+00:00',
+            '2021-05-10T00:00:00+00:00', '2021-05-11T00:00:00+00:00',
+            '2021-05-12T00:00:00+00:00', '2021-05-13T00:00:00+00:00',
+            '2021-05-14T00:00:00+00:00', '2021-05-15T00:00:00+00:00',
+            '2021-05-16T00:00:00+00:00', '2021-05-17T00:00:00+00:00',
+            '2021-05-18T00:00:00+00:00', '2021-05-19T00:00:00+00:00',
+            '2021-05-20T00:00:00+00:00', '2021-05-21T00:00:00+00:00',
+            '2021-05-22T00:00:00+00:00', '2021-05-23T00:00:00+00:00',
+            '2021-05-24T00:00:00+00:00', '2021-05-25T00:00:00+00:00',
+            '2021-05-26T00:00:00+00:00', '2021-05-27T00:00:00+00:00',
+            '2021-05-28T00:00:00+00:00', '2021-05-29T00:00:00+00:00',
+            '2021-05-30T00:00:00+00:00', '2021-05-31T00:00:00+00:00',
+            '2021-06-01T00:00:00+00:00', '2021-06-02T00:00:00+00:00',
+            '2021-06-03T00:00:00+00:00', '2021-06-04T00:00:00+00:00',
+            '2021-06-05T00:00:00+00:00', '2021-06-06T00:00:00+00:00'
+        ]
+        date_05_2021 = timezone.datetime.fromisoformat(
+            '2021-05-01T00:00:00+00:00')
+        gen_monthsdays_05_2021 = DatesHandler.get_monthdates(date_05_2021)
+        self.assertEquals(monthsdays_05_2021, gen_monthsdays_05_2021)

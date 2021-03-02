@@ -9,7 +9,7 @@ from django.utils import timezone
 from ..models import Task, File, Completion
 
 
-class Database_handler:
+class DatabaseHandler:
 
     @staticmethod
     def get_monthly_tasks(dates_period: tuple):
