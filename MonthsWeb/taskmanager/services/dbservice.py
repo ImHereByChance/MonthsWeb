@@ -6,23 +6,13 @@ from collections import namedtuple
 
 
 class DatabaseHandler:
-    # fields, stored in the taskmanager.models.Task 
-    Core_fields = namedtuple(typename='Core_fields',
-                             field_names=('id, init_date, title, description,'
-                                          'interval, autoshift'))
-    # fields, stored in the related to taskmanager.models.Task via Foreign key
-    # models: taskmanager.models.Completion and taskmanager.models.File
-    Additional_fields = namedtuple(typename='Additional_fields',
-                                   field_names=('id, completion,' 
-                                                'file__id, file__link,' 
-                                                'file__related_task_id'))
 
     @classmethod
     def get_monthly_tasks(cls, dates_period: tuple):
         """Takes a tuple of two datetime objects and retrieves from database
-        all the tasks (all fields including fields from related tables), that
-        matches this time period (except the fields, which can be multiple for 
-        each task.ID: "completion" and "file")
+        all the tasks, that matches this time period (except the fields,
+        from related tables which can be multiple for each task.id: 
+        "completion" and "file")
         """
         values_list = Task.objects\
             .values_list('id',
@@ -30,10 +20,10 @@ class DatabaseHandler:
                          'title',
                          'description',
                          'interval',
-                         'autoshift')\
+                         'autoshift', named=True)\
             .filter(init_date__range=dates_period)
 
-        return [cls.Core_fields(*tup) for tup in list(values_list)]
+        return values_list
 
     @classmethod
     def get_intervalled_tasks(cls, dates_period: tuple):
@@ -52,11 +42,11 @@ class DatabaseHandler:
                          'title',
                          'description',
                          'interval',
-                         'autoshift')\
+                         'autoshift', named=True)\
             .filter(init_date__lt=date_until)\
             .exclude(interval='no')
 
-        return [cls.Core_fields(*tup) for tup in list(values_list)]
+        return values_list
 
     @classmethod
     def get_additional_fields(cls, task_IDs_list: list):
@@ -72,10 +62,10 @@ class DatabaseHandler:
                 Cast('completion__date_completed', output_field=CharField()),
                 'file__id',
                 'file__link',
-                'file__related_task_id')\
+                'file__related_task_id', named=True)\
             .filter(id__in=task_IDs_list)
 
-        return [cls.Additional_fields(*tup) for tup in list(values_list)]
+        return values_list
 
     @staticmethod
     def add_overall_task(overall_dict: dict):
@@ -101,7 +91,9 @@ class DatabaseHandler:
 
     @staticmethod
     def update_overall_task(overall_dict: dict):
-        """ Takes a dict of all fields of the task and updates it by id."""
+        """ Takes a dict of all fields of the task and updates this
+        task it by id.
+        """
         # copy to not to mutate original dict
         updated_dict = {k: v for k, v in overall_dict.items()}
 

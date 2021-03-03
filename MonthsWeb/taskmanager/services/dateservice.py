@@ -165,16 +165,16 @@ class IntervalHandler:
     # not included and will return as False.
 
     @classmethod
-    def every_day(cls, initdate, checkdate):
-        if initdate.date() >= checkdate.date():
+    def every_day(cls, init_date, checkdate):
+        if init_date.date() >= checkdate.date():
             return False
         else:
             return True
 
     @classmethod
-    def every_workday(cls, initdate, checkdate):
+    def every_workday(cls, init_date, checkdate):
         """ every MONDAY - FRIDAY """
-        if initdate.date() >= checkdate.date():
+        if init_date.date() >= checkdate.date():
             return False
         elif checkdate.weekday() in (0, 1, 2, 3, 4):
             return True
@@ -182,27 +182,27 @@ class IntervalHandler:
             return False
 
     @classmethod
-    def every_week(cls, initdate, checkdate):
-        if initdate.date() >= checkdate.date():
+    def every_week(cls, init_date, checkdate):
+        if init_date.date() >= checkdate.date():
             return False
-        elif initdate.weekday() == checkdate.weekday():
+        elif init_date.weekday() == checkdate.weekday():
             return True
         else:
             return False
 
     @classmethod
-    def every_month(cls, initdate, checkdate):
+    def every_month(cls, init_date, checkdate):
         """(!) if the month of the initial task date is the 31s
         and a checking month have only 30 days - interval will match the 30th
         """
         is_end_of_month = DatesHandler.is_end_of_month
 
-        if initdate.date() >= checkdate.date():
+        if init_date.date() >= checkdate.date():
             return False
-        elif initdate.day == checkdate.day:
+        elif init_date.day == checkdate.day:
             return True
         elif checkdate.day in (28, 29, 30) and is_end_of_month(checkdate):
-            if initdate.day > checkdate.day:
+            if init_date.day > checkdate.day:
                 return True
             else:
                 return False
@@ -210,19 +210,19 @@ class IntervalHandler:
             return False
 
     @classmethod
-    def every_year(cls, initdate, checkdate):
-        if initdate.date() >= checkdate.date():
+    def every_year(cls, init_date, checkdate):
+        if init_date.date() >= checkdate.date():
             return
-        if (initdate.month, initdate.day) == (checkdate.month, checkdate.day):
+        if (init_date.month, init_date.day) == (checkdate.month, checkdate.day):
             return True
-        elif (initdate.month, checkdate.month) == (2, 2):
+        elif (init_date.month, checkdate.month) == (2, 2):
             if checkdate.day == 28 and DatesHandler.is_end_of_month(checkdate):
-                if initdate.day > checkdate.day:
+                if init_date.day > checkdate.day:
                     return True
             return False
         else:
             return False
 
     @classmethod
-    def special(cls, initdate, checkdate, options):
+    def special(cls, init_date, checkdate, options):
         pass  # TODO

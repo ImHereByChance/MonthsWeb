@@ -7,6 +7,7 @@ from django.db import IntegrityError
 from .models import (Task, Completion, File)
 from .services.dbservice import DatabaseHandler
 from .services.dateservice import DatesHandler, IntervalHandler
+from .services.taskservice import TaskHandler
 
 
 class TestModels(TestCase):
@@ -186,13 +187,13 @@ class TestDatabaseHandler(TestCase):
              'test task 1', 'bare task without interval and autoshift', 'no', False),
 
             (11, timezone.datetime.fromisoformat('2021-02-20T14:01:40.981+00:00'),
-            'test task 2', 'task with interval value "every_week"', 'every_week', False),
+             'test task 2', 'task with interval value "every_week"', 'every_week', False),
 
             (12, timezone.datetime.fromisoformat('2021-02-23T17:59:22.900000+00:00'),
-            'test task 3', 'task with autoshift value True', 'no', True),
+             'test task 3', 'task with autoshift value True', 'no', True),
 
             (13, timezone.datetime.fromisoformat('2021-03-01T17:59:22.900000+00:00'),
-            'test task 4', 'task which is in next month', 'no', False)
+             'test task 4', 'task which is in next month', 'no', False)
         ]
         # exclude 'id'(index 1) because it can vary depending on case
         self.assertEquals(first=list(i[1:] for i in tuples_list),
@@ -411,9 +412,9 @@ class TestDatesHandler(TestCase):
 
         self.assertFalse(DatesHandler.is_end_of_month(
             timezone.datetime(2021, 2, 27)))
-    
+
     def test_get_monthsdays(self):
-        # CASE#1: + 1 additional week 
+        # CASE#1: + 1 additional week
         monthsdays_01_2021 = [
             '2020-12-28T00:00:00+00:00', '2020-12-29T00:00:00+00:00',
             '2020-12-30T00:00:00+00:00', '2020-12-31T00:00:00+00:00',
@@ -442,7 +443,7 @@ class TestDatesHandler(TestCase):
         gen_monthsdays_01_2021 = DatesHandler.get_monthdates(date_01_2021)
         self.assertEquals(monthsdays_01_2021, gen_monthsdays_01_2021)
 
-        #CASE#2 + 2 additional weeks
+        # CASE#2 + 2 additional weeks
         monthsdays_02_2021 = [
             '2021-02-01T00:00:00+00:00', '2021-02-02T00:00:00+00:00',
             '2021-02-03T00:00:00+00:00', '2021-02-04T00:00:00+00:00',
@@ -536,29 +537,29 @@ class TestIntervalHandler(TestCase):
             description='with interval from previous month',
             interval='every_month'
         )
-        
+
     def test_every_day(self):
         # date when task was initialized
         init_date = timezone.datetime(2020, 10, 4)
 
         self.assertTrue(IntervalHandler.every_day(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
         self.assertTrue(IntervalHandler.every_day(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2048, 5, 27))
         )
         self.assertFalse(IntervalHandler.every_day(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 4))
         )
         self.assertFalse(IntervalHandler.every_day(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 3))
         )
         self.assertFalse(IntervalHandler.every_day(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2007, 10, 3))
         )
 
@@ -567,31 +568,31 @@ class TestIntervalHandler(TestCase):
         init_date = timezone.datetime(2020, 10, 5)
 
         self.assertTrue(IntervalHandler.every_workday(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 6))
         )
         self.assertTrue(IntervalHandler.every_workday(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2050, 4, 4))
         )
         self.assertTrue(IntervalHandler.every_workday(
-            initdate=timezone.datetime(2020, 6, 28),
+            init_date=timezone.datetime(2020, 6, 28),
             checkdate=timezone.datetime(2021, 1, 13))
         )
         self.assertFalse(IntervalHandler.every_workday(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
         self.assertFalse(IntervalHandler.every_workday(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 4))
         )
         self.assertFalse(IntervalHandler.every_workday(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 2))
         )
         self.assertFalse(IntervalHandler.every_workday(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 10))
         )
 
@@ -600,23 +601,23 @@ class TestIntervalHandler(TestCase):
         init_date = timezone.datetime(2020, 10, 5)
 
         self.assertTrue(IntervalHandler.every_week(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 12, 14))
         )
         self.assertTrue(IntervalHandler.every_week(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2050, 4, 4))
         )
         self.assertFalse(IntervalHandler.every_week(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
         self.assertFalse(IntervalHandler.every_week(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 21))
         )
         self.assertFalse(IntervalHandler.every_week(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 11, 22))
         )
 
@@ -625,63 +626,63 @@ class TestIntervalHandler(TestCase):
         init_date = timezone.datetime(2020, 10, 5)
 
         self.assertTrue(IntervalHandler.every_month(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 11, 5))
         )
         self.assertTrue(IntervalHandler.every_month(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2023, 2, 5))
         )
         self.assertTrue(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 10, 31),
+            init_date=timezone.datetime(2020, 10, 31),
             checkdate=timezone.datetime(2020, 11, 30))
         )
         self.assertTrue(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 10, 31),
+            init_date=timezone.datetime(2020, 10, 31),
             checkdate=timezone.datetime(2021, 2, 28))
         )
         self.assertTrue(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 1, 30),
+            init_date=timezone.datetime(2020, 1, 30),
             checkdate=timezone.datetime(2020, 2, 29))
         )
         self.assertTrue(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 2, 29),
+            init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 1, 29))
         )
         self.assertTrue(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 2, 29),
+            init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 2, 28))
         )
         self.assertTrue(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 10, 30),
+            init_date=timezone.datetime(2020, 10, 30),
             checkdate=timezone.datetime(2021, 2, 28))
         )
         self.assertFalse(IntervalHandler.every_month(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=init_date)
         )
         self.assertFalse(IntervalHandler.every_month(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 6))
         )
         self.assertFalse(IntervalHandler.every_month(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2019, 9, 5))
         )
         self.assertFalse(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 10, 30),
+            init_date=timezone.datetime(2020, 10, 30),
             checkdate=timezone.datetime(2021, 2, 27))
         )
         self.assertFalse(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 1, 29),
+            init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 28))
         )
         self.assertTrue(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 1, 29),
+            init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 29))
         )
         self.assertFalse(IntervalHandler.every_month(
-            initdate=timezone.datetime(2020, 1, 29),
+            init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 30))
         )
 
@@ -690,45 +691,45 @@ class TestIntervalHandler(TestCase):
         init_date = timezone.datetime(2020, 10, 5)
 
         self.assertTrue(IntervalHandler.every_year(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2021, 10, 5))
         )
         self.assertTrue(IntervalHandler.every_year(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=timezone.datetime(2050, 10, 5))
         )
         self.assertTrue(IntervalHandler.every_year(
-            initdate=timezone.datetime(2020, 2, 29),
+            init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 2, 28))
         )
         self.assertTrue(IntervalHandler.every_year(
-            initdate=timezone.datetime(2020, 2, 29),
+            init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2024, 2, 29))
         )
         self.assertFalse(IntervalHandler.every_year(
-            initdate=timezone.datetime(2020, 2, 27),
+            init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2021, 2, 28))
         )
         self.assertFalse(IntervalHandler.every_year(
-            initdate=init_date,
+            init_date=init_date,
             checkdate=init_date)
         )
         self.assertFalse(IntervalHandler.every_year(
-            initdate=timezone.datetime(2020, 2, 27),
+            init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2021, 2, 28))
         )
         self.assertFalse(IntervalHandler.every_year(
-            initdate=timezone.datetime(2020, 2, 27),
+            init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2019, 2, 27))
         )
         self.assertFalse(IntervalHandler.every_year(
-            initdate=timezone.datetime(2020, 2, 29),
+            init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2024, 2, 28))
         )
 
-    def test_is_match(self):
+    def test_get_from_montharray(self):
         testing_date = timezone.datetime.fromisoformat(
-                                '2021-02-01T00:00:00+00:00')
+            '2021-02-01T00:00:00+00:00')
         datetime_objects = DatesHandler.get_monthdates(testing_date,
                                                        as_objects=True)
         date_range = datetime_objects[0], datetime_objects[-1]
@@ -738,168 +739,257 @@ class TestIntervalHandler(TestCase):
                                                        intervalled_tasks)
         expected_output = [
             (136,
-            datetime.datetime(
-                2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 5',
-            'with interval from previous month',
-            'every_month',
-            False,
-            datetime.datetime(
-                2021, 2, 1, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 5',
+             'with interval from previous month',
+             'every_month',
+             False,
+             datetime.datetime(
+                 2021, 2, 1, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 2, 24, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 2, 24, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 2, 25, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 2, 25, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 2, 26, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 2, 26, 0, 0, tzinfo=datetime.timezone.utc)),
             (133,
-            datetime.datetime(
-                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 2',
-            'task with interval value "every_week"',
-            'every_week',
-            False,
-            datetime.datetime(
-                2021, 2, 27, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 2',
+             'task with interval value "every_week"',
+             'every_week',
+             False,
+             datetime.datetime(
+                 2021, 2, 27, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 1, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 1, 0, 0, tzinfo=datetime.timezone.utc)),
             (136,
-            datetime.datetime(
-                2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 5',
-            'with interval from previous month',
-            'every_month',
-            False,
-            datetime.datetime(
-                2021, 3, 1, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 5',
+             'with interval from previous month',
+             'every_month',
+             False,
+             datetime.datetime(
+                 2021, 3, 1, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 2, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 2, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 3, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 3, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 4, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 4, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 5, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 5, 0, 0, tzinfo=datetime.timezone.utc)),
             (133,
-            datetime.datetime(
-                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 2',
-            'task with interval value "every_week"',
-            'every_week',
-            False,
-            datetime.datetime(
-                2021, 3, 6, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 2',
+             'task with interval value "every_week"',
+             'every_week',
+             False,
+             datetime.datetime(
+                 2021, 3, 6, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 8, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 8, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 9, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 9, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 10, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 10, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 11, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 11, 0, 0, tzinfo=datetime.timezone.utc)),
             (134,
-            datetime.datetime(
-                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 3',
-            'task with interval "every_workday"',
-            'every_workday',
-            False,
-            datetime.datetime(
-                2021, 3, 12, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 3',
+             'task with interval "every_workday"',
+             'every_workday',
+             False,
+             datetime.datetime(
+                 2021, 3, 12, 0, 0, tzinfo=datetime.timezone.utc)),
             (133,
-            datetime.datetime(
-                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
-            'test task 2',
-            'task with interval value "every_week"',
-            'every_week',
-            False,
-            datetime.datetime(
-                2021, 3, 13, 0, 0, tzinfo=datetime.timezone.utc)),
+             datetime.datetime(
+                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
+             'test task 2',
+             'task with interval value "every_week"',
+             'every_week',
+             False,
+             datetime.datetime(
+                 2021, 3, 13, 0, 0, tzinfo=datetime.timezone.utc)),
         ]
         # without id-s
-        self.assertEquals([i[1:] for i in repeated],
-                          [i[1:] for i in expected_output])
+        self.assertEquals(first=[i[1:] for i in repeated],
+                          second=[i[1:] for i in expected_output])
+
+    
+class TestTaskHandler(TestCase):
+    def setUp(self):
+        task_1 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-02-21T00:00:00.000000+00:00"),
+            title='test task 1',
+            description='bare task without interval and autoshift'
+        )
+        task_2 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-02-20T00:00:00.000000+00:00"),
+            title='test task 2',
+            description='task with interval value "every_week"',
+            interval='every_week'
+        )
+        task_4 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-03-02T00:00:00.000000+00:00"),
+            title='test task 4',
+            description='task which is in next month',
+        )
+        task_5 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-01-01T00:00:00.000000+00:00"),
+            title='test task 5',
+            description='with interval from previous month',
+            interval='every_month'
+        )
+
+    def test_get_intervalled_task(self):
+        testing_date = timezone.datetime.fromisoformat(
+            '2021-02-01T00:00:00+00:00')
+        datetime_objects = DatesHandler.get_monthdates(testing_date,
+                                                       as_objects=True)
+        date_range = datetime_objects[0], datetime_objects[-1]
+        
+        task_handler = TaskHandler(db_service=DatabaseHandler)
+        output = task_handler._get_intervalled_tasks_dicts(
+                                 datetime_objects=datetime_objects,
+                                 dates_period=date_range)
+
+        expected_output = [
+            {'id': 136,
+            'init_date': '2021-01-01T00:00:00+00:00',
+            'title': 'test task 5',
+            'description': 'with interval from previous month',
+            'interval': 'every_month',
+            'autoshift': False,
+            'date': '2021-02-01T00:00:00+00:00'},
+            {'id': 133,
+            'init_date': '2021-02-20T00:00:00+00:00',
+            'title': 'test task 2',
+            'description': 'task with interval value "every_week"',
+            'interval': 'every_week',
+            'autoshift': False,
+            'date': '2021-02-27T00:00:00+00:00'},
+            {'id': 136,
+            'init_date': '2021-01-01T00:00:00+00:00',
+            'title': 'test task 5',
+            'description': 'with interval from previous month',
+            'interval': 'every_month',
+            'autoshift': False,
+            'date': '2021-03-01T00:00:00+00:00'},
+            {'id': 133,
+            'init_date': '2021-02-20T00:00:00+00:00',
+            'title': 'test task 2',
+            'description': 'task with interval value "every_week"',
+            'interval': 'every_week',
+            'autoshift': False,
+            'date': '2021-03-06T00:00:00+00:00'},
+            {'id': 133,
+            'init_date': '2021-02-20T00:00:00+00:00',
+            'title': 'test task 2',
+            'description': 'task with interval value "every_week"',
+            'interval': 'every_week',
+            'autoshift': False,
+            'date': '2021-03-13T00:00:00+00:00'}
+        ]
+
+        # without id-s
+        output = [{k:v for k,v in dct.items() if k != 'id'} for dct in output]
+        expected_output = [
+            {k:v for k,v in dct.items() if k != 'id'} 
+            for dct in expected_output
+        ]
+        self.assertEquals(expected_output, output)
+

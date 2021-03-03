@@ -1,116 +1,39 @@
 from .dateservice import DatesHandler, IntervalHandler
 from django.utils import timezone
 
-class TaskOverall:
-    """docstring for Task"""
-
-    def __init__(self, date, ID, initdate, title, description,
-                 autoshift='no', completion=False, interval='no', files=None):
-        self.date = date
-        self.ID = ID
-        self.initdate = initdate
-        self.title = title
-        self.description = description
-        self._interval = interval
-        self._autoshift = autoshift
-        self.completion = completion
-        if files is None:
-            self.files = []
-        else:
-            self.files = files
-
-    def __repr__(self):
-        if self.date == self.initdate:
-            interval_info = 'not from interval'
-        else:
-            interval_info = 'from interval'
-        return f'<Task__id:_{self.ID}__{interval_info}>'
-
-    @property
-    def interval(self):
-        return self._interval
-
-    @interval.setter
-    def interval(self, setting_value):
-        if self._autoshift and setting_value:
-            raise ValueError('task may have either interval or autoshift ',
-                             'properties - not both of them')
-        self._interval = setting_value
-
-    @property
-    def autoshift(self):
-        return self._autoshift
-
-    @autoshift.setter
-    def autoshift(self, setting_value):
-        if self._interval and setting_value:
-            raise ValueError('task may have either interval or autoshift ',
-                             'properties - not both of them')
-        self._autoshift = setting_value
-
-    @property
-    def fields_dict(self):
-        proper_dict = {}
-        for k in self.__dict__:
-            if k.startswith('_'):
-                key = k[1:]
-                value = self.__dict__[k]
-                proper_dict[key] = value
-            else:
-                proper_dict[k] = self.__dict__[k]
-        return proper_dict
-
-    def attach_file(self, *files):
-        """Adds to self.files list dicts, that represents fields
-        of 'file' database entries."""
-        for new_file in files:
-            if tuple(new_file.keys()) == ('ID', 'link', 'task_id'):
-                pass
-            else:
-                raise TypeError('File object should be a dict with ',
-                                'appropriate keys: "ID", "link", "task_id"')
-
-            if new_file in self.files:
-                continue
-
-            self.files.append(new_file)
-
-
-class File:
-    """An object for working with data about files attached to specific tasks."""
-    def __init__(self, ID, link, task_id):
-        self.ID = ID
-        self.link = link
-        self.task_id = task_id
-
-    def __repr__(self):
-        return f'File_link_with_path:_{self.link} '
-
-    @property
-    def fields_dict(self):
-        return self.__dict__
-
 
 class TaskHandler:
     def __init__(self, db_service):
         self.db_service = db_service
+        
+    def _get_intervalled_tasks_dicts(self, datetime_objects, 
+                                     dates_period: tuple) -> dict:
+        intervalled_tasks = self.db_service.get_intervalled_tasks(dates_period)
+        matched = IntervalHandler.get_from_montharray(
+            datetime_objects=datetime_objects,
+            intervalled_tasks=intervalled_tasks)
+        # convert namedtuples to dicts
+        dicts_list = [named_tup._asdict() for named_tup in matched]
+        # convert datestrings to datetime objects
+        for dct in dicts_list:
+            dct['init_date'] = dct['init_date'].isoformat()
+            dct['date'] = dct['date'].isoformat()
+        
+        return dicts_list
+            
 
-    def get_monthly_tasks(self, date_string, monthdates_objs):
+            
+
+
+
+
+    def get_monthly_tasks(self, monthdates_objs):
         # tuple of first and last date in the month
         dates_period = (monthdates_objs[0], monthdates_objs[-1])
 
-        intervalled_tasks = self.db_service.get_intervalled_tasks(dates_period)
-        matched = IntervalHandler.get_from_montharray(
-            monthdates_objs=monthdates_objs,
-            intervalled_tasks=intervalled_tasks)
-
-        from_intervals = []
-        for tup in matched:
-            date, interval, task_fields = tup
-            date = DatesHandler.to_localestring(date) # TODO: fix it. DatesHandler is rewritten
-            task = TaskOverall(date, *task_fields, interval=interval)
-            from_intervals.append(task)
-
+        
+        
+        # in separate method
         monthly_tasks = self.db_service.get_monthly_tasks(dates_period)
 
         from_monthdate = []
@@ -121,12 +44,17 @@ class TaskHandler:
             task = TaskOverall(date, *positional_fields, interval=interval)
             from_monthdate.append(task)
 
+
         tasks_total = from_intervals + from_monthdate
 
         if tasks_total:
             self.add_remain_fields(tasks_total)
 
         return tasks_total
+
+
+
+
 
     def add_remain_fields(self, task_list):
         """ takes list of Tasks and add to them fields that requires
@@ -148,6 +76,9 @@ class TaskHandler:
                     if completion == task.date:
                         task.completion = completion
 
+
+
+    # ???
     def add_task_to_db(self, task_dict):
         self.db_service.add_overall_task(task_dict)
 
@@ -164,6 +95,8 @@ class TaskHandler:
     def shift_tasks(self):
         today_str = DatesHandler.get_today()  # TODO: fix it. DatesHandler is rewritten
         self.db_service.shift_tasks(today_str)
+
+
 
 
 class Package():
@@ -185,13 +118,5 @@ class Package():
         tasks_dicts = [task.fields_dict for task in tasks_objs]
 
         package = {'monthdates': monthdates, 'tasks': tasks_dicts}
-
-        print(f'Made new month pack for date {date_string}:')
-        count = 1
-        for task in tasks_dicts:
-            number_files = len(task['files'])
-            print(f'{count}){task}, attached files: {number_files}')
-            count += 1
-        print('***')
 
         return package
