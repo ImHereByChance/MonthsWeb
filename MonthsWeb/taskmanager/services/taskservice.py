@@ -1,3 +1,4 @@
+from datetime import datetime
 from .dateservice import DatesHandler, IntervalHandler
 from django.utils import timezone
 
@@ -6,12 +7,17 @@ class TaskHandler:
     def __init__(self, db_service):
         self.db_service = db_service
         
-    def _get_intervalled_tasks_dicts(self, datetime_objects, 
-                                     dates_period: tuple) -> dict:
+    def _get_intervalled_tasks_dicts(self, datetime_objects: list) -> list:
+        """Takes a list of datetime objects and returns a list of dictionaries
+        with task fields to appear on those dates, according to their interval
+        settings.
+        """
+        dates_period = datetime_objects[0], datetime_objects[-1]
         intervalled_tasks = self.db_service.get_intervalled_tasks(dates_period)
         matched = IntervalHandler.get_from_montharray(
             datetime_objects=datetime_objects,
-            intervalled_tasks=intervalled_tasks)
+            intervalled_tasks=intervalled_tasks
+        )
         # convert namedtuples to dicts
         dicts_list = [named_tup._asdict() for named_tup in matched]
         # convert datestrings to datetime objects
@@ -20,7 +26,24 @@ class TaskHandler:
             dct['date'] = dct['date'].isoformat()
         
         return dicts_list
-            
+
+    def _get_monthly_tasks_dicts(self, dates_period: tuple) -> dict:
+        """Takes a list of datetime objects and returns a list of dictionaries
+        with task for those dates (excluding interval tasks).
+        """
+        monthly_tasks = self.db_service.get_monthly_tasks(dates_period)
+
+        dicts_list = [named_tup._asdict() for named_tup in monthly_tasks]
+        # need to add actual task's date, which is the same as task's creation
+        # date (init_date) if the task is not intervalled (like these).
+        for dct in dicts_list:
+            dct['date'] = dct['init_date']
+            # convert datestrings to datetime objects
+            dct['init_date'] = dct['init_date'].isoformat()
+            dct['date'] = dct['date'].isoformat()
+
+        return dicts_list
+
 
             
 
@@ -30,20 +53,6 @@ class TaskHandler:
     def get_monthly_tasks(self, monthdates_objs):
         # tuple of first and last date in the month
         dates_period = (monthdates_objs[0], monthdates_objs[-1])
-
-        
-        
-        # in separate method
-        monthly_tasks = self.db_service.get_monthly_tasks(dates_period)
-
-        from_monthdate = []
-        for task_tup in monthly_tasks:
-            date = task_tup[1]
-            interval = task_tup[-1]
-            positional_fields = task_tup[:-1]
-            task = TaskOverall(date, *positional_fields, interval=interval)
-            from_monthdate.append(task)
-
 
         tasks_total = from_intervals + from_monthdate
 

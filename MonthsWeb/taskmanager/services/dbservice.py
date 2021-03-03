@@ -8,7 +8,7 @@ from collections import namedtuple
 class DatabaseHandler:
 
     @classmethod
-    def get_monthly_tasks(cls, dates_period: tuple):
+    def get_monthly_tasks(cls, dates_period: tuple) -> list:
         """Takes a tuple of two datetime objects and retrieves from database
         all the tasks, that matches this time period (except the fields,
         from related tables which can be multiple for each task.id: 
@@ -26,7 +26,7 @@ class DatabaseHandler:
         return values_list
 
     @classmethod
-    def get_intervalled_tasks(cls, dates_period: tuple):
+    def get_intervalled_tasks(cls, dates_period: tuple) -> list:
         """ Takes a tuple of two datetime objects, where the first is the
         beginning- and the second is the end- of the time period. The method
         finds all interval-based tasks that matches the period and returns a
@@ -49,7 +49,7 @@ class DatabaseHandler:
         return values_list
 
     @classmethod
-    def get_additional_fields(cls, task_IDs_list: list):
+    def get_additional_fields(cls, task_IDs_list: list) -> list:
         """ Takes a list of task IDs and extracts data from tables that
         contains additional information about each task with the given ID.
         Returns a list of tuples containing the task's ID, task's completion
@@ -68,7 +68,7 @@ class DatabaseHandler:
         return values_list
 
     @staticmethod
-    def add_overall_task(overall_dict: dict):
+    def add_overall_task(overall_dict: dict) -> None:
         """Takes a dict of all fields of the task (arg "overall_dict") 
         and inserts them into database.
         """
@@ -90,7 +90,7 @@ class DatabaseHandler:
         # TODO: adding in db attached files
 
     @staticmethod
-    def update_overall_task(overall_dict: dict):
+    def update_overall_task(overall_dict: dict) -> None:
         """ Takes a dict of all fields of the task and updates this
         task it by id.
         """
@@ -120,7 +120,7 @@ class DatabaseHandler:
         # TODO: attached files
 
     @staticmethod
-    def delete_task(task):
+    def delete_task(task: dict) -> None:
         """ Delete task by id from database (including all related to it via
         foreign key). As an argument can be provided a dict, that contains
         {'id': <integer id>} key-value pair or direct integer id value
@@ -135,7 +135,7 @@ class DatabaseHandler:
         Task.objects.filter(id=task_id).delete()
 
     @staticmethod
-    def check_uncheck_task(task_dict: dict):
+    def check_uncheck_task(task_dict: dict) -> None:
         """ Creates an entry in the "Completion" table if
         task_dict['completion'] have a value (it must be a datetime str
         formated as "2020-01-01 00:00:00"). If task_dict['completion'] == False
@@ -158,7 +158,7 @@ class DatabaseHandler:
                 pass
 
     @staticmethod
-    def shift_tasks(today):
+    def shift_tasks(today) -> None:
         """Changes the date of the uncompleted Tasks with Autoshift=True 
         to the given date (shifts them to today if them not completed yet)"""
         nested_query = Completion.objects.values_list('id', flat=True)\

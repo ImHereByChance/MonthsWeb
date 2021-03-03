@@ -935,7 +935,7 @@ class TestTaskHandler(TestCase):
             interval='every_month'
         )
 
-    def test_get_intervalled_task(self):
+    def testget_intervalled_tasks_dicts(self):
         testing_date = timezone.datetime.fromisoformat(
             '2021-02-01T00:00:00+00:00')
         datetime_objects = DatesHandler.get_monthdates(testing_date,
@@ -944,8 +944,7 @@ class TestTaskHandler(TestCase):
         
         task_handler = TaskHandler(db_service=DatabaseHandler)
         output = task_handler._get_intervalled_tasks_dicts(
-                                 datetime_objects=datetime_objects,
-                                 dates_period=date_range)
+                                 datetime_objects=datetime_objects)
 
         expected_output = [
             {'id': 136,
@@ -993,3 +992,41 @@ class TestTaskHandler(TestCase):
         ]
         self.assertEquals(expected_output, output)
 
+    def test_get_monthly_tasks_dicts(self):
+        testing_date = timezone.datetime.fromisoformat(
+            '2021-02-01T00:00:00+00:00')
+        datetime_objects = DatesHandler.get_monthdates(testing_date,
+                                                       as_objects=True)
+        date_range = datetime_objects[0], datetime_objects[-1]
+        
+        task_handler = TaskHandler(db_service=DatabaseHandler)
+        output = task_handler._get_monthly_tasks_dicts(date_range)
+        
+        expected_output = [
+            {'init_date': '2021-02-21T00:00:00+00:00',
+            'title': 'test task 1',
+            'description': 'bare task without interval and autoshift',
+            'interval': 'no',
+            'autoshift': False,
+            'date': '2021-02-21T00:00:00+00:00'},
+            {'init_date': '2021-02-20T00:00:00+00:00',
+            'title': 'test task 2',
+            'description': 'task with interval value "every_week"',
+            'interval': 'every_week',
+            'autoshift': False,
+            'date': '2021-02-20T00:00:00+00:00'},
+            {'init_date': '2021-03-02T00:00:00+00:00',
+            'title': 'test task 4',
+            'description': 'task which is in next month',
+            'interval': 'no',
+            'autoshift': False,
+            'date': '2021-03-02T00:00:00+00:00'}
+        ]
+
+        # without id-s
+        output = [{k:v for k,v in dct.items() if k != 'id'} for dct in output]
+        expected_output = [
+            {k:v for k,v in dct.items() if k != 'id'} 
+            for dct in expected_output
+        ]
+        self.assertEquals(expected_output, output)
