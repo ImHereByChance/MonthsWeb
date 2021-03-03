@@ -48,8 +48,7 @@ class DatabaseHandler:
 
         values_list = Task.objects\
             .values_list('id',
-                         # as a string
-                         Cast('init_date', output_field=CharField()),
+                         'init_date',
                          'title',
                          'description',
                          'interval',

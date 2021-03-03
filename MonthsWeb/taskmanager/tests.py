@@ -1,4 +1,4 @@
-from typing import overload
+import datetime
 from django.test import TestCase
 from django.db.models.fields import AutoField, CharField
 from django.db.models.functions import Cast
@@ -209,10 +209,12 @@ class TestDatabaseHandler(TestCase):
         tuples_list = DatabaseHandler.get_intervalled_tasks(dates_period)
 
         expected_output = [
-            (133, '2021-02-20 14:01:40.981+00', 'test task 2',
+            (133, timezone.datetime.fromisoformat(
+                '2021-02-20T14:01:40.981000+00:00'), 'test task 2',
              'task with interval value "every_week"', 'every_week', False),
 
-            (136, '2021-01-01 17:59:22.9+00', 'test task 5',
+            (136, timezone.datetime.fromisoformat(
+                '2021-01-01T17:59:22.900000+00:00'), 'test task 5',
              'with interval from previous month', 'every_month', False)
         ]
 
@@ -500,6 +502,41 @@ class TestDatesHandler(TestCase):
 
 
 class TestIntervalHandler(TestCase):
+    def setUp(self):
+        task_1 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-02-21T00:00:00.000000+00:00"),
+            title='test task 1',
+            description='bare task without interval and autoshift'
+        )
+        task_2 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-02-20T00:00:00.000000+00:00"),
+            title='test task 2',
+            description='task with interval value "every_week"',
+            interval='every_week'
+        )
+        task_3 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-02-23T00:00:00.000000+00:00"),
+            title='test task 3',
+            description='task with interval "every_workday"',
+            interval='every_workday'
+        )
+        task_4 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-03-02T00:00:00.000000+00:00"),
+            title='test task 4',
+            description='task which is in next month',
+        )
+        task_5 = Task.objects.create(
+            init_date=timezone.datetime.fromisoformat(
+                "2021-01-01T00:00:00.000000+00:00"),
+            title='test task 5',
+            description='with interval from previous month',
+            interval='every_month'
+        )
+        
     def test_every_day(self):
         # date when task was initialized
         init_date = timezone.datetime(2020, 10, 4)
@@ -688,3 +725,181 @@ class TestIntervalHandler(TestCase):
             initdate=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2024, 2, 28))
         )
+
+    def test_is_match(self):
+        testing_date = timezone.datetime.fromisoformat(
+                                '2021-02-01T00:00:00+00:00')
+        datetime_objects = DatesHandler.get_monthdates(testing_date,
+                                                       as_objects=True)
+        date_range = datetime_objects[0], datetime_objects[-1]
+        intervalled_tasks = DatabaseHandler.get_intervalled_tasks(date_range)
+
+        repeated = IntervalHandler.get_from_montharray(datetime_objects,
+                                                       intervalled_tasks)
+        expected_output = [
+            (136,
+            datetime.datetime(
+                2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 5',
+            'with interval from previous month',
+            'every_month',
+            False,
+            datetime.datetime(
+                2021, 2, 1, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 2, 24, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 2, 25, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 2, 26, 0, 0, tzinfo=datetime.timezone.utc)),
+            (133,
+            datetime.datetime(
+                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 2',
+            'task with interval value "every_week"',
+            'every_week',
+            False,
+            datetime.datetime(
+                2021, 2, 27, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 1, 0, 0, tzinfo=datetime.timezone.utc)),
+            (136,
+            datetime.datetime(
+                2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 5',
+            'with interval from previous month',
+            'every_month',
+            False,
+            datetime.datetime(
+                2021, 3, 1, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 2, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 3, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 4, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 5, 0, 0, tzinfo=datetime.timezone.utc)),
+            (133,
+            datetime.datetime(
+                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 2',
+            'task with interval value "every_week"',
+            'every_week',
+            False,
+            datetime.datetime(
+                2021, 3, 6, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 8, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 9, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 10, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 11, 0, 0, tzinfo=datetime.timezone.utc)),
+            (134,
+            datetime.datetime(
+                2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 3',
+            'task with interval "every_workday"',
+            'every_workday',
+            False,
+            datetime.datetime(
+                2021, 3, 12, 0, 0, tzinfo=datetime.timezone.utc)),
+            (133,
+            datetime.datetime(
+                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
+            'test task 2',
+            'task with interval value "every_week"',
+            'every_week',
+            False,
+            datetime.datetime(
+                2021, 3, 13, 0, 0, tzinfo=datetime.timezone.utc)),
+        ]
+        # without id-s
+        self.assertEquals([i[1:] for i in repeated],
+                          [i[1:] for i in expected_output])

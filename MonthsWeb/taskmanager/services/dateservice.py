@@ -1,5 +1,6 @@
 import calendar
 import datetime
+from collections import namedtuple
 import pytz
 from dateutil.rrule import *
 from django.utils import timezone
@@ -96,53 +97,49 @@ class DatesHandler:
 
 class IntervalHandler:
     """TODO: docstring for this class"""
+    # a task that repeats according to the interval settings. For example,
+    # a task with the interval 'every day' can have a creation date(init_date)
+    # of 01.01.2021 and an actual date of 01.02.2021 etc. In the database
+    # stored only the "core-task" with it's creation date. Repeatable
+    # "interval" tasks are generated in this class and look like a tuple below.
+    # (actual date added to the end).
+    Repeated_task = namedtuple(typename='repeated_task',
+                               field_names='id, init_date, title, description,'
+                                           'interval, autoshift, date')
 
     @classmethod
     def get_from_montharray(cls, datetime_objects, intervalled_tasks):
         """ Takes a list of datetime.datetime objects as the first argument
-        and a list of tuples containing intervalled task's fields retrieved
+        and a list of namedtuples containing intervalled task's fields retrieved
         from the database (via dbservice.DatabaseHandler.get_intervalled_tasks)
-            First item of each tuple is a string, that denotes interval (e.i.,
-        'every_week'), remaindings are core fields of task, that stored in
-        'tasks' sql-table ( id, creation date(init_date), task title(title),
-        task description(description), autoshift).
             The method checks in a loop whether the task should appear on a
         specific day from the list of datetime objects (specified as the first
         argument) using method is_match of the current class.
-            Returns list of tuples consisting:
-        1) datetime object that indicates the date, when task should appear
-        according of its interval;
-        2) string that determins interval;
-        3) nested tuple of other tasks core fields. """
+            Returns list of namedtuples consisting with following fields: id,
+        init_date (date of task creation), title, description, interval, 
+        autoshift, date (task's current date which can defer from the task
+        creation date).
+        """
 
         list_of_matched = []
         for date_obj in datetime_objects:
-            for tup in intervalled_tasks:
-                interval = tup[0]
-                task_fields = tup[1:]
-                task_initdate_str = task_fields[1]
-                task_initdate_obj = timezone.datetime\
-                                        .fromisoformat(task_initdate_str)
-                try:
-                    if cls.is_match(interval=interval,
-                                    initdate=task_initdate_obj,
-                                    checkdate=date_obj):  
-                                  # options=options) - TODO
-                        matched = (date_obj, interval, task_fields)
-                        list_of_matched.append(matched)
-                except Exception as err:
-                    print(str(err))
-                    pass
+            for task in intervalled_tasks:
+                if cls.is_match(interval=task.interval,
+                                init_date=task.init_date,
+                                checkdate=date_obj):  
+                                # options=options) - TODO
+                    matched = cls.Repeated_task(*task, date_obj)
+                    list_of_matched.append(matched)
         return list_of_matched
 
     @classmethod
     def is_match(cls, interval, init_date, checkdate, options=None):
         """ Checks whether the date is within the time interval or not.
         If the interval is simple (such as every_day, every_week etc.,
-        i.e. does not use dateutil library), a function needs as arguments
-        only the date of task creation and a date needs to be checked,
-        otherwise must be provided "options" arg, that contains parameters for
-        dateutil.rrule.
+        i.e. there is no need to use dateutil library), a function needs as
+        arguments only the date of task creation and the date, that needs to 
+        be checked - otherwise must be provided "options" arg, that contains 
+        parameters for dateutil.rrule.
         """    
         intervals_map = {
             'every_day': cls.every_day,
@@ -164,7 +161,7 @@ class IntervalHandler:
 
     #                       ***
     # flags that returns True if a date match the interval,
-    # otherwise returns False. Date when the Task was created (initdate)
+    # otherwise returns False. Date when the Task was created (init_date)
     # not included and will return as False.
 
     @classmethod
