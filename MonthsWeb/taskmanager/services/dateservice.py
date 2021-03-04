@@ -123,7 +123,7 @@ class IntervalHandler:
 
         list_of_matched = []
         for date_obj in datetime_objects:
-            for task in intervalled_tasks:
+            for task in intervalled_tasks:  # each task is namedtuple 
                 if cls.is_match(interval=task.interval,
                                 init_date=task.init_date,
                                 checkdate=date_obj):  
@@ -159,10 +159,10 @@ class IntervalHandler:
         else:
             return check_func(init_date, checkdate, options)
 
-    #                       ***
-    # flags that returns True if a date match the interval,
-    # otherwise returns False. Date when the Task was created (init_date)
-    # not included and will return as False.
+    #                        ***
+    # Flags that returns True if a date match the interval,
+    # otherwise returns False. Date when the Task was created
+    # (init_date) not included and will return as False.
 
     @classmethod
     def every_day(cls, init_date, checkdate):

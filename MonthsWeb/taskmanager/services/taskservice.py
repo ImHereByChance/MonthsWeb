@@ -20,10 +20,6 @@ class TaskHandler:
         )
         # convert namedtuples to dicts
         dicts_list = [named_tup._asdict() for named_tup in matched]
-        # convert datestrings to datetime objects
-        for dct in dicts_list:
-            dct['init_date'] = dct['init_date'].isoformat()
-            dct['date'] = dct['date'].isoformat()
         
         return dicts_list
 
@@ -38,34 +34,10 @@ class TaskHandler:
         # date (init_date) if the task is not intervalled (like these).
         for dct in dicts_list:
             dct['date'] = dct['init_date']
-            # convert datestrings to datetime objects
-            dct['init_date'] = dct['init_date'].isoformat()
-            dct['date'] = dct['date'].isoformat()
 
         return dicts_list
 
-
-            
-
-
-
-
-    def get_monthly_tasks(self, monthdates_objs):
-        # tuple of first and last date in the month
-        dates_period = (monthdates_objs[0], monthdates_objs[-1])
-
-        tasks_total = from_intervals + from_monthdate
-
-        if tasks_total:
-            self.add_remain_fields(tasks_total)
-
-        return tasks_total
-
-
-
-
-
-    def add_remain_fields(self, task_list):
+    def _add_remain_fields(self, task_list):
         """ takes list of Tasks and add to them fields that requires
         additional request to database: "files", "completion". """
         task_IDs_list = set(task.ID for task in task_list)
@@ -84,6 +56,24 @@ class TaskHandler:
 
                     if completion == task.date:
                         task.completion = completion
+
+
+
+    def get_monthly_tasks(self, monthdates_objs):
+        # tuple of first and last date in the month
+        dates_period = (monthdates_objs[0], monthdates_objs[-1])
+
+        tasks_total = from_intervals + from_monthdate
+
+        if tasks_total:
+            self.add_remain_fields(tasks_total)
+
+        return tasks_total
+
+
+
+
+
 
 
 
@@ -111,7 +101,8 @@ class TaskHandler:
 class Package():
     """A dispatcher class responsible for collecting packages from the outputs
     of other service classes (Dates_handler, Interval_handler, Db_handler)
-    to wrap them in a single json response and it them to the client."""
+    to wrap them in a single json response and it them to the client.
+    """
 
     def __init__(self, task_service):
         self.task_service = task_service

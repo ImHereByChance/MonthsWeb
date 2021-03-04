@@ -934,6 +934,22 @@ class TestTaskHandler(TestCase):
             description='with interval from previous month',
             interval='every_month'
         )
+        # completion1 = Completion.objects.create(
+        #     date_completed=
+        # )
+
+        file1 = File.objects.create(
+            link='file1/for/task2',
+            related_task=task_2
+        )
+        file2 = File.objects.create(
+            link='file2/for/task5',
+            related_task=task_5
+        )
+        file3 = File.objects.create(
+            link='file3/for/task5',
+            related_task=task_5
+        )
 
     def testget_intervalled_tasks_dicts(self):
         testing_date = timezone.datetime.fromisoformat(
@@ -948,41 +964,51 @@ class TestTaskHandler(TestCase):
 
         expected_output = [
             {'id': 136,
-            'init_date': '2021-01-01T00:00:00+00:00',
+            'init_date': datetime.datetime(
+                2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 5',
             'description': 'with interval from previous month',
             'interval': 'every_month',
             'autoshift': False,
-            'date': '2021-02-01T00:00:00+00:00'},
+            'date': datetime.datetime(
+                2021, 2, 1, 0, 0, tzinfo=datetime.timezone.utc)},
             {'id': 133,
-            'init_date': '2021-02-20T00:00:00+00:00',
+            'init_date': datetime.datetime(
+                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
             'description': 'task with interval value "every_week"',
             'interval': 'every_week',
             'autoshift': False,
-            'date': '2021-02-27T00:00:00+00:00'},
+            'date': datetime.datetime(
+                2021, 2, 27, 0, 0, tzinfo=datetime.timezone.utc)},
             {'id': 136,
-            'init_date': '2021-01-01T00:00:00+00:00',
+            'init_date': datetime.datetime(
+                2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 5',
             'description': 'with interval from previous month',
             'interval': 'every_month',
             'autoshift': False,
-            'date': '2021-03-01T00:00:00+00:00'},
+            'date': datetime.datetime(
+                2021, 3, 1, 0, 0, tzinfo=datetime.timezone.utc)},
             {'id': 133,
-            'init_date': '2021-02-20T00:00:00+00:00',
+            'init_date': datetime.datetime(
+                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
             'description': 'task with interval value "every_week"',
             'interval': 'every_week',
             'autoshift': False,
-            'date': '2021-03-06T00:00:00+00:00'},
+            'date': datetime.datetime(
+                2021, 3, 6, 0, 0, tzinfo=datetime.timezone.utc)},
             {'id': 133,
-            'init_date': '2021-02-20T00:00:00+00:00',
+            'init_date': datetime.datetime(
+                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
             'description': 'task with interval value "every_week"',
             'interval': 'every_week',
             'autoshift': False,
-            'date': '2021-03-13T00:00:00+00:00'}
-        ]
+            'date': datetime.datetime(
+                2021, 3, 13, 0, 0, tzinfo=datetime.timezone.utc)}
+            ]
 
         # without id-s
         output = [{k:v for k,v in dct.items() if k != 'id'} for dct in output]
@@ -1003,25 +1029,28 @@ class TestTaskHandler(TestCase):
         output = task_handler._get_monthly_tasks_dicts(date_range)
         
         expected_output = [
-            {'init_date': '2021-02-21T00:00:00+00:00',
+            {'id': 132,
+            'init_date': datetime.datetime(2021, 2, 21, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 1',
             'description': 'bare task without interval and autoshift',
             'interval': 'no',
             'autoshift': False,
-            'date': '2021-02-21T00:00:00+00:00'},
-            {'init_date': '2021-02-20T00:00:00+00:00',
+            'date': datetime.datetime(2021, 2, 21, 0, 0, tzinfo=datetime.timezone.utc)},
+            {'id': 133,
+            'init_date': datetime.datetime(2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
             'description': 'task with interval value "every_week"',
             'interval': 'every_week',
             'autoshift': False,
-            'date': '2021-02-20T00:00:00+00:00'},
-            {'init_date': '2021-03-02T00:00:00+00:00',
+            'date': datetime.datetime(2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc)},
+            {'id': 134,
+            'init_date': datetime.datetime(2021, 3, 2, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 4',
             'description': 'task which is in next month',
             'interval': 'no',
             'autoshift': False,
-            'date': '2021-03-02T00:00:00+00:00'}
-        ]
+            'date': datetime.datetime(2021, 3, 2, 0, 0, tzinfo=datetime.timezone.utc)}]
+
 
         # without id-s
         output = [{k:v for k,v in dct.items() if k != 'id'} for dct in output]
@@ -1030,3 +1059,8 @@ class TestTaskHandler(TestCase):
             for dct in expected_output
         ]
         self.assertEquals(expected_output, output)
+
+    def test_add_remain_fields(self):
+        task_handler = TaskHandler(DatabaseHandler)
+
+        
