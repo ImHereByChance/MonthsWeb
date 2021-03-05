@@ -103,9 +103,6 @@ class IntervalHandler:
     # stored only the "core-task" with it's creation date. Repeatable
     # "interval" tasks are generated in this class and look like a tuple below.
     # (actual date added to the end).
-    Repeated_task = namedtuple(typename='repeated_task',
-                               field_names='id, init_date, title, description,'
-                                           'interval, autoshift, date')
 
     @classmethod
     def get_from_montharray(cls, datetime_objects, intervalled_tasks):
@@ -120,16 +117,17 @@ class IntervalHandler:
         autoshift, date (task's current date which can defer from the task
         creation date).
         """
-
         list_of_matched = []
         for date_obj in datetime_objects:
-            for task in intervalled_tasks:  # each task is namedtuple 
-                if cls.is_match(interval=task.interval,
-                                init_date=task.init_date,
+            for task in intervalled_tasks:
+                if cls.is_match(interval=task['interval'],
+                                init_date=task['init_date'],
                                 checkdate=date_obj):  
                                 # options=options) - TODO
-                    matched = cls.Repeated_task(*task, date_obj)
-                    list_of_matched.append(matched)
+                    matched_dict_copy = {k:v for k,v in task.items()}
+                    matched_dict_copy['date'] = date_obj
+                    list_of_matched.append(matched_dict_copy)
+
         return list_of_matched
 
     @classmethod

@@ -14,16 +14,16 @@ class DatabaseHandler:
         from related tables which can be multiple for each task.id: 
         "completion" and "file")
         """
-        values_list = Task.objects\
-            .values_list('id',
-                         'init_date',
-                         'title',
-                         'description',
-                         'interval',
-                         'autoshift', named=True)\
+        retrieved_values = Task.objects\
+            .values('id',
+                    'init_date',
+                    'title',
+                    'description',
+                    'interval',
+                    'autoshift')\
             .filter(init_date__range=dates_period)
 
-        return values_list
+        return list(retrieved_values)
 
     @classmethod
     def get_intervalled_tasks(cls, dates_period: tuple) -> list:
@@ -36,17 +36,17 @@ class DatabaseHandler:
         """
         _, date_until = dates_period  # needs only end-date of period
 
-        values_list = Task.objects\
-            .values_list('id',
-                         'init_date',
-                         'title',
-                         'description',
-                         'interval',
-                         'autoshift', named=True)\
+        retrieved_values = Task.objects\
+            .values('id',
+                    'init_date',
+                    'title',
+                    'description',
+                    'interval',
+                    'autoshift')\
             .filter(init_date__lt=date_until)\
             .exclude(interval='no')
 
-        return values_list
+        return list(retrieved_values)
 
     @classmethod
     def get_additional_fields(cls, task_IDs_list: list) -> list:
@@ -55,17 +55,15 @@ class DatabaseHandler:
         Returns a list of tuples containing the task's ID, task's completion
         date, and files associated with the task.
         """
-        values_list = Task.objects\
-            .select_related('completion', 'file')\
-            .values_list(
-                'id',                              # as a string ↴
-                Cast('completion__date_completed', output_field=CharField()),
-                'file__id',
-                'file__link',
-                'file__related_task_id', named=True)\
-            .filter(id__in=task_IDs_list)
-
-        return values_list
+        files = File.objects.values('id', 'link', 'related_task_id')
+        completions = Completion.objects\
+            .values('id', 'date_completed', 'related_task_id')
+            
+        additional_fields = {
+            'files': list(files),
+            'completions': list(completions)
+        }
+        return additional_fields
 
     @staticmethod
     def add_overall_task(overall_dict: dict) -> None:
