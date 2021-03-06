@@ -6,11 +6,20 @@ from django.db import IntegrityError
 
 
 class Task(models.Model):
-    """The model, which stores the main fields of the task 
-    (ID, creation date (init_date), title, description,
-    task repetition interval(interval), autoshift.
-    All other specific fields joins to it, such as the 
-    dates when task was mareked as completed or files attached to the task.
+    """A model containing basic information about a user-generated task.
+    This information is represented by the following fields:
+    1) id;
+    2) init_date (task creation date);
+    3) title (title of the task);
+    4) description (description of the task);
+    5) interval (when to repeat the task, e.g. "every_day",
+    "every_month" etc.);
+    6) autoshift (a value indicating whether the task should be rescheduled
+    to the next date if it was not completed on time);
+
+    Task has related models that store additional about it:
+    1) File (attaced to to the Task, such as text document, spreadsheat, etc.)
+    2) Completion (date, when the task marked as completed)
     """
     # task creation date
     init_date = models.DateTimeField(auto_now=False, auto_now_add=False)
@@ -20,11 +29,12 @@ class Task(models.Model):
     description = models.CharField(max_length=800, blank=True)
     # task repetition interval (e.g. "every_day", "every_month" etc.)
     interval = models.CharField(max_length=150, default='no')
-    # a value representing whether the task should be moved to the next date
-    # if it is not completed on time 
+    # a value indicating whether the task should be rescheduled to the
+    # next date if it was not completed on time (shifted if not completed)
     autoshift = models.BooleanField(default=False)
     
     class Meta:
+        # interval or autoshift (or none of them) - not both.
         constraints = [
             models.CheckConstraint(
                 check=(
@@ -37,7 +47,7 @@ class Task(models.Model):
                     Q(interval='no') &
                     Q(autoshift=False)
                 ),
-                name='only_interval_or_autoshift',
+                name='interval_or_autoshift',
             )
         ]
 
@@ -46,6 +56,8 @@ class Task(models.Model):
 
 
 class File(models.Model):
+
+
     # address to access the task
     link = models.CharField(max_length=400)
     related_task = models.ForeignKey(Task, on_delete=models.CASCADE)

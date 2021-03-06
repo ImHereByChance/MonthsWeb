@@ -7,8 +7,8 @@ from collections import namedtuple
 
 class DatabaseHandler:
 
-    @classmethod
-    def get_monthly_tasks(cls, dates_period: tuple) -> list:
+    @staticmethod
+    def get_monthly_tasks(date_range: tuple) -> list:
         """Takes a tuple of two datetime objects and retrieves from database
         all the tasks, that matches this time period (except the fields,
         from related tables which can be multiple for each task.id: 
@@ -21,12 +21,12 @@ class DatabaseHandler:
                     'description',
                     'interval',
                     'autoshift')\
-            .filter(init_date__range=dates_period)
+            .filter(init_date__range=date_range)
 
         return list(retrieved_values)
 
-    @classmethod
-    def get_intervalled_tasks(cls, dates_period: tuple) -> list:
+    @staticmethod
+    def get_intervalled_tasks(date_range: tuple) -> list:
         """ Takes a tuple of two datetime objects, where the first is the
         beginning- and the second is the end- of the time period. The method
         finds all interval-based tasks that matches the period and returns a
@@ -34,7 +34,7 @@ class DatabaseHandler:
         title, task, description, interval (e.g. "every_day", "every_month" 
         etc),  information about autoshift.
         """
-        _, date_until = dates_period  # needs only end-date of period
+        _, date_until = date_range  # needs only end-date of period
 
         retrieved_values = Task.objects\
             .values('id',
@@ -48,16 +48,19 @@ class DatabaseHandler:
 
         return list(retrieved_values)
 
-    @classmethod
-    def get_additional_fields(cls, task_IDs_list: list) -> list:
+    @staticmethod
+    def get_additional_fields(task_IDs_list: list) -> list:
         """ Takes a list of task IDs and extracts data from tables that
         contains additional information about each task with the given ID.
         Returns a list of tuples containing the task's ID, task's completion
         date, and files associated with the task.
         """
-        files = File.objects.values('id', 'link', 'related_task_id')
+        files = File.objects\
+            .values('id', 'link', 'related_task_id')\
+            .filter(related_task_id__in=task_IDs_list)
         completions = Completion.objects\
-            .values('id', 'date_completed', 'related_task_id')
+            .values('id', 'date_completed', 'related_task_id')\
+            .filter(related_task_id__in=task_IDs_list)
             
         additional_fields = {
             'files': list(files),

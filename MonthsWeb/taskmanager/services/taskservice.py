@@ -1,67 +1,68 @@
+from collections import namedtuple
 from datetime import datetime
 from .dateservice import DatesHandler, IntervalHandler
-from django.utils import timezone
 
 
 class TaskHandler:
     def __init__(self, db_service):
         self.db_service = db_service
         
-    def _get_intervalled_tasks_dicts(self, datetime_objects: list) -> list:
-        """Takes a list of datetime objects and returns a list of dictionaries
-        with task fields to appear on those dates, according to their interval
-        settings.
+    def _get_tasks_by_intervall(self, datetime_objects: list) -> list:
+        """Takes a list of datetime.datetime objects and returns a list of
+        tasks (as dicts) that appears on those dates according to their 
+        interval settings.
         """
-        dates_period = datetime_objects[0], datetime_objects[-1]
-        intervalled_tasks = self.db_service.get_intervalled_tasks(dates_period)
+        # take 
+        date_range = datetime_objects[0], datetime_objects[-1]
+        intervalled_tasks = self.db_service.get_intervalled_tasks(date_range)
         matched = IntervalHandler.get_from_montharray(
             datetime_objects=datetime_objects,
             intervalled_tasks=intervalled_tasks
         )
-        # convert namedtuples to dicts
-        dicts_list = [named_tup._asdict() for named_tup in matched]
-        
-        return dicts_list
+        return matched
 
-    def _get_monthly_tasks_dicts(self, dates_period: tuple) -> dict:
+    def _get_tasks_by_month(self, date_range: tuple) -> dict:
         """Takes a list of datetime objects and returns a list of dictionaries
         with task for those dates (excluding interval tasks).
         """
-        monthly_tasks = self.db_service.get_monthly_tasks(dates_period)
-
-        dicts_list = [named_tup._asdict() for named_tup in monthly_tasks]
+        monthly_tasks = self.db_service.get_monthly_tasks(date_range)
         # need to add actual task's date, which is the same as task's creation
         # date (init_date) if the task is not intervalled (like these).
-        for dct in dicts_list:
+        for dct in monthly_tasks:
             dct['date'] = dct['init_date']
+        return monthly_tasks
 
-        return dicts_list
-
-    def _add_remain_fields(self, task_list):
+    def _add_remain_fields(self, task_dicts_list):
         """ takes list of Tasks and add to them fields that requires
         additional request to database: "files", "completion". """
-        task_IDs_list = set(task.ID for task in task_list)
-        additional_fields = self.db_service.get_additional_fields(task_IDs_list)
-
-        for task in task_list:
-            for field in additional_fields:
-                field_id = field[0]
-                completion = field[1]
-                file_id, file_link, file_task_id = field[2:]
-
-                if task.ID == field_id:
-                    if file_task_id == task.ID:
-                        file = File(file_id, file_link, file_task_id)
-                        task.attach_file(file.fields_dict)
-
-                    if completion == task.date:
-                        task.completion = completion
-
-
-
+        task_id_list = set(task_dict['id'] for task_dict in task_dicts_list)
+        additional_fields = self.db_service.get_additional_fields(task_id_list)
+        
+        for task in task_dicts_list:
+            task['files'] = []
+            task['completion'] = False
+            for file in additional_fields['files']:
+                if file['related_task_id'] == task['id']:
+                    task['files'].append(file)
+            for completion in additional_fields['completions']:
+                if (completion['related_task_id'] == task['id'] and
+                    completion['date_completed'].date() == task['date'].date()):
+                    task['completion'] = completion['date_completed']
+                    break
+        
+        # for task in task_dicts_list:
+        #     for field in ('init_date', 'date', 'completion'):
+        #         if not isinstance(task[field], bool):
+        #             task[field] = task[field].isoformat()
+        
+        return(task_dicts_list)
+    
+    def _convert_dates_to_strings(self, task_dicts_list):
+        return []
+    
     def get_monthly_tasks(self, monthdates_objs):
         # tuple of first and last date in the month
-        dates_period = (monthdates_objs[0], monthdates_objs[-1])
+        date_range = (monthdates_objs[0], monthdates_objs[-1])
 
         tasks_total = from_intervals + from_monthdate
 
@@ -69,11 +70,6 @@ class TaskHandler:
             self.add_remain_fields(tasks_total)
 
         return tasks_total
-
-
-
-
-
 
 
 
@@ -94,8 +90,6 @@ class TaskHandler:
     def shift_tasks(self):
         today_str = DatesHandler.get_today()  # TODO: fix it. DatesHandler is rewritten
         self.db_service.shift_tasks(today_str)
-
-
 
 
 class Package():

@@ -1,8 +1,8 @@
 import datetime
-from pdb import set_trace
-import pdb
+from copy import copy, deepcopy
+from unittest.signals import removeHandler
 from django.test import TestCase
-from django.db.models.fields import AutoField, CharField
+from django.db.models.fields import CharField
 from django.db.models.functions import Cast
 from django.utils import timezone
 from django.db import IntegrityError
@@ -175,14 +175,14 @@ class TestDatabaseHandler(TestCase):
         )
 
     def test_get_monthly_tasks(self):
-        dates_period = (
+        date_range = (
             datetime.datetime.fromisoformat(
                 "2021-02-01T00:00:00.000+00:00"),
             datetime.datetime.fromisoformat(
                 "2021-03-14T21:59:59.999+00:00")
         )
 
-        dicts_list = DatabaseHandler.get_monthly_tasks(dates_period)
+        dicts_list = DatabaseHandler.get_monthly_tasks(date_range)
         expected_output = [
             {'id': 10,
              'init_date': datetime.datetime(
@@ -223,13 +223,13 @@ class TestDatabaseHandler(TestCase):
                           second=expected_output)
 
     def test_get_intervalled_tasks(self):
-        dates_period = (
+        date_range = (
             datetime.datetime.fromisoformat(
                 "2021-02-01T00:00:00.000+00:00"),
             datetime.datetime.fromisoformat(
                 "2021-03-14T21:59:59.999+00:00")
         )
-        dicts_list = DatabaseHandler.get_intervalled_tasks(dates_period)
+        dicts_list = DatabaseHandler.get_intervalled_tasks(date_range)
 
         expected_output = [
             {'id': 133,
@@ -255,7 +255,7 @@ class TestDatabaseHandler(TestCase):
         self.assertEquals(dicts_list, expected_output)
 
     def test_get_additional_fields(self):
-        dates_period = (
+        date_range = (
             datetime.datetime.fromisoformat(
                 "2021-02-01T00:00:00.000+00:00"),
             datetime.datetime.fromisoformat(
@@ -263,7 +263,7 @@ class TestDatabaseHandler(TestCase):
         )
 
         qs = Task.objects.values_list('id').filter(
-            init_date__range=dates_period)
+            init_date__range=date_range)
         id_set = set(i[0] for i in qs)
 
         additional_fields = DatabaseHandler.get_additional_fields(id_set)
@@ -971,8 +971,6 @@ class TestIntervalHandler(TestCase):
         self.assertEquals(first=repeated, second=expected_output)
 
 
-"""
-    
 class TestTaskHandler(TestCase):
     def setUp(self):
         task_1 = Task.objects.create(
@@ -1030,18 +1028,31 @@ class TestTaskHandler(TestCase):
             link='file3/for/task5',
             related_task=task_5
         )
-
-    def testget_intervalled_tasks_dicts(self):
+        
+        # common 
         testing_date = datetime.datetime.fromisoformat(
             '2021-02-01T00:00:00+00:00')
         datetime_objects = DatesHandler.get_monthdates(testing_date,
-                                                       as_objects=True)
+                                                            as_objects=True)
         date_range = datetime_objects[0], datetime_objects[-1]
         
-        task_handler = TaskHandler(db_service=DatabaseHandler)
-        output = task_handler._get_intervalled_tasks_dicts(
-                                 datetime_objects=datetime_objects)
+        self.task_handler = TaskHandler(db_service=DatabaseHandler)
 
+        # for test_get_intervalled_tasks_dicts()
+        self.intervalled_tasks_dicts = self.task_handler\
+            ._get_tasks_by_intervall(datetime_objects=datetime_objects
+        )
+        # for test_get_monthly_tasks_dicts()
+        self.monthly_tasks_dicts = self.task_handler\
+            ._get_tasks_by_month(date_range)
+        
+        # for test_add_remain_fields()
+        task_dicts = (deepcopy(self.monthly_tasks_dicts) +
+                      deepcopy(self.intervalled_tasks_dicts))
+        self.remain_fields = self.task_handler._add_remain_fields(task_dicts)
+
+    def test_get_intervalled_tasks_dicts(self):
+        
         expected_output = [
             {'id': 136,
             'init_date': datetime.datetime(
@@ -1091,23 +1102,18 @@ class TestTaskHandler(TestCase):
             ]
 
         # without id-s
-        output = [{k:v for k,v in dct.items() if k != 'id'} for dct in output]
+        self.intervalled_tasks_dicts = [
+            {k:v for k,v in dct.items() if k != 'id'}
+            for dct in self.intervalled_tasks_dicts
+        ]
         expected_output = [
             {k:v for k,v in dct.items() if k != 'id'} 
             for dct in expected_output
         ]
-        self.assertEquals(expected_output, output)
+        self.assertEquals(expected_output, self.intervalled_tasks_dicts)
 
-    def test_get_monthly_tasks_dicts(self):
-        testing_date = datetime.datetime.fromisoformat(
-            '2021-02-01T00:00:00+00:00')
-        datetime_objects = DatesHandler.get_monthdates(testing_date,
-                                                       as_objects=True)
-        date_range = datetime_objects[0], datetime_objects[-1]
-        
-        task_handler = TaskHandler(db_service=DatabaseHandler)
-        output = task_handler._get_monthly_tasks_dicts(date_range)
-        
+    def test_get_monthly_tasks_dicts(self): 
+        self.maxDiff = None
         expected_output = [
             {'id': 132,
             'init_date': datetime.datetime(
@@ -1138,82 +1144,212 @@ class TestTaskHandler(TestCase):
                 2021, 3, 2, 0, 0, tzinfo=datetime.timezone.utc)}
         ]
         # without id-s
-        output = [{k:v for k,v in dct.items() if k != 'id'} for dct in output]
+        self.monthly_tasks_dicts = [
+            {k:v for k,v in dct.items() if k != 'id'}
+            for dct in self.monthly_tasks_dicts
+        ]
         expected_output = [
             {k:v for k,v in dct.items() if k != 'id'} 
             for dct in expected_output
         ]
-        self.assertEquals(expected_output, output)
+        self.assertEquals(expected_output, self.monthly_tasks_dicts)
 
     def test_add_remain_fields(self):
-        task_handler = TaskHandler(DatabaseHandler)
-        
-        #####
-        ids = Task.objects.values_list('id', flat=True)
-        outp = DatabaseHandler.get_additional_fields(ids)
-        ######
-        
         expected_output = [
-            {'id': 136,
-            'init_date': datetime.datetime(
-                2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
+            {'init_date':  datetime.datetime.fromisoformat('2021-02-21T00:00:00+00:00'),
+            'title': 'test task 1',
+            'description': 'bare task without interval and autoshift',
+            'interval': 'no',
+            'autoshift': False,
+            'date':  datetime.datetime.fromisoformat('2021-02-21T00:00:00+00:00'),
+            'files': [],
+            'completion': False},
+            {'init_date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
+            'title': 'test task 2',
+            'description': 'task with interval value "every_week"',
+            'interval': 'every_week',
+            'autoshift': False,
+            'date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
+            'files': [
+                {'id': 17, 'link': 'file1/for/task2', 'related_task_id': 107}
+            ],
+            'completion': False},
+            {'init_date':  datetime.datetime.fromisoformat('2021-03-02T00:00:00+00:00'),
+            'title': 'test task 4',
+            'description': 'task which is in next month',
+            'interval': 'no',
+            'autoshift': False,
+            'date':  datetime.datetime.fromisoformat('2021-03-02T00:00:00+00:00'),
+            'files': [],
+            'completion': False},
+            {'init_date':  datetime.datetime.fromisoformat('2021-01-01T00:00:00+00:00'),
             'title': 'test task 5',
             'description': 'with interval from previous month',
             'interval': 'every_month',
             'autoshift': False,
-            'date': datetime.datetime(
-                2021, 2, 1, 0, 0, tzinfo=datetime.timezone.utc),
-            'completion': datetime.datetime(
-                2021, 2, 1, 0, 0, tzinfo=datetime.timezone.utc),
-            'files': [{'id': 2, 'link': 'file1/for/task5'},
-            {'id': 3, 'link': 'file2/for/task5'}]},
-            {'id': 133,
-            'init_date': datetime.datetime(
-                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
+            'date':  datetime.datetime.fromisoformat('2021-02-01T00:00:00+00:00'),
+            'files': [
+                {'id': 18, 'link': 'file2/for/task5', 'related_task_id': 109},
+                {'id': 19, 'link': 'file3/for/task5', 'related_task_id': 109}
+            ],
+            'completion': datetime.datetime.fromisoformat('2021-02-01T00:00:00+00:00')},
+            {'init_date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
             'title': 'test task 2',
             'description': 'task with interval value "every_week"',
             'interval': 'every_week',
             'autoshift': False,
-            'date': datetime.datetime(
-                2021, 2, 27, 0, 0, tzinfo=datetime.timezone.utc),
-            'completion': None,
-            'files': [{'id': 1, 'link': 'file1/for/task2'}]},
-            {'id': 136,
-            'init_date': datetime.datetime(
-                2021, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),
+            'date':  datetime.datetime.fromisoformat('2021-02-27T00:00:00+00:00'),
+            'files': [
+                {'id': 17, 'link': 'file1/for/task2', 'related_task_id': 107}
+            ],
+            'completion': False},
+            {'init_date':  datetime.datetime.fromisoformat('2021-01-01T00:00:00+00:00'),
             'title': 'test task 5',
             'description': 'with interval from previous month',
             'interval': 'every_month',
             'autoshift': False,
-            'date': datetime.datetime(
-                2021, 3, 1, 0, 0, tzinfo=datetime.timezone.utc),
-            'completion': datetime.datetime(
-                2021, 3, 1, 0, 0, tzinfo=datetime.timezone.utc),
-            'files': [{'id': 2, 'link': 'file1/for/task5'},
-            {'id': 3, 'link': 'file2/for/task5'}]},
-            {'id': 133,
-            'init_date': datetime.datetime(
-                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
+            'date':  datetime.datetime.fromisoformat('2021-03-01T00:00:00+00:00'),
+            'files': [
+                {'id': 18, 'link': 'file2/for/task5', 'related_task_id': 109},
+                {'id': 19, 'link': 'file3/for/task5', 'related_task_id': 109}
+            ],
+            'completion': datetime.datetime.fromisoformat('2021-03-01T00:00:00+00:00')},
+            {'init_date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
             'title': 'test task 2',
             'description': 'task with interval value "every_week"',
             'interval': 'every_week',
             'autoshift': False,
-            'date': datetime.datetime(
-                2021, 3, 6, 0, 0, tzinfo=datetime.timezone.utc),
-            'completion': None,
-            'files': [{'id': 1, 'link': 'file1/for/task2'}]},
-            {'id': 133,
-            'init_date': datetime.datetime(
-                2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
+            'date':  datetime.datetime.fromisoformat('2021-03-06T00:00:00+00:00'),
+            'files': [
+                {'id': 17, 'link': 'file1/for/task2', 'related_task_id': 107}
+            ],
+            'completion': False},
+            {'init_date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
             'title': 'test task 2',
             'description': 'task with interval value "every_week"',
             'interval': 'every_week',
             'autoshift': False,
-            'date': datetime.datetime(
-                2021, 3, 13, 0, 0, tzinfo=datetime.timezone.utc),
-            'completion': datetime.datetime(
-                2021, 3, 13, 0, 0, tzinfo=datetime.timezone.utc),
-            'files': [{'id': 1, 'link': 'file1/for/task2'}]}
+            'date':  datetime.datetime.fromisoformat('2021-03-13T00:00:00+00:00'),
+            'files': [
+                {'id': 17, 'link': 'file1/for/task2', 'related_task_id': 107}
+            ],
+            'completion': datetime.datetime.fromisoformat('2021-03-13T00:00:00+00:00')}
         ]
+        
+        # without id-s and dates objects converted to iso string 
+        self.remain_fields = [
+            {k:v for k,v in dct.items() if k != 'id'}
+            for dct in self.remain_fields
+        ]
+        expected_output = [
+            {k:v for k,v in dct.items() if k != 'id'} 
+            for dct in expected_output
+        ]
+        copy_ramain_fields = deepcopy(self.remain_fields)
+        copy_expected_output = deepcopy(expected_output)
+        for l in copy_ramain_fields, copy_expected_output:
+            for d in l:
+                d['init_date'] = d['init_date'].isoformat()
+                d['date'] = d['date'].isoformat()
+                if d['completion']:
+                    d['completion'] = d['completion'].isoformat()
+                d['files'] = [
+                    {k:v for k,v in file_dict.items()
+                     if k not in ['id', 'related_task_id']}
+                    for file_dict in d['files']
+                ]
+        self.assertEquals(copy_ramain_fields, copy_expected_output)
 
+"""
+    def test_convert_dates_to_strings(self):
+        expected_output = [
+            {'init_date': '2021-02-21T00:00:00+00:00',
+            'title': 'test task 1',
+            'description': 'bare task without interval and autoshift',
+            'interval': 'no',
+            'autoshift': False,
+            'date': '2021-02-21T00:00:00+00:00',
+            'files': [],
+            'completion': False},
+            {'init_date': '2021-02-20T00:00:00+00:00',
+            'title': 'test task 2',
+            'description': 'task with interval value "every_week"',
+            'interval': 'every_week',
+            'autoshift': False,
+            'date': '2021-02-20T00:00:00+00:00',
+            'files': [
+                {'id': 17, 'link': 'file1/for/task2', 'related_task_id': 107}
+            ],
+            'completion': False},
+            {'init_date': '2021-03-02T00:00:00+00:00',
+            'title': 'test task 4',
+            'description': 'task which is in next month',
+            'interval': 'no',
+            'autoshift': False,
+            'date': '2021-03-02T00:00:00+00:00',
+            'files': [],
+            'completion': False},
+            {'init_date': '2021-01-01T00:00:00+00:00',
+            'title': 'test task 5',
+            'description': 'with interval from previous month',
+            'interval': 'every_month',
+            'autoshift': False,
+            'date': '2021-02-01T00:00:00+00:00',
+            'files': [
+                {'id': 18, 'link': 'file2/for/task5', 'related_task_id': 109},
+                {'id': 19, 'link': 'file3/for/task5', 'related_task_id': 109}
+            ],
+            'completion': '2021-02-01T00:00:00+00:00'},
+            {'init_date': '2021-02-20T00:00:00+00:00',
+            'title': 'test task 2',
+            'description': 'task with interval value "every_week"',
+            'interval': 'every_week',
+            'autoshift': False,
+            'date': '2021-02-27T00:00:00+00:00',
+            'files': [
+                {'id': 17, 'link': 'file1/for/task2', 'related_task_id': 107}
+            ],
+            'completion': False},
+            {'init_date': '2021-01-01T00:00:00+00:00',
+            'title': 'test task 5',
+            'description': 'with interval from previous month',
+            'interval': 'every_month',
+            'autoshift': False,
+            'date': '2021-03-01T00:00:00+00:00',
+            'files': [
+                {'id': 18, 'link': 'file2/for/task5', 'related_task_id': 109},
+                {'id': 19, 'link': 'file3/for/task5', 'related_task_id': 109}
+            ],
+            'completion': '2021-03-01T00:00:00+00:00'},
+            {'init_date': '2021-02-20T00:00:00+00:00',
+            'title': 'test task 2',
+            'description': 'task with interval value "every_week"',
+            'interval': 'every_week',
+            'autoshift': False,
+            'date': '2021-03-06T00:00:00+00:00',
+            'files': [
+                {'id': 17, 'link': 'file1/for/task2', 'related_task_id': 107}
+            ],
+            'completion': False},
+            {'init_date': '2021-02-20T00:00:00+00:00',
+            'title': 'test task 2',
+            'description': 'task with interval value "every_week"',
+            'interval': 'every_week',
+            'autoshift': False,
+            'date': '2021-03-13T00:00:00+00:00',
+            'files': [
+                {'id': 17, 'link': 'file1/for/task2', 'related_task_id': 107}
+            ],
+            'completion': '2021-03-13T00:00:00+00:00'}
+        ]
+        eventual = self.task_handler._convert_dates_to_strings(self.remain_fields)
+        #  without id-s
+        for l in eventual, expected_output:
+            for d in l:
+                d['files'] = [
+                    {k:v for k,v in file_dict.items()
+                     if k not in ['id', 'related_task_id']}
+                    for file_dict in d['files']
+                ]
+        self.assertEquals(eventual, expected_output)
 """

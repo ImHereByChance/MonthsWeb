@@ -4,13 +4,14 @@ from collections import namedtuple
 import pytz
 from dateutil.rrule import *
 from django.utils import timezone
+from typing import Union
 
 
 class DatesHandler:
     """ self explanatory """
     
     @staticmethod
-    def is_end_of_month(dt_obj):
+    def is_end_of_month(dt_obj: datetime):
         """ Checks whether a datetime.date or datetime.datetime object
         falls on the last day of it's appropriate month.
         """
@@ -24,12 +25,35 @@ class DatesHandler:
             return False
 
     @staticmethod
-    def get_monthdates(date:str , as_objects=False):
-        """ Takes a date string in ISOformat (e.g. '2022-05-06T00:00:00+00:00')
-        or datetime.datetime/datetime.date object and returns a list of
-        appropriate month's date-strings in ISOformat or if, flag as_objects is
-        True, list of datetime.datetime.objects. Timezones support included.
+    def get_monthdates(date: Union[str, datetime.datetime], 
+                       as_objects: bool = False) -> list:
+        """ Takes a date string in ISOformat (e.g. 
+        '2022-05-06T00:00:00+00:00') or datetime.datetime/datetime.date
+        object. Returns a list of date-strings in ISOformat (or, if
+        flag "as_objects" is True, list of datetime.datetime.objects)
+        for calendar widget (on front-end side). List contains dates
+        of the given month and dates of the previous or following month
+        to make full 6 weeks(42 dates), like here:
+
+             January(2020)                   
+        Mo Tu We Th Fr Sa Su \n
+        30 31  1  2  3  4  5 \n
+         6  7  8  9 10 11 12 \n
+        13 14 15 16 17 18 19 \n
+        20 21 22 23 24 25 26 \n
+        27 28 29 30 31  1  2 \n
+         3  4  5  6  7  8  9 \n
+
+        In:  get_monthdates("2020-01-01T00:00:00+00:00") \n        
+        
+        Out: [ "2019-12-30T00:00:00+00:00",   \n
+                "2019-12-31T00:00:00+00:00",  \n
+                "2020-01-01T00:00:00+00:00",  \n
+                            ...               \n
+                "2020-03-09T00:00:00+00:00" ] \n           
         """
+        
+        # input types checking
         if isinstance(date, str):
             try:
                 date = timezone.datetime.fromisoformat(date)
@@ -105,25 +129,23 @@ class IntervalHandler:
     # (actual date added to the end).
 
     @classmethod
-    def get_from_montharray(cls, datetime_objects, intervalled_tasks):
-        """ Takes a list of datetime.datetime objects as the first argument
-        and a list of namedtuples containing intervalled task's fields retrieved
-        from the database (via dbservice.DatabaseHandler.get_intervalled_tasks)
-            The method checks in a loop whether the task should appear on a
-        specific day from the list of datetime objects (specified as the first
-        argument) using method is_match of the current class.
-            Returns list of namedtuples consisting with following fields: id,
-        init_date (date of task creation), title, description, interval, 
-        autoshift, date (task's current date which can defer from the task
-        creation date).
+    def get_from_montharray(cls,
+                            datetime_objects: list,
+                            intervalled_tasks: list) -> list:
+        """ Takes a list of datetime.datetime objects as the first
+        argument and a list of task (as dicts) which have interval
+        repeating settings ('every_day', 'every_workday' etc.) as
+        a the second argument
+            The method checks in a loop whether the task should appear
+        on a specific day from the list of datetime objects (first 
+        argument) using method cls.is_match().
+            Returns list of tasks (as dicts) with key 'date', that
+        denote the date, when the task with interval appear.
         """
         list_of_matched = []
         for date_obj in datetime_objects:
             for task in intervalled_tasks:
-                if cls.is_match(interval=task['interval'],
-                                init_date=task['init_date'],
-                                checkdate=date_obj):  
-                                # options=options) - TODO
+                if cls.is_match(task=task, checkdate=date_obj):
                     matched_dict_copy = {k:v for k,v in task.items()}
                     matched_dict_copy['date'] = date_obj
                     list_of_matched.append(matched_dict_copy)
@@ -131,13 +153,9 @@ class IntervalHandler:
         return list_of_matched
 
     @classmethod
-    def is_match(cls, interval, init_date, checkdate, options=None):
-        """ Checks whether the date is within the time interval or not.
-        If the interval is simple (such as every_day, every_week etc.,
-        i.e. there is no need to use dateutil library), a function needs as
-        arguments only the date of task creation and the date, that needs to 
-        be checked - otherwise must be provided "options" arg, that contains 
-        parameters for dateutil.rrule.
+    def is_match(cls, task: dict, checkdate: datetime.datetime):
+        """ Checks whether the task with interval settings should
+        appear on particular date(checkdate) or not.
         """    
         intervals_map = {
             'every_day': cls.every_day,
@@ -147,6 +165,10 @@ class IntervalHandler:
             'every_year': cls.every_year,
             'special': cls.special
         }
+        interval = task['interval']
+        init_date = task['init_date']
+        options = None  # TODO: fix when complex intervals will be implemented
+        
         check_func = intervals_map[interval]
         
         if not interval.startswith('special'):
@@ -158,9 +180,9 @@ class IntervalHandler:
             return check_func(init_date, checkdate, options)
 
     #                        ***
-    # Flags that returns True if a date match the interval,
+    # Following      True if a date match the interval,
     # otherwise returns False. Date when the Task was created
-    # (init_date) not included and will return as False.
+    # (init_date) not included and will be returned as False.
 
     @classmethod
     def every_day(cls, init_date, checkdate):
