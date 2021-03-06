@@ -25,7 +25,7 @@ class TestModels(TestCase):
             init_date=datetime.datetime.fromisoformat(
                 "2021-02-20T14:01:40.981+00:00"),
             title='test task 2',
-            description='task with interval value "every_day"',
+            description='task with interval value "_every_day"',
             interval='every_week'
         )
         task_3 = Task.objects.create(
@@ -107,7 +107,7 @@ class TestDatabaseHandler(TestCase):
             init_date=datetime.datetime.fromisoformat(
                 "2021-02-20T14:01:40.981+00:00"),
             title='test task 2',
-            description='task with interval value "every_week"',
+            description='task with interval value "_every_week"',
             interval='every_week'
         )
         task_3 = Task.objects.create(
@@ -195,7 +195,7 @@ class TestDatabaseHandler(TestCase):
              'init_date': datetime.datetime(
                  2021, 2, 20, 14, 1, 40, 981000, tzinfo=datetime.timezone.utc),
              'title': 'test task 2',
-             'description': 'task with interval value "every_week"',
+             'description': 'task with interval value "_every_week"',
              'interval': 'every_week',
              'autoshift': False},
             {'id': 12,
@@ -236,7 +236,7 @@ class TestDatabaseHandler(TestCase):
              'init_date': datetime.datetime(
                  2021, 2, 20, 14, 1, 40, 981000, tzinfo=datetime.timezone.utc),
              'title': 'test task 2',
-             'description': 'task with interval value "every_week"',
+             'description': 'task with interval value "_every_week"',
              'interval': 'every_week',
              'autoshift': False},
             {'id': 136,
@@ -569,14 +569,14 @@ class TestIntervalHandler(TestCase):
             init_date=datetime.datetime.fromisoformat(
                 "2021-02-20T00:00:00.000000+00:00"),
             title='test task 2',
-            description='task with interval value "every_week"',
+            description='task with interval value "_every_week"',
             interval='every_week'
         )
         task_3 = Task.objects.create(
             init_date=datetime.datetime.fromisoformat(
                 "2021-02-23T00:00:00.000000+00:00"),
             title='test task 3',
-            description='task with interval "every_workday"',
+            description='task with interval "_every_workday"',
             interval='every_workday'
         )
         task_4 = Task.objects.create(
@@ -593,60 +593,60 @@ class TestIntervalHandler(TestCase):
             interval='every_month'
         )
 
-    def test_every_day(self):
+    def test__every_day(self):
         # date when task was initialized
         init_date = timezone.datetime(2020, 10, 4)
 
-        self.assertTrue(IntervalHandler.every_day(
+        self.assertTrue(IntervalHandler._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
-        self.assertTrue(IntervalHandler.every_day(
+        self.assertTrue(IntervalHandler._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2048, 5, 27))
         )
-        self.assertFalse(IntervalHandler.every_day(
+        self.assertFalse(IntervalHandler._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 4))
         )
-        self.assertFalse(IntervalHandler.every_day(
+        self.assertFalse(IntervalHandler._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 3))
         )
-        self.assertFalse(IntervalHandler.every_day(
+        self.assertFalse(IntervalHandler._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2007, 10, 3))
         )
 
-    def testevery_workday(self):
+    def test_every_workday(self):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(IntervalHandler.every_workday(
+        self.assertTrue(IntervalHandler._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 6))
         )
-        self.assertTrue(IntervalHandler.every_workday(
+        self.assertTrue(IntervalHandler._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2050, 4, 4))
         )
-        self.assertTrue(IntervalHandler.every_workday(
+        self.assertTrue(IntervalHandler._every_workday(
             init_date=timezone.datetime(2020, 6, 28),
             checkdate=timezone.datetime(2021, 1, 13))
         )
-        self.assertFalse(IntervalHandler.every_workday(
+        self.assertFalse(IntervalHandler._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
-        self.assertFalse(IntervalHandler.every_workday(
+        self.assertFalse(IntervalHandler._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 4))
         )
-        self.assertFalse(IntervalHandler.every_workday(
+        self.assertFalse(IntervalHandler._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 2))
         )
-        self.assertFalse(IntervalHandler.every_workday(
+        self.assertFalse(IntervalHandler._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 10))
         )
@@ -655,23 +655,23 @@ class TestIntervalHandler(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(IntervalHandler.every_week(
+        self.assertTrue(IntervalHandler._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 12, 14))
         )
-        self.assertTrue(IntervalHandler.every_week(
+        self.assertTrue(IntervalHandler._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2050, 4, 4))
         )
-        self.assertFalse(IntervalHandler.every_week(
+        self.assertFalse(IntervalHandler._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
-        self.assertFalse(IntervalHandler.every_week(
+        self.assertFalse(IntervalHandler._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 21))
         )
-        self.assertFalse(IntervalHandler.every_week(
+        self.assertFalse(IntervalHandler._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 11, 22))
         )
@@ -680,63 +680,63 @@ class TestIntervalHandler(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(IntervalHandler.every_month(
+        self.assertTrue(IntervalHandler._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 11, 5))
         )
-        self.assertTrue(IntervalHandler.every_month(
+        self.assertTrue(IntervalHandler._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2023, 2, 5))
         )
-        self.assertTrue(IntervalHandler.every_month(
+        self.assertTrue(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 10, 31),
             checkdate=timezone.datetime(2020, 11, 30))
         )
-        self.assertTrue(IntervalHandler.every_month(
+        self.assertTrue(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 10, 31),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertTrue(IntervalHandler.every_month(
+        self.assertTrue(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 1, 30),
             checkdate=timezone.datetime(2020, 2, 29))
         )
-        self.assertTrue(IntervalHandler.every_month(
+        self.assertTrue(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 1, 29))
         )
-        self.assertTrue(IntervalHandler.every_month(
+        self.assertTrue(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertTrue(IntervalHandler.every_month(
+        self.assertTrue(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 10, 30),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertFalse(IntervalHandler.every_month(
+        self.assertFalse(IntervalHandler._every_month(
             init_date=init_date,
             checkdate=init_date)
         )
-        self.assertFalse(IntervalHandler.every_month(
+        self.assertFalse(IntervalHandler._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 6))
         )
-        self.assertFalse(IntervalHandler.every_month(
+        self.assertFalse(IntervalHandler._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2019, 9, 5))
         )
-        self.assertFalse(IntervalHandler.every_month(
+        self.assertFalse(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 10, 30),
             checkdate=timezone.datetime(2021, 2, 27))
         )
-        self.assertFalse(IntervalHandler.every_month(
+        self.assertFalse(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 28))
         )
-        self.assertTrue(IntervalHandler.every_month(
+        self.assertTrue(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 29))
         )
-        self.assertFalse(IntervalHandler.every_month(
+        self.assertFalse(IntervalHandler._every_month(
             init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 30))
         )
@@ -745,39 +745,39 @@ class TestIntervalHandler(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(IntervalHandler.every_year(
+        self.assertTrue(IntervalHandler._every_year(
             init_date=init_date,
             checkdate=timezone.datetime(2021, 10, 5))
         )
-        self.assertTrue(IntervalHandler.every_year(
+        self.assertTrue(IntervalHandler._every_year(
             init_date=init_date,
             checkdate=timezone.datetime(2050, 10, 5))
         )
-        self.assertTrue(IntervalHandler.every_year(
+        self.assertTrue(IntervalHandler._every_year(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertTrue(IntervalHandler.every_year(
+        self.assertTrue(IntervalHandler._every_year(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2024, 2, 29))
         )
-        self.assertFalse(IntervalHandler.every_year(
+        self.assertFalse(IntervalHandler._every_year(
             init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertFalse(IntervalHandler.every_year(
+        self.assertFalse(IntervalHandler._every_year(
             init_date=init_date,
             checkdate=init_date)
         )
-        self.assertFalse(IntervalHandler.every_year(
+        self.assertFalse(IntervalHandler._every_year(
             init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertFalse(IntervalHandler.every_year(
+        self.assertFalse(IntervalHandler._every_year(
             init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2019, 2, 27))
         )
-        self.assertFalse(IntervalHandler.every_year(
+        self.assertFalse(IntervalHandler._every_year(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2024, 2, 28))
         )
@@ -807,7 +807,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -816,7 +816,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -825,7 +825,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -834,7 +834,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': datetime.datetime(
@@ -843,7 +843,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -861,7 +861,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -870,7 +870,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -879,7 +879,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -888,7 +888,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -897,7 +897,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': datetime.datetime(
@@ -906,7 +906,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -915,7 +915,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -924,7 +924,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -933,7 +933,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -942,7 +942,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 23, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 3',
-            'description': 'task with interval "every_workday"',
+            'description': 'task with interval "_every_workday"',
             'interval': 'every_workday',
             'autoshift': False,
             'date': datetime.datetime(
@@ -951,7 +951,7 @@ class TestIntervalHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': datetime.datetime(
@@ -983,7 +983,7 @@ class TestTaskHandler(TestCase):
             init_date=datetime.datetime.fromisoformat(
                 "2021-02-20T00:00:00.000000+00:00"),
             title='test task 2',
-            description='task with interval value "every_week"',
+            description='task with interval value "_every_week"',
             interval='every_week'
         )
         task_4 = Task.objects.create(
@@ -1067,7 +1067,7 @@ class TestTaskHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': datetime.datetime(
@@ -1085,7 +1085,7 @@ class TestTaskHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': datetime.datetime(
@@ -1094,7 +1094,7 @@ class TestTaskHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': datetime.datetime(
@@ -1128,7 +1128,7 @@ class TestTaskHandler(TestCase):
             'init_date': datetime.datetime(
                 2021, 2, 20, 0, 0, tzinfo=datetime.timezone.utc),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': datetime.datetime(
@@ -1166,7 +1166,7 @@ class TestTaskHandler(TestCase):
             'completion': False},
             {'init_date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
@@ -1195,7 +1195,7 @@ class TestTaskHandler(TestCase):
             'completion': datetime.datetime.fromisoformat('2021-02-01T00:00:00+00:00')},
             {'init_date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date':  datetime.datetime.fromisoformat('2021-02-27T00:00:00+00:00'),
@@ -1216,7 +1216,7 @@ class TestTaskHandler(TestCase):
             'completion': datetime.datetime.fromisoformat('2021-03-01T00:00:00+00:00')},
             {'init_date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date':  datetime.datetime.fromisoformat('2021-03-06T00:00:00+00:00'),
@@ -1226,7 +1226,7 @@ class TestTaskHandler(TestCase):
             'completion': False},
             {'init_date':  datetime.datetime.fromisoformat('2021-02-20T00:00:00+00:00'),
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date':  datetime.datetime.fromisoformat('2021-03-13T00:00:00+00:00'),
@@ -1260,7 +1260,7 @@ class TestTaskHandler(TestCase):
                 ]
         self.assertEquals(copy_ramain_fields, copy_expected_output)
 
-"""
+"""  
     def test_convert_dates_to_strings(self):
         expected_output = [
             {'init_date': '2021-02-21T00:00:00+00:00',
@@ -1273,7 +1273,7 @@ class TestTaskHandler(TestCase):
             'completion': False},
             {'init_date': '2021-02-20T00:00:00+00:00',
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': '2021-02-20T00:00:00+00:00',
@@ -1302,7 +1302,7 @@ class TestTaskHandler(TestCase):
             'completion': '2021-02-01T00:00:00+00:00'},
             {'init_date': '2021-02-20T00:00:00+00:00',
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': '2021-02-27T00:00:00+00:00',
@@ -1323,7 +1323,7 @@ class TestTaskHandler(TestCase):
             'completion': '2021-03-01T00:00:00+00:00'},
             {'init_date': '2021-02-20T00:00:00+00:00',
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': '2021-03-06T00:00:00+00:00',
@@ -1333,7 +1333,7 @@ class TestTaskHandler(TestCase):
             'completion': False},
             {'init_date': '2021-02-20T00:00:00+00:00',
             'title': 'test task 2',
-            'description': 'task with interval value "every_week"',
+            'description': 'task with interval value "_every_week"',
             'interval': 'every_week',
             'autoshift': False,
             'date': '2021-03-13T00:00:00+00:00',

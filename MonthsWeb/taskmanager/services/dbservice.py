@@ -31,7 +31,7 @@ class DatabaseHandler:
         beginning- and the second is the end- of the time period. The method
         finds all interval-based tasks that matches the period and returns a
         list of tuples with following items: id, date of the task's creation,
-        title, task, description, interval (e.g. "every_day", "every_month" 
+        title, task, description, interval (e.g. "__every_day", "_every_month" 
         etc),  information about autoshift.
         """
         _, date_until = date_range  # needs only end-date of period

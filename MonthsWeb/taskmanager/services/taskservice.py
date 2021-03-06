@@ -12,8 +12,9 @@ class TaskHandler:
         tasks (as dicts) that appears on those dates according to their 
         interval settings.
         """
-        # take 
+        # extract first and last dates from datetime_objects
         date_range = datetime_objects[0], datetime_objects[-1]
+        
         intervalled_tasks = self.db_service.get_intervalled_tasks(date_range)
         matched = IntervalHandler.get_from_montharray(
             datetime_objects=datetime_objects,
