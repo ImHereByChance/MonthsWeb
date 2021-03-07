@@ -1,6 +1,6 @@
+from django.db import IntegrityError
 from django.db import models
 from django.db.models import Q
-from django.db import IntegrityError
 
 
 class Task(models.Model):
@@ -10,8 +10,8 @@ class Task(models.Model):
     2) init_date (task creation date);
     3) title (title of the task);
     4) description (description of the task);
-    5) interval (when to repeat the task, e.g. "__every_day",
-    "_every_month" etc.);
+    5) interval (when to repeat the task, e.g. "every_day",
+    "every_month" etc.);
     6) autoshift (a value indicating whether the task should be
     rescheduled to the next date if it was not completed on time);
 
@@ -32,7 +32,8 @@ class Task(models.Model):
     autoshift = models.BooleanField(default=False)
     
     class Meta:
-        # model should hold interval or autoshift (or none of them) - not both.
+        # model should have interval or autoshift only
+        # (or none of them) - not both.
         constraints = [
             models.CheckConstraint(
                 check=(
@@ -57,7 +58,6 @@ class File(models.Model):
     """ File, attached to the user-created task (text document,
     spreadsheat, etc.). File represented as a link to the place
     where the task stored.
-    
     """
     # address to access the task
     link = models.CharField(max_length=400)
@@ -69,7 +69,10 @@ class File(models.Model):
 
 
 class Completion(models.Model):
-    """ Date when a user marked the task as completed."""
+    """ The date when the user marked the task as completed. If a task
+    repeat according to a certain time interval, it can be completed
+    several times on different dates.
+    """
     # date when the related task completed
     date_completed = models.DateTimeField(auto_now=False, auto_now_add=False)
     # completed task

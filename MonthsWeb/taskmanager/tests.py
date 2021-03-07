@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.db import IntegrityError
 from .models import (Task, Completion, File)
 from .services.dbservice import DatabaseHandler
-from .services.dateservice import DatesHandler, RepeatingTaskGenerator
+from .services.dateservice import DatesHandler, RepeatingTasksGenerator
 from .services.taskservice import TaskHandler
 
 
@@ -557,7 +557,7 @@ class TestDatesHandler(TestCase):
         self.assertEquals(monthsdays_05_2021, gen_monthsdays_05_2021)
 
 
-class TestRepeatingTaskGenerator(TestCase):
+class TestRepeatingTasksGenerator(TestCase):
     def setUp(self):
         task_1 = Task.objects.create(
             init_date=datetime.datetime.fromisoformat(
@@ -597,23 +597,23 @@ class TestRepeatingTaskGenerator(TestCase):
         # date when task was initialized
         init_date = timezone.datetime(2020, 10, 4)
 
-        self.assertTrue(RepeatingTaskGenerator._every_day(
+        self.assertTrue(RepeatingTasksGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_day(
+        self.assertTrue(RepeatingTasksGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2048, 5, 27))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_day(
+        self.assertFalse(RepeatingTasksGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 4))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_day(
+        self.assertFalse(RepeatingTasksGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 3))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_day(
+        self.assertFalse(RepeatingTasksGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2007, 10, 3))
         )
@@ -622,31 +622,31 @@ class TestRepeatingTaskGenerator(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(RepeatingTaskGenerator._every_workday(
+        self.assertTrue(RepeatingTasksGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 6))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_workday(
+        self.assertTrue(RepeatingTasksGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2050, 4, 4))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_workday(
+        self.assertTrue(RepeatingTasksGenerator._every_workday(
             init_date=timezone.datetime(2020, 6, 28),
             checkdate=timezone.datetime(2021, 1, 13))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_workday(
+        self.assertFalse(RepeatingTasksGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_workday(
+        self.assertFalse(RepeatingTasksGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 4))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_workday(
+        self.assertFalse(RepeatingTasksGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 2))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_workday(
+        self.assertFalse(RepeatingTasksGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 10))
         )
@@ -655,23 +655,23 @@ class TestRepeatingTaskGenerator(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(RepeatingTaskGenerator._every_week(
+        self.assertTrue(RepeatingTasksGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 12, 14))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_week(
+        self.assertTrue(RepeatingTasksGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2050, 4, 4))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_week(
+        self.assertFalse(RepeatingTasksGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_week(
+        self.assertFalse(RepeatingTasksGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 21))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_week(
+        self.assertFalse(RepeatingTasksGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 11, 22))
         )
@@ -680,63 +680,63 @@ class TestRepeatingTaskGenerator(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(RepeatingTaskGenerator._every_month(
+        self.assertTrue(RepeatingTasksGenerator._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 11, 5))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_month(
+        self.assertTrue(RepeatingTasksGenerator._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2023, 2, 5))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_month(
+        self.assertTrue(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 10, 31),
             checkdate=timezone.datetime(2020, 11, 30))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_month(
+        self.assertTrue(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 10, 31),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_month(
+        self.assertTrue(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 1, 30),
             checkdate=timezone.datetime(2020, 2, 29))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_month(
+        self.assertTrue(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 1, 29))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_month(
+        self.assertTrue(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_month(
+        self.assertTrue(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 10, 30),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_month(
+        self.assertFalse(RepeatingTasksGenerator._every_month(
             init_date=init_date,
             checkdate=init_date)
         )
-        self.assertFalse(RepeatingTaskGenerator._every_month(
+        self.assertFalse(RepeatingTasksGenerator._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 6))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_month(
+        self.assertFalse(RepeatingTasksGenerator._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2019, 9, 5))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_month(
+        self.assertFalse(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 10, 30),
             checkdate=timezone.datetime(2021, 2, 27))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_month(
+        self.assertFalse(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 28))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_month(
+        self.assertTrue(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 29))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_month(
+        self.assertFalse(RepeatingTasksGenerator._every_month(
             init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 30))
         )
@@ -745,39 +745,39 @@ class TestRepeatingTaskGenerator(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(RepeatingTaskGenerator._every_year(
+        self.assertTrue(RepeatingTasksGenerator._every_year(
             init_date=init_date,
             checkdate=timezone.datetime(2021, 10, 5))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_year(
+        self.assertTrue(RepeatingTasksGenerator._every_year(
             init_date=init_date,
             checkdate=timezone.datetime(2050, 10, 5))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_year(
+        self.assertTrue(RepeatingTasksGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertTrue(RepeatingTaskGenerator._every_year(
+        self.assertTrue(RepeatingTasksGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2024, 2, 29))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_year(
+        self.assertFalse(RepeatingTasksGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_year(
+        self.assertFalse(RepeatingTasksGenerator._every_year(
             init_date=init_date,
             checkdate=init_date)
         )
-        self.assertFalse(RepeatingTaskGenerator._every_year(
+        self.assertFalse(RepeatingTasksGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_year(
+        self.assertFalse(RepeatingTasksGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2019, 2, 27))
         )
-        self.assertFalse(RepeatingTaskGenerator._every_year(
+        self.assertFalse(RepeatingTasksGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2024, 2, 28))
         )
@@ -791,7 +791,7 @@ class TestRepeatingTaskGenerator(TestCase):
         date_range = datetime_objects[0], datetime_objects[-1]
         intervalled_tasks = DatabaseHandler.get_intervalled_tasks(date_range)
         # import pdb; pdb.set_trace()
-        repeated = RepeatingTaskGenerator.generate(datetime_objects,
+        repeated = RepeatingTasksGenerator.generate(datetime_objects,
                                                        intervalled_tasks)
         expected_output = [
             {'id': 136,
@@ -1259,8 +1259,7 @@ class TestTaskHandler(TestCase):
                     for file_dict in d['files']
                 ]
         self.assertEquals(copy_ramain_fields, copy_expected_output)
-
-"""  
+  
     def test_convert_dates_to_strings(self):
         expected_output = [
             {'init_date': '2021-02-21T00:00:00+00:00',
@@ -1344,12 +1343,24 @@ class TestTaskHandler(TestCase):
         ]
         eventual = self.task_handler._convert_dates_to_strings(self.remain_fields)
         #  without id-s
-        for l in eventual, expected_output:
-            for d in l:
-                d['files'] = [
-                    {k:v for k,v in file_dict.items()
-                     if k not in ['id', 'related_task_id']}
-                    for file_dict in d['files']
-                ]
+        for lst in (eventual, expected_output):
+            remove_ids(lst)
         self.assertEquals(eventual, expected_output)
-"""
+
+
+def remove_ids(dicts_list):
+    """Remove (recursively) keys with names 'id' and 'related_task_id'
+    from all dicts in `dicts_list`
+    """
+    for d in dicts_list:
+        to_delete = []
+        for key, value in d.items():    
+        # recursive purge nested containers
+            if type(value) in [list, tuple, set]:
+                remove_ids(value)
+            elif key in ['id', 'related_task_id']:
+                to_delete.append(key)
+        for k in to_delete:
+            del d[k]
+    
+    return dicts_list

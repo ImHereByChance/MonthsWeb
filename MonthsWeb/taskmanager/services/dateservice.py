@@ -11,7 +11,7 @@ class DatesHandler:
    
     @staticmethod
     def is_end_of_month(dt_obj: datetime) -> False:
-        """ Are you the last day of your month, "datetime.datememe"?"""
+        """ Is this `datetime` the last day of it's month?"""
         if dt_obj.day not in (28, 29, 30, 31):
             return False
         try:
@@ -115,7 +115,7 @@ class DatesHandler:
             return [dt.isoformat() for dt in aware_datetimes_list]
 
 
-class RepeatingTaskGenerator:
+class RepeatingTasksGenerator:
     """ If task repeat according to user-defined time interval,
     this class generates the copies of such task for each date when
     it should be repeated (in range of the given dates list).

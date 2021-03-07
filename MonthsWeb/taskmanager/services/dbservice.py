@@ -7,7 +7,8 @@ from ..models import Task, File, Completion
 
 
 class DatabaseHandler:
-
+    """ Select, create, update, delete and another operatons with database."""
+    
     @staticmethod
     def get_monthly_tasks(date_range: tuple) -> list:
         """Takes a tuple of two `datetime` and retrieves all user's
