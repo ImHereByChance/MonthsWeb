@@ -7,8 +7,8 @@ from django.utils import timezone
 from django.db import IntegrityError
 from .models import (Task, Completion, File)
 from .services.dbservice import DatabaseHandler
-from .services.dateservice import DatesHandler, RepeatingTasksGenerator
-from .services.taskservice import TaskHandler
+from .services.dateservice import DatesHandler
+from .services.taskservice import TaskHandler, RepeatingTasksGenerator
 
 
 class TestModels(TestCase):
@@ -1347,14 +1347,14 @@ class TestTaskHandler(TestCase):
         self.assertEquals(eventual, expected_output)
 
 
-def remove_ids(dicts_list):
+def remove_ids(dicts_list: list) -> list:
     """Remove (recursively) keys with names 'id' and 'related_task_id'
     from all dicts in `dicts_list`
     """
     for d in dicts_list:
         to_delete = []
         for key, value in d.items():    
-        # recursive purge nested containers
+            # recursive purge nested containers
             if type(value) in [list, tuple, set]:
                 remove_ids(value)
             elif key in ['id', 'related_task_id']:

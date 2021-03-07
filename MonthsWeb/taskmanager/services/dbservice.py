@@ -1,14 +1,11 @@
-from collections import namedtuple
-from datetime import datetime
-from django.db.models import CharField
-from django.db.models.functions import Cast
-from django.utils import timezone
 from ..models import Task, File, Completion
+from datetime import datetime
+from django.utils import timezone
 
 
 class DatabaseHandler:
-    """ Select, create, update, delete and another operatons with database."""
-    
+    """ Select, create, update, delete and other interactions with database.
+    """
     @staticmethod
     def get_monthly_tasks(date_range: tuple) -> list:
         """Takes a tuple of two `datetime` and retrieves all user's
@@ -50,7 +47,7 @@ class DatabaseHandler:
     @staticmethod
     def get_additional_fields(task_IDs_list: list) -> dict:
         """ 1. Takes a list of task id-s
-        2. Returns the dict containing two keys: `['files'] (list of attached
+        2. Returns the dict containing two keys: `['files']` (list of attached
         files) and `['completions']` (list of the object, that store
         the date when user marked the task as completed). 
 
@@ -70,7 +67,7 @@ class DatabaseHandler:
 
     @staticmethod
     def add_overall_task(overall_task: dict) -> None:
-        """Takes a dict of all fields of the task ("overall_task") 
+        """Takes a dict of all fields of the task (`overall_task`) 
         and inserts them into appropriate database tables (models).
         """
         # ISOstring to datetime object

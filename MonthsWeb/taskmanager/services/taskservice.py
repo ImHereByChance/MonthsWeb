@@ -1,5 +1,149 @@
-from .dateservice import DatesHandler, RepeatingTasksGenerator
-from datetime import date, datetime
+import datetime
+from .dateservice import DatesHandler
+
+
+class RepeatingTasksGenerator:
+    """ If task repeat according to user-defined time interval,
+    this class generates the copies of such task for each date when
+    it should be repeated (in range of the given dates list).
+    """
+    @classmethod
+    def generate(cls, datetime_objects: list,
+                 intervalled_tasks: list) -> list:
+        """ 1 Takes:
+        1) list of `datetime_objects`
+        2) list of user-made tasks (as dicts) which must be repeated
+        according to specified `task['interval']` (e.g 'every_day',
+        'every_workday' etc.).
+    
+        2 Returns a list of tasks (as dicts) with new key ['date'],
+        that denote when task should be repeated (task creation date -
+        `['init_date']` is not included).
+        """
+        list_of_matched = []
+        for date_obj in datetime_objects:
+            for task in intervalled_tasks:
+                if cls._is_match(task=task, checkdate=date_obj):
+                    matched_dict_copy = {k:v for k,v in task.items()}
+                    matched_dict_copy['date'] = date_obj
+                    list_of_matched.append(matched_dict_copy)
+
+        return list_of_matched
+
+    @classmethod
+    def _is_match(cls, task: dict, checkdate: datetime.datetime) -> bool:
+        """ Checks whether the task with interval settings should
+        appear on particular date(checkdate arg) or not.
+        """    
+        intervals_map = {
+            'every_day': cls._every_day,
+            'every_workday': cls._every_workday,
+            'every_week': cls._every_week,            
+            'every_month': cls._every_month,
+            'every_year': cls._every_year,
+            'special': cls._special
+        }
+        interval = task['interval']
+        init_date = task['init_date']
+        options = None  # TODO: fix when complex intervals will be implemented
+        check_func = intervals_map[interval]
+        
+        if not interval.startswith('special'):
+            return check_func(init_date, checkdate)
+        elif not options:
+            raise TypeError('special time interval needs the options dict '
+                            'as arguments of function')
+        else:
+            return check_func(init_date, checkdate, options)
+
+    @classmethod
+    def _every_day(cls, init_date: datetime.datetime,
+                   checkdate:datetime.datetime) -> None:
+        """ Returns `True` if `checkdate` matches 'every_day', interval.
+        Otherwise returns False. Date when the Task was created
+        (`init_date`) always returns as `False`.
+        """
+        if init_date.date() >= checkdate.date():
+            return False
+        else:
+            return True
+
+    @classmethod
+    def _every_workday(cls, init_date: datetime.datetime,
+                       checkdate:datetime.datetime) -> None:
+        """ Returns `True` if `checkdate` matches 'every_workday'
+        interval (every MONDAY-FRIDAY). Otherwise returns `False`.
+        Date when the Task was created (`init_date`) always returns
+        as `False`.
+        """
+        if init_date.date() >= checkdate.date():
+            return False
+        elif checkdate.weekday() in (0, 1, 2, 3, 4):
+            return True
+        else:
+            return False
+
+    @classmethod
+    def _every_week(cls, init_date: datetime.datetime,
+                    checkdate:datetime.datetime) -> None:
+        """ Returns `True` if `checkdate` match interval 'every_week',
+        otherwise returns False. Date when the Task was created
+        (`init_date`) always returns as `False`.
+        """
+        if init_date.date() >= checkdate.date():
+            return False
+        elif init_date.weekday() == checkdate.weekday():
+            return True
+        else:
+            return False
+
+    @classmethod
+    def _every_month(cls, init_date: datetime.datetime,
+                     checkdate:datetime.datetime) -> None:
+        """ Returns `True` if `checkdate` match interval 'every_month',
+        otherwise returns False. Date when the Task was created
+        (`init_date`) always returns as `False`.
+        
+        If the month of the `init_date` is 31 and a checking month have
+        only 30 or less days returns `True` on the latest date of the
+        month.
+        """
+        is_end_of_month = DatesHandler.is_end_of_month
+
+        if init_date.date() >= checkdate.date():
+            return False
+        elif init_date.day == checkdate.day:
+            return True
+        elif checkdate.day in (28, 29, 30) and is_end_of_month(checkdate):
+            if init_date.day > checkdate.day:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    @classmethod
+    def _every_year(cls, init_date: datetime.datetime,
+                    checkdate:datetime.datetime) -> None:
+        """ Returns `True` if `checkdate` matches 'every_year',
+        interval. Otherwise returns `False`. Date when the Task was created
+        (`init_date`) always returns as `False`.
+        """
+        if init_date.date() >= checkdate.date():
+            return
+        if (init_date.month, init_date.day) == (checkdate.month, checkdate.day):
+            return True
+        elif (init_date.month, checkdate.month) == (2, 2):
+            if checkdate.day == 28 and DatesHandler.is_end_of_month(checkdate):
+                if init_date.day > checkdate.day:
+                    return True
+            return False
+        else:
+            return False
+
+    @classmethod
+    def _special(cls, init_date, checkdate, options):
+        pass  # TODO
 
 
 class TaskHandler:
@@ -16,8 +160,8 @@ class TaskHandler:
         if not self._is_db_service_valid(db_service):
             raise ValueError('invalid value of the db_service argument')
     
-    #                            ***
-    #                           public
+    #                               ***
+    #                              public
 
     def generate_tasklist_for_dates(self, monthdates_objects: list) -> list:
         """Takes a list of `datetime.datetime` objects and returns a
@@ -102,14 +246,14 @@ class TaskHandler:
                 # recursive convertion of nested containers
                 if type(value) in [list, tuple, set]:
                     self._convert_dates_to_strings(value)
-                elif (isinstance(value, datetime)):
+                elif (isinstance(value, datetime.datetime)):
                     dct[key] = value.isoformat()
         # now task dicts finally compled and can be sent to the client
         return task_dicts
 
     #                       ***
     #                      other
-    def _is_db_service_valid(self, db_service):
+    def _is_db_service_valid(self, db_service) -> bool:
         """Check the consistens of the service class object which
         handles database."""
 
