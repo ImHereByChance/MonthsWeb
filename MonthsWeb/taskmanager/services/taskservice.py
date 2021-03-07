@@ -1,6 +1,6 @@
 from collections import namedtuple
 from datetime import datetime
-from .dateservice import DatesHandler, IntervalHandler
+from .dateservice import DatesHandler, RepeatingTaskGenerator
 
 
 class TaskHandler:
@@ -16,7 +16,7 @@ class TaskHandler:
         date_range = datetime_objects[0], datetime_objects[-1]
         
         intervalled_tasks = self.db_service.get_intervalled_tasks(date_range)
-        matched = IntervalHandler.get_from_montharray(
+        matched = RepeatingTaskGenerator.generate(
             datetime_objects=datetime_objects,
             intervalled_tasks=intervalled_tasks
         )
@@ -103,7 +103,7 @@ class Package():
         self.task_service = task_service
 
     def for_new_month(self, date_string):
-        monthdates_objs = DatesHandler.get_monthdates(date_string,
+        monthdates_objs = DatesHandler. generate(date_string,
                                                       as_objects=True)
         monthdates = [DatesHandler.to_localestring(obj)  # TODO: fix it. DatesHandler is rewritten
                              for obj in monthdates_objs]

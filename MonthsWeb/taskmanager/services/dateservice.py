@@ -7,12 +7,11 @@ from typing import Union
 
 
 class DatesHandler:
-    """ Class for complex logic related to dates and time."""
+    """ Class for hard logic related to dates and time."""
+   
     @staticmethod
-    def is_end_of_month(dt_obj: datetime):
-        """ Checks whether a datetime.date or datetime.datetime object
-        falls on the last day of it's appropriate month.
-        """
+    def is_end_of_month(dt_obj: datetime) -> False:
+        """ Are you the last day of your month, "datetime.datememe"?"""
         if dt_obj.day not in (28, 29, 30, 31):
             return False
         try:
@@ -23,15 +22,16 @@ class DatesHandler:
             return False
 
     @staticmethod
-    def get_monthdates(date: Union[str, datetime.datetime], 
-                       as_objects: bool = False) -> list:
-        """ Takes a date string in ISOformat (e.g. 
-        '2022-05-06T00:00:00+00:00') or datetime.datetime/datetime.date
-        object. Returns a list of date-strings in ISOformat (or, if
-        flag "as_objects" is True, list of datetime.datetime.objects)
-        for calendar widget (on front-end side). List contains dates
-        of the given month and dates of the previous or following month
-        to make full 6 weeks(42 dates), like here:
+    def  generate(date: Union[str, datetime.datetime], 
+                         as_objects: bool = False) -> list:
+        """ 1. Take a date string in ISOformat (e.g. 
+        '2022-05-06T00:00:00+00:00') or `datetime` object.
+        2. Extract the month from the given date.
+        3. Return a list of all days in this month as ISOstrings
+        (by default) or `as_objects` datetime. 
+            
+        List contains extra-days dates to make 6 full weeks and look as
+        pretty a calendar: 
 
              January(2020)                   
         Mo Tu We Th Fr Sa Su  \n
@@ -41,30 +41,27 @@ class DatesHandler:
         20 21 22 23 24 25 26  \n
         27 28 29 30 31  1  2  \n
          3  4  5  6  7  8  9  \n
-
-        Example of usage:
-
-        In:  get_monthdates(date="2020-01-01T00:00:00+00:00") \n         
-        Out: ["2019-12-30T00:00:00+00:00",   \n
-              "2019-12-31T00:00:00+00:00",   \n
-              "2020-01-01T00:00:00+00:00",   \n
-                          ...                \n
-              "2020-03-09T00:00:00+00:00" ]  \n           
-        """
+        ```
+        # Example of usage:
+        >>> generate(date=datetime.date(2020, 1, 1))
         
+        ["2019-12-30T00:00:00+00:00",
+         "2019-12-31T00:00:00+00:00",
+         "2020-01-01T00:00:00+00:00",
+         ...                          
+         "2020-03-09T00:00:00+00:00" ]
+        """
         # input types checking
-        if isinstance(date, str):
-            try:
+        try:
+            if isinstance(date, str):
                 date = timezone.datetime.fromisoformat(date)
-            except Exception as e:
-                raise e
-        elif (isinstance(date, datetime.datetime) or
-              isinstance(date, datetime.date)):
-            pass
-        else:
-            raise TypeError('argument should be a date string in ISOformat ',
-                            '(e.g. "2022-05-06T00:00:00+00:00") or ',
-                            'datetime.datetime/datetime.date object')
+            elif (isinstance(date, datetime.datetime) or
+                  isinstance(date, datetime.date)):
+                pass
+        except TypeError as err:
+            raise err('argument should be a date string in ISOformat ',
+                      '(e.g. "2022-05-06T00:00:00+00:00") or ',
+                      'datetime.datetime/datetime.date object')
 
         c = calendar.Calendar()
         datetimes_gen = c.itermonthdates(date.year, date.month)
@@ -118,22 +115,24 @@ class DatesHandler:
             return [dt.isoformat() for dt in aware_datetimes_list]
 
 
-class IntervalHandler:
-    """The class to handle tasks which have interval settings"""
+class RepeatingTaskGenerator:
+    """ If task repeat according to user-defined time interval,
+    this class generates the copies of such task for each date when
+    it should be repeated.
+    """
     
     @classmethod
-    def get_from_montharray(cls, datetime_objects: list,
-                            intervalled_tasks: list) -> list:
-        """ Takes a list of datetime.datetime objects as the first
-        argument and a list of task (as dicts) which have interval
-        repeating settings (_every_day', 'every_workday' etc.) as
-        a the second argument.
-            The method checks in a loop whether the task should appear
-        on a specific day from the list of datetime objects (first 
-        argument) using method cls._is_match().
-            Returns list of tasks (as dicts) with added key 'date',that
-        denote the date, when the task should repeat according to it's
-        interval settings.
+    def generate(cls, datetime_objects: list,
+                 intervalled_tasks: list) -> list:
+        """ 1 Takes:
+        1) list of `datetime_objects`
+        2) list of user-made tasks (as dicts) which must be repeated
+        according to specified `task['interval']` (e.g 'every_day',
+        'every_workday' etc.).
+    
+        2 Returns list of tasks (as dicts) with new key ['date'], that
+        denote when task should be repeated (task creation date -
+        `['init_date']` is not included)
         """
         list_of_matched = []
         for date_obj in datetime_objects:
@@ -174,9 +173,9 @@ class IntervalHandler:
     @classmethod
     def _every_day(cls, init_date: datetime.datetime,
                    checkdate:datetime.datetime) -> None:
-        """ Returns True if checkdate match interval _every_day',
-        otherwise returns False. Date when the Task was created
-        (init_date) not included and will be returned as False.
+        """ Returns `True` if `checkdate` matches 'every_day', interval.
+        Otherwise returns False. Date when the Task was created
+        (`init_date`) always returns as `False`.
         """
         if init_date.date() >= checkdate.date():
             return False
@@ -186,10 +185,10 @@ class IntervalHandler:
     @classmethod
     def _every_workday(cls, init_date: datetime.datetime,
                        checkdate:datetime.datetime) -> None:
-        """ Returns True if checkdate match interval 'every_workday',
-        (every MONDAY-FRIDAY) otherwise returns False. Date when the
-        Task was created (init_date) not included and will be returned
-        as False.
+        """ Returns `True` if `checkdate` matches 'every_workday'
+        interval (every MONDAY-FRIDAY). Otherwise returns `False`.
+        Date when the Task was created (`init_date`) always returns
+        as `False`.
         """
         if init_date.date() >= checkdate.date():
             return False
@@ -201,9 +200,9 @@ class IntervalHandler:
     @classmethod
     def _every_week(cls, init_date: datetime.datetime,
                     checkdate:datetime.datetime) -> None:
-        """ Returns True if checkdate match interval 'every_week',
+        """ Returns `True` if `checkdate` match interval 'every_week',
         otherwise returns False. Date when the Task was created
-        (init_date) not included and will be returned as False.
+        (`init_date`) always returns as `False`.
         """
         if init_date.date() >= checkdate.date():
             return False
@@ -215,11 +214,13 @@ class IntervalHandler:
     @classmethod
     def _every_month(cls, init_date: datetime.datetime,
                      checkdate:datetime.datetime) -> None:
-        """ Returns True if checkdate match interval 'every_month',
+        """ Returns `True` if `checkdate` match interval 'every_month',
         otherwise returns False. Date when the Task was created
-        (init_date) not included and will be returned as False.
-        (!)If the month of the initial task date is the 31s and a
-        checking month have only 30 days - interval will match the 30th
+        (`init_date`) always returns as `False`.
+        
+        If the month of the `init_date` is 31 and a checking month have
+        only 30 or less days returns `True` on the latest date of the
+        month.
         """
         is_end_of_month = DatesHandler.is_end_of_month
 
@@ -238,9 +239,9 @@ class IntervalHandler:
     @classmethod
     def _every_year(cls, init_date: datetime.datetime,
                     checkdate:datetime.datetime) -> None:
-        """ Returns True if checkdate match interval 'every_year',
-        otherwise returns False. Date when the Task was created
-        (init_date) not included and will be returned as False.
+        """ Returns `True` if `checkdate` matches 'every_year',
+        interval. Otherwise returns `False`. Date when the Task was created
+        (`init_date`) always returns as `False`.
         """
         if init_date.date() >= checkdate.date():
             return

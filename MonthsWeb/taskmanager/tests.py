@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.db import IntegrityError
 from .models import (Task, Completion, File)
 from .services.dbservice import DatabaseHandler
-from .services.dateservice import DatesHandler, IntervalHandler
+from .services.dateservice import DatesHandler, RepeatingTaskGenerator
 from .services.taskservice import TaskHandler
 
 
@@ -495,7 +495,7 @@ class TestDatesHandler(TestCase):
         ]
         date_01_2021 = datetime.datetime.fromisoformat(
             '2021-01-01T00:00:00+00:00')
-        gen_monthsdays_01_2021 = DatesHandler.get_monthdates(date_01_2021)
+        gen_monthsdays_01_2021 = DatesHandler. generate(date_01_2021)
         self.assertEquals(monthsdays_01_2021, gen_monthsdays_01_2021)
 
         # CASE#2 + 2 additional weeks
@@ -524,7 +524,7 @@ class TestDatesHandler(TestCase):
         ]
         date_02_2021 = datetime.datetime.fromisoformat(
             '2021-02-01T00:00:00+00:00')
-        gen_monthsdays_02_2021 = DatesHandler.get_monthdates(date_02_2021)
+        gen_monthsdays_02_2021 = DatesHandler. generate(date_02_2021)
         self.assertEquals(monthsdays_02_2021, gen_monthsdays_02_2021)
 
         # CASE#3 without additional weeks
@@ -553,11 +553,11 @@ class TestDatesHandler(TestCase):
         ]
         date_05_2021 = datetime.datetime.fromisoformat(
             '2021-05-01T00:00:00+00:00')
-        gen_monthsdays_05_2021 = DatesHandler.get_monthdates(date_05_2021)
+        gen_monthsdays_05_2021 = DatesHandler. generate(date_05_2021)
         self.assertEquals(monthsdays_05_2021, gen_monthsdays_05_2021)
 
 
-class TestIntervalHandler(TestCase):
+class TestRepeatingTaskGenerator(TestCase):
     def setUp(self):
         task_1 = Task.objects.create(
             init_date=datetime.datetime.fromisoformat(
@@ -597,23 +597,23 @@ class TestIntervalHandler(TestCase):
         # date when task was initialized
         init_date = timezone.datetime(2020, 10, 4)
 
-        self.assertTrue(IntervalHandler._every_day(
+        self.assertTrue(RepeatingTaskGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
-        self.assertTrue(IntervalHandler._every_day(
+        self.assertTrue(RepeatingTaskGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2048, 5, 27))
         )
-        self.assertFalse(IntervalHandler._every_day(
+        self.assertFalse(RepeatingTaskGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 4))
         )
-        self.assertFalse(IntervalHandler._every_day(
+        self.assertFalse(RepeatingTaskGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 3))
         )
-        self.assertFalse(IntervalHandler._every_day(
+        self.assertFalse(RepeatingTaskGenerator._every_day(
             init_date=init_date,
             checkdate=timezone.datetime(2007, 10, 3))
         )
@@ -622,31 +622,31 @@ class TestIntervalHandler(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(IntervalHandler._every_workday(
+        self.assertTrue(RepeatingTaskGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 6))
         )
-        self.assertTrue(IntervalHandler._every_workday(
+        self.assertTrue(RepeatingTaskGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2050, 4, 4))
         )
-        self.assertTrue(IntervalHandler._every_workday(
+        self.assertTrue(RepeatingTaskGenerator._every_workday(
             init_date=timezone.datetime(2020, 6, 28),
             checkdate=timezone.datetime(2021, 1, 13))
         )
-        self.assertFalse(IntervalHandler._every_workday(
+        self.assertFalse(RepeatingTaskGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
-        self.assertFalse(IntervalHandler._every_workday(
+        self.assertFalse(RepeatingTaskGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 4))
         )
-        self.assertFalse(IntervalHandler._every_workday(
+        self.assertFalse(RepeatingTaskGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 2))
         )
-        self.assertFalse(IntervalHandler._every_workday(
+        self.assertFalse(RepeatingTaskGenerator._every_workday(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 10))
         )
@@ -655,23 +655,23 @@ class TestIntervalHandler(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(IntervalHandler._every_week(
+        self.assertTrue(RepeatingTaskGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 12, 14))
         )
-        self.assertTrue(IntervalHandler._every_week(
+        self.assertTrue(RepeatingTaskGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2050, 4, 4))
         )
-        self.assertFalse(IntervalHandler._every_week(
+        self.assertFalse(RepeatingTaskGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 5))
         )
-        self.assertFalse(IntervalHandler._every_week(
+        self.assertFalse(RepeatingTaskGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 21))
         )
-        self.assertFalse(IntervalHandler._every_week(
+        self.assertFalse(RepeatingTaskGenerator._every_week(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 11, 22))
         )
@@ -680,63 +680,63 @@ class TestIntervalHandler(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(IntervalHandler._every_month(
+        self.assertTrue(RepeatingTaskGenerator._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 11, 5))
         )
-        self.assertTrue(IntervalHandler._every_month(
+        self.assertTrue(RepeatingTaskGenerator._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2023, 2, 5))
         )
-        self.assertTrue(IntervalHandler._every_month(
+        self.assertTrue(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 10, 31),
             checkdate=timezone.datetime(2020, 11, 30))
         )
-        self.assertTrue(IntervalHandler._every_month(
+        self.assertTrue(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 10, 31),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertTrue(IntervalHandler._every_month(
+        self.assertTrue(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 1, 30),
             checkdate=timezone.datetime(2020, 2, 29))
         )
-        self.assertTrue(IntervalHandler._every_month(
+        self.assertTrue(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 1, 29))
         )
-        self.assertTrue(IntervalHandler._every_month(
+        self.assertTrue(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertTrue(IntervalHandler._every_month(
+        self.assertTrue(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 10, 30),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertFalse(IntervalHandler._every_month(
+        self.assertFalse(RepeatingTaskGenerator._every_month(
             init_date=init_date,
             checkdate=init_date)
         )
-        self.assertFalse(IntervalHandler._every_month(
+        self.assertFalse(RepeatingTaskGenerator._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2020, 10, 6))
         )
-        self.assertFalse(IntervalHandler._every_month(
+        self.assertFalse(RepeatingTaskGenerator._every_month(
             init_date=init_date,
             checkdate=timezone.datetime(2019, 9, 5))
         )
-        self.assertFalse(IntervalHandler._every_month(
+        self.assertFalse(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 10, 30),
             checkdate=timezone.datetime(2021, 2, 27))
         )
-        self.assertFalse(IntervalHandler._every_month(
+        self.assertFalse(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 28))
         )
-        self.assertTrue(IntervalHandler._every_month(
+        self.assertTrue(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 29))
         )
-        self.assertFalse(IntervalHandler._every_month(
+        self.assertFalse(RepeatingTaskGenerator._every_month(
             init_date=timezone.datetime(2020, 1, 29),
             checkdate=timezone.datetime(2021, 4, 30))
         )
@@ -745,53 +745,53 @@ class TestIntervalHandler(TestCase):
         # date when task was initialized (Monday)
         init_date = timezone.datetime(2020, 10, 5)
 
-        self.assertTrue(IntervalHandler._every_year(
+        self.assertTrue(RepeatingTaskGenerator._every_year(
             init_date=init_date,
             checkdate=timezone.datetime(2021, 10, 5))
         )
-        self.assertTrue(IntervalHandler._every_year(
+        self.assertTrue(RepeatingTaskGenerator._every_year(
             init_date=init_date,
             checkdate=timezone.datetime(2050, 10, 5))
         )
-        self.assertTrue(IntervalHandler._every_year(
+        self.assertTrue(RepeatingTaskGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertTrue(IntervalHandler._every_year(
+        self.assertTrue(RepeatingTaskGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2024, 2, 29))
         )
-        self.assertFalse(IntervalHandler._every_year(
+        self.assertFalse(RepeatingTaskGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertFalse(IntervalHandler._every_year(
+        self.assertFalse(RepeatingTaskGenerator._every_year(
             init_date=init_date,
             checkdate=init_date)
         )
-        self.assertFalse(IntervalHandler._every_year(
+        self.assertFalse(RepeatingTaskGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2021, 2, 28))
         )
-        self.assertFalse(IntervalHandler._every_year(
+        self.assertFalse(RepeatingTaskGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 27),
             checkdate=timezone.datetime(2019, 2, 27))
         )
-        self.assertFalse(IntervalHandler._every_year(
+        self.assertFalse(RepeatingTaskGenerator._every_year(
             init_date=timezone.datetime(2020, 2, 29),
             checkdate=timezone.datetime(2024, 2, 28))
         )
 
-    def test_get_from_montharray(self):
+    def test_generate(self):
         # self.maxDiff = None
         testing_date = datetime.datetime.fromisoformat(
             '2021-02-01T00:00:00+00:00')
-        datetime_objects = DatesHandler.get_monthdates(testing_date,
+        datetime_objects = DatesHandler. generate(testing_date,
                                                        as_objects=True)
         date_range = datetime_objects[0], datetime_objects[-1]
         intervalled_tasks = DatabaseHandler.get_intervalled_tasks(date_range)
         # import pdb; pdb.set_trace()
-        repeated = IntervalHandler.get_from_montharray(datetime_objects,
+        repeated = RepeatingTaskGenerator.generate(datetime_objects,
                                                        intervalled_tasks)
         expected_output = [
             {'id': 136,
@@ -1032,7 +1032,7 @@ class TestTaskHandler(TestCase):
         # common 
         testing_date = datetime.datetime.fromisoformat(
             '2021-02-01T00:00:00+00:00')
-        datetime_objects = DatesHandler.get_monthdates(testing_date,
+        datetime_objects = DatesHandler. generate(testing_date,
                                                             as_objects=True)
         date_range = datetime_objects[0], datetime_objects[-1]
         
