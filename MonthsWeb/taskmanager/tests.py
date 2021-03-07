@@ -1,6 +1,5 @@
 import datetime
-from copy import copy, deepcopy
-from unittest.signals import removeHandler
+from copy import deepcopy
 from django.test import TestCase
 from django.db.models.fields import CharField
 from django.db.models.functions import Cast

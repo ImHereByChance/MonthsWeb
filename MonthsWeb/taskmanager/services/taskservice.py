@@ -3,6 +3,10 @@ from datetime import date, datetime
 
 
 class TaskHandler:
+    """Retrieve the tasks form database, make copies of tasks if it must
+    repeat according to certain time interval and another hard logic
+    related to the user tasks entities"""
+    
     def __init__(self, db_service):
         # an objects which can handle the database records about Task,
         # Completion and File entities. Should have methods listed in
@@ -11,20 +15,31 @@ class TaskHandler:
         
         if not self._is_db_service_valid(db_service):
             raise ValueError('invalid value of the db_service argument')
+    
+    #                            ***
+    #                           public
 
-    def _is_db_service_valid(self, db_service):
-        """Check the consistens of the service class object which
-        handles database."""
+    def generate_tasklist_for_dates(self, monthdates_objects: list) -> list:
+        """Takes a list of `datetime.datetime` objects and returns a
+        list of ALL tasks (as dicts) that appears on those dates (their
+        interval settings).
+        """
+        # tuple of first and last date in the month
+        date_range = (monthdates_objects[0], monthdates_objects[-1])
+        
+        tasks_by_interval = self._get_tasks_by_intervall(monthdates_objects)
+        tasks_by_month = self._get_tasks_by_month(date_range)
 
-        obligatory_attrs = [
-            'get_intervalled_tasks',
-            'get_monthly_tasks',
-            'get_additional_fields'
-        ]
-        for attr in obligatory_attrs:
-            if not hasattr(db_service, attr):
-                return False
-        return True 
+        tasks_total = tasks_by_month + tasks_by_interval
+
+        if tasks_total:
+            tasks_total = self._add_remain_fields(tasks_total)
+            tasks_total =  self._convert_dates_to_strings(tasks_total)
+
+        return tasks_total
+
+    #                           ***
+    # ancillary methods for self.generate_tasklist_for_dates() method
 
     def _get_tasks_by_intervall(self, datetime_objects: list) -> list:
         """Takes a list of datetime.datetime objects and returns a list
@@ -60,19 +75,28 @@ class TaskHandler:
         additional_fields = self.db_service.get_additional_fields(task_id_list)
         
         for task in task_dicts:
+            # adding fielsd with default values
             task['files'] = []
             task['completion'] = False
+            # append files in list of task['files']
             for file_ in additional_fields['files']:
                 if file_['related_task_id'] == task['id']:
                     task['files'].append(file_)
+            # if date is marked as completed on it's ['date'],
+            # set ['completion'] = ['date'] 
             for completion in additional_fields['completions']:
                 if (completion['date_completed'].date() == task['date'].date()
                         and completion['related_task_id'] == task['id']):
                     task['completion'] = completion['date_completed']
-                    break        
+                    break
+
         return task_dicts
     
     def _convert_dates_to_strings(self, task_dicts: list) -> list:
+        """Takes a list of task (as dicts) and convert all `datetime`
+        objects in it ISOformat date-strings (recursively, including
+        nested arrays).
+        """
         for dct in task_dicts:
             for key, value in dct.items():    
                 # recursive convertion of nested containers
@@ -80,62 +104,21 @@ class TaskHandler:
                     self._convert_dates_to_strings(value)
                 elif (isinstance(value, datetime)):
                     dct[key] = value.isoformat()
-        
+        # now task dicts finally compled and can be sent to the client
         return task_dicts
-                 
 
-    
-    def get_monthly_tasks(self, monthdates_objects):
-        # tuple of first and last date in the month
-        date_range = (monthdates_objects[0], monthdates_objects[-1])
+    #                       ***
+    #                      other
+    def _is_db_service_valid(self, db_service):
+        """Check the consistens of the service class object which
+        handles database."""
 
-        tasks_total = from_intervals + from_monthdate
-
-        if tasks_total:
-            self.add_remain_fields(tasks_total)
-
-        return tasks_total
-
-
-
-    # ???
-    def add_task_to_db(self, task_dict):
-        self.db_service.add_overall_task(task_dict)
-
-    def upd_task_in_db(self, task_dict):
-        self.db_service.update_overall_task(task_dict)
-
-    def del_task_from_db(self, task):
-        """can accept as an arg task dictionary or integer task id"""
-        self.db_service.delete_task(task)
-
-    def check_uncheck_task(self, task_dict):
-        self.db_service.check_uncheck_task(task_dict)
-
-    def shift_tasks(self):
-        today_str = DatesHandler.get_today()  # TODO: fix it. DatesHandler is rewritten
-        self.db_service.shift_tasks(today_str)
-
-
-class Package():
-    """A dispatcher class responsible for collecting packages from the outputs
-    of other service classes (Dates_handler, Interval_handler, Db_handler)
-    to wrap them in a single json response and it them to the client.
-    """
-
-    def __init__(self, task_service):
-        self.task_service = task_service
-
-    def for_new_month(self, date_string):
-        monthdates_objects = DatesHandler.generate_month_dates(date_string,
-                                                      as_objects=True)
-        monthdates = [DatesHandler.to_localestring(obj)  # TODO: fix it. DatesHandler is rewritten
-                             for obj in monthdates_objects]
-
-        tasks_objs = self.task_service.get_monthly_tasks(date_string,
-                                                         monthdates_objects)
-        tasks_dicts = [task.fields_dict for task in tasks_objs]
-
-        package = {'monthdates': monthdates, 'tasks': tasks_dicts}
-
-        return package
+        obligatory_attrs = [
+            'get_intervalled_tasks',
+            'get_monthly_tasks',
+            'get_additional_fields'
+        ]
+        for attr in obligatory_attrs:
+            if not hasattr(db_service, attr):
+                return False
+        return True
