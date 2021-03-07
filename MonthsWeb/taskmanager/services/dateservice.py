@@ -22,8 +22,8 @@ class DatesHandler:
             return False
 
     @staticmethod
-    def  generate(date: Union[str, datetime.datetime], 
-                         as_objects: bool = False) -> list:
+    def generate_month_dates(date: Union[str, datetime.datetime], 
+                             as_objects: bool = False) -> list:
         """ 1. Take a date string in ISOformat (e.g. 
         '2022-05-06T00:00:00+00:00') or `datetime` object.
         2. Extract the month from the given date.
@@ -118,9 +118,8 @@ class DatesHandler:
 class RepeatingTaskGenerator:
     """ If task repeat according to user-defined time interval,
     this class generates the copies of such task for each date when
-    it should be repeated.
+    it should be repeated (in range of the given dates list).
     """
-    
     @classmethod
     def generate(cls, datetime_objects: list,
                  intervalled_tasks: list) -> list:

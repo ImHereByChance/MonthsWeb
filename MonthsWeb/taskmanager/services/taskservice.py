@@ -103,7 +103,7 @@ class Package():
         self.task_service = task_service
 
     def for_new_month(self, date_string):
-        monthdates_objs = DatesHandler. generate(date_string,
+        monthdates_objs = DatesHandler.generate_month_dates(date_string,
                                                       as_objects=True)
         monthdates = [DatesHandler.to_localestring(obj)  # TODO: fix it. DatesHandler is rewritten
                              for obj in monthdates_objs]

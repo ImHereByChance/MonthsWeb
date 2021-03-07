@@ -495,7 +495,7 @@ class TestDatesHandler(TestCase):
         ]
         date_01_2021 = datetime.datetime.fromisoformat(
             '2021-01-01T00:00:00+00:00')
-        gen_monthsdays_01_2021 = DatesHandler. generate(date_01_2021)
+        gen_monthsdays_01_2021 = DatesHandler.generate_month_dates(date_01_2021)
         self.assertEquals(monthsdays_01_2021, gen_monthsdays_01_2021)
 
         # CASE#2 + 2 additional weeks
@@ -524,7 +524,7 @@ class TestDatesHandler(TestCase):
         ]
         date_02_2021 = datetime.datetime.fromisoformat(
             '2021-02-01T00:00:00+00:00')
-        gen_monthsdays_02_2021 = DatesHandler. generate(date_02_2021)
+        gen_monthsdays_02_2021 = DatesHandler.generate_month_dates(date_02_2021)
         self.assertEquals(monthsdays_02_2021, gen_monthsdays_02_2021)
 
         # CASE#3 without additional weeks
@@ -553,7 +553,7 @@ class TestDatesHandler(TestCase):
         ]
         date_05_2021 = datetime.datetime.fromisoformat(
             '2021-05-01T00:00:00+00:00')
-        gen_monthsdays_05_2021 = DatesHandler. generate(date_05_2021)
+        gen_monthsdays_05_2021 = DatesHandler.generate_month_dates(date_05_2021)
         self.assertEquals(monthsdays_05_2021, gen_monthsdays_05_2021)
 
 
@@ -786,7 +786,7 @@ class TestRepeatingTaskGenerator(TestCase):
         # self.maxDiff = None
         testing_date = datetime.datetime.fromisoformat(
             '2021-02-01T00:00:00+00:00')
-        datetime_objects = DatesHandler. generate(testing_date,
+        datetime_objects = DatesHandler.generate_month_dates(testing_date,
                                                        as_objects=True)
         date_range = datetime_objects[0], datetime_objects[-1]
         intervalled_tasks = DatabaseHandler.get_intervalled_tasks(date_range)
@@ -1032,7 +1032,7 @@ class TestTaskHandler(TestCase):
         # common 
         testing_date = datetime.datetime.fromisoformat(
             '2021-02-01T00:00:00+00:00')
-        datetime_objects = DatesHandler. generate(testing_date,
+        datetime_objects = DatesHandler.generate_month_dates(testing_date,
                                                             as_objects=True)
         date_range = datetime_objects[0], datetime_objects[-1]
         

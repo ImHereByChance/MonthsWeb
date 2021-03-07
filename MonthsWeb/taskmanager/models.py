@@ -55,7 +55,9 @@ class Task(models.Model):
 
 class File(models.Model):
     """ File, attached to the user-created task (text document,
-    spreadsheat, etc.). File represented as link where the task stored.
+    spreadsheat, etc.). File represented as a link to the place
+    where the task stored.
+    
     """
     # address to access the task
     link = models.CharField(max_length=400)
@@ -81,6 +83,6 @@ class Completion(models.Model):
         .filter(date_completed__date=self.date_completed)\
         .exists():
             raise IntegrityError(
-                'must be only one Completion model for one Task and date')
+                        'Completion must be unique for one Task and one date')
         
         super(Completion, self).save(*args, **kwargs)

@@ -1,18 +1,19 @@
+from collections import namedtuple
+from datetime import datetime
 from django.db.models import CharField
 from django.db.models.functions import Cast
 from django.utils import timezone
 from ..models import Task, File, Completion
-from collections import namedtuple
 
 
 class DatabaseHandler:
 
     @staticmethod
     def get_monthly_tasks(date_range: tuple) -> list:
-        """Takes a tuple of two datetime objects and retrieves from database
-        all the tasks, that matches this time period (except the fields,
-        from related tables which can be multiple for each task.id: 
-        "completion" and "file")
+        """Takes a tuple of two `datetime` and retrieves all user's
+        tasks, that matches given time period (except the fields from
+        assertive models which can be multiple for each task: 
+        `Completion` and `File`)
         """
         retrieved_values = Task.objects\
             .values('id',
@@ -27,12 +28,9 @@ class DatabaseHandler:
 
     @staticmethod
     def get_intervalled_tasks(date_range: tuple) -> list:
-        """ Takes a tuple of two datetime objects, where the first is the
-        beginning- and the second is the end- of the time period. The method
-        finds all interval-based tasks that matches the period and returns a
-        list of tuples with following items: id, date of the task's creation,
-        title, task, description, interval (e.g. "__every_day", "_every_month" 
-        etc),  information about autoshift.
+        """ 1. Takes a tuple of two `datetime` objects, where the first is the
+        beginning- and the second is the end- of the time period.
+        2. Returns list of all interval-based tasks in the given `date_range`.
         """
         _, date_until = date_range  # needs only end-date of period
 
@@ -49,11 +47,12 @@ class DatabaseHandler:
         return list(retrieved_values)
 
     @staticmethod
-    def get_additional_fields(task_IDs_list: list) -> list:
-        """ Takes a list of task IDs and extracts data from tables that
-        contains additional information about each task with the given ID.
-        Returns a list of tuples containing the task's ID, task's completion
-        date, and files associated with the task.
+    def get_additional_fields(task_IDs_list: list) -> dict:
+        """ 1. Takes a list of task id-s
+        2. Returns the dict containing two keys: `['files'] (list of attached
+        files) and `['completions']` (list of the object, that store
+        the date when user marked the task as completed). 
+
         """
         files = File.objects\
             .values('id', 'link', 'related_task_id')\
@@ -69,34 +68,34 @@ class DatabaseHandler:
         return additional_fields
 
     @staticmethod
-    def add_overall_task(overall_dict: dict) -> None:
-        """Takes a dict of all fields of the task (arg "overall_dict") 
-        and inserts them into database.
+    def add_overall_task(overall_task: dict) -> None:
+        """Takes a dict of all fields of the task ("overall_task") 
+        and inserts them into appropriate database tables (models).
         """
-        # isostring to datetime object
+        # ISOstring to datetime object
         task_creation_time = timezone.datetime.fromisoformat(
-            overall_dict['init_date'])
-        # TODO: fix
-        if overall_dict['autoshift'] == 'no':
-            overall_dict['autoshift'] = False
-        elif overall_dict['autoshift'] == 'yes':
-            overall_dict['autoshift'] = True
+            overall_task['init_date'])
+        # for compatability purposes 
+        if overall_task['autoshift'] == 'no':
+            overall_task['autoshift'] = False
+        elif overall_task['autoshift'] == 'yes':
+            overall_task['autoshift'] = True
 
         Task.objects.create(init_date=task_creation_time,
-                            title=overall_dict['title'],
-                            description=overall_dict['description'],
-                            interval=overall_dict['interval'],
-                            autoshift=overall_dict['autoshift'])
+                            title=overall_task['title'],
+                            description=overall_task['description'],
+                            interval=overall_task['interval'],
+                            autoshift=overall_task['autoshift'])
 
         # TODO: adding in db attached files
 
     @staticmethod
-    def update_overall_task(overall_dict: dict) -> None:
+    def update_overall_task(overall_task: dict) -> None:
         """ Takes a dict of all fields of the task and updates this
         task it by id.
         """
         # copy to not to mutate original dict
-        updated_dict = {k: v for k, v in overall_dict.items()}
+        updated_dict = {k: v for k, v in overall_task.items()}
 
         # filter non required fields that may cause KeyError
         non_required = []
@@ -111,20 +110,21 @@ class DatabaseHandler:
         # ISOstring to datetime
         if updated_dict['init_date']:
             updated_dict['init_date'] = timezone.datetime\
-                .fromisoformat(overall_dict['init_date'])
+                .fromisoformat(overall_task['init_date'])
 
         # Update fields
         Task.objects\
-            .filter(id=overall_dict['id'])\
+            .filter(id=overall_task['id'])\
             .update(**updated_dict)
 
         # TODO: attached files
 
     @staticmethod
     def delete_task(task: dict) -> None:
-        """ Delete task by id from database (including all related to it via
-        foreign key). As an argument can be provided a dict, that contains
-        {'id': <integer id>} key-value pair or direct integer id value
+        """ Delete a task by id from database (including all related to it via
+        foreign key).
+        As an argument can be provided a dict, that contains
+        {'id': <integer id>} key-value pair or plain integer id of the task.
         """
         if isinstance(task, dict):
             task_id = task['id']
@@ -140,7 +140,7 @@ class DatabaseHandler:
         """ Creates an entry in the "Completion" table if
         task_dict['completion'] have a value (it must be a datetime str
         formated as "2020-01-01 00:00:00"). If task_dict['completion'] == False
-        - deletes appropriate entry about task complition.
+        deletes appropriate entry about task complition.
         """
         task_id = task_dict['id']
         completion = task_dict['completion']
@@ -159,12 +159,13 @@ class DatabaseHandler:
                 pass
 
     @staticmethod
-    def shift_tasks(today) -> None:
-        """Changes the date of the uncompleted Tasks with Autoshift=True 
-        to the given date (shifts them to today if them not completed yet)"""
+    def shift_tasks(today: datetime) -> None:
+        """Changes the date of the uncompleted tasks with `Autoshift=True` 
+        to the given date (shifts them to today if they does't completed yet)
+        """
         nested_query = Completion.objects.values_list('id', flat=True)\
             .filter(date_completed__date__lt=today.date())
-        query = Task.objects\
+        Task.objects\
             .prefetch_related('completion')\
             .filter(init_date__date__lt=today.date())\
             .exclude(autoshift=False)\
