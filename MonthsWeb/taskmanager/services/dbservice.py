@@ -7,11 +7,9 @@ class DatabaseHandler:
     """ Select, create, update, delete and other interactions with database.
     """
     @staticmethod
-    def get_monthly_tasks(date_range: tuple) -> list:
-        """Takes a tuple of two `datetime` and retrieves all user's
-        tasks, that matches given time period (except the fields from
-        assertive models which can be multiple for each task: 
-        `Completion` and `File`)
+    def get_tasks_by_timerange(date_range: tuple) -> list:
+        """Retrieve from database all `models.Task` in given time range
+        (related models `Completion` and `File` are not touched). 
         """
         retrieved_values = Task.objects\
             .values('id',
@@ -45,19 +43,20 @@ class DatabaseHandler:
         return list(retrieved_values)
 
     @staticmethod
-    def get_additional_fields(task_IDs_list: list) -> dict:
-        """ 1. Takes a list of task id-s
-        2. Returns the dict containing two keys: `['files']` (list of attached
-        files) and `['completions']` (list of the object, that store
-        the date when user marked the task as completed). 
+    def get_additional_fields(task_id_list: list) -> dict:
+        """ Takes a list of models.Task id-s - returns the dict of
+        two keys:
 
+        1) ['files'] (list of attached files);
+        2) ['completions'] (`datetime.datetime`s when the task was
+           marked as completed). 
         """
         files = File.objects\
             .values('id', 'link', 'related_task_id')\
-            .filter(related_task_id__in=task_IDs_list)
+            .filter(related_task_id__in=task_id_list)
         completions = Completion.objects\
             .values('id', 'date_completed', 'related_task_id')\
-            .filter(related_task_id__in=task_IDs_list)
+            .filter(related_task_id__in=task_id_list)
             
         additional_fields = {
             'files': list(files),
@@ -66,26 +65,37 @@ class DatabaseHandler:
         return additional_fields
 
     @staticmethod
-    def add_overall_task(overall_task: dict) -> None:
-        """Takes a dict of all fields of the task (`overall_task`) 
-        and inserts them into appropriate database tables (models).
+    def create_task_and_related(task_and_related: dict) -> None:
+        """Takes a dict where the keys are the fields of
+        `models.Task` and the field from related models
+        and insert the into database..
         """
         # ISOstring to datetime object
-        task_creation_time = timezone.datetime.fromisoformat(
-            overall_task['init_date'])
+        task_creation_date = timezone.datetime.fromisoformat(
+                task_and_related['init_date'])
         # for compatability purposes 
-        if overall_task['autoshift'] == 'no':
-            overall_task['autoshift'] = False
-        elif overall_task['autoshift'] == 'yes':
-            overall_task['autoshift'] = True
+        if task_and_related['autoshift'] == 'no':
+            task_and_related['autoshift'] = False
+        elif task_and_related['autoshift'] == 'yes':
+            task_and_related['autoshift'] = True
 
-        Task.objects.create(init_date=task_creation_time,
-                            title=overall_task['title'],
-                            description=overall_task['description'],
-                            interval=overall_task['interval'],
-                            autoshift=overall_task['autoshift'])
-
-        # TODO: adding in db attached files
+        created_task = Task.objects.create(
+                init_date=task_creation_date,
+                title=task_and_related['title'],
+                description=task_and_related['description'],
+                interval=task_and_related['interval'],
+                autoshift=task_and_related['autoshift'])
+        
+        # insert related
+        if task_and_related['completion']:
+            task_completion_date = timezone.datetime.fromisoformat(
+                    task_and_related['completion'])
+            Completion.objects.create(
+                related_task=created_task,
+                date_completed=task_completion_date)
+        for file_ in task_and_related['files']:
+            File.objects.create(related_task=created_task,
+                                link=file_['link'])
 
     @staticmethod
     def update_overall_task(overall_task: dict) -> None:

@@ -5,7 +5,7 @@ from django.db.models.fields import CharField
 from django.db.models.functions import Cast
 from django.utils import timezone
 from django.db import IntegrityError
-from .models import (Task, Completion, File)
+from .models import Task, Completion, File
 from .services.dbservice import DatabaseHandler
 from .services.dateservice import DatesHandler
 from .services.taskservice import TaskHandler, RepeatingTasksGenerator
@@ -173,15 +173,15 @@ class TestDatabaseHandler(TestCase):
             related_task=task_1
         )
 
-    def test_get_monthly_tasks(self):
+    def test_get_tasks_by_timerange(self):
         date_range = (
             datetime.datetime.fromisoformat(
-                "2021-02-01T00:00:00.000+00:00"),
+                    "2021-02-01T00:00:00.000+00:00"),
             datetime.datetime.fromisoformat(
-                "2021-03-14T21:59:59.999+00:00")
+                    "2021-03-14T21:59:59.999+00:00")
         )
 
-        dicts_list = DatabaseHandler.get_monthly_tasks(date_range)
+        dicts_list = DatabaseHandler.get_tasks_by_timerange(date_range)
         expected_output = [
             {'id': 10,
              'init_date': datetime.datetime(
@@ -214,19 +214,18 @@ class TestDatabaseHandler(TestCase):
         ]
 
         # exclude 'id' because it can vary depending on case
-        for d in dicts_list:
-            del d['id']
-        for d in expected_output:
-            del d['id']
+        dicts_list = remove_ids(dicts_list)
+        expected_output = remove_ids(expected_output)
+        
         self.assertEquals(first=dicts_list,
                           second=expected_output)
 
     def test_get_intervalled_tasks(self):
         date_range = (
             datetime.datetime.fromisoformat(
-                "2021-02-01T00:00:00.000+00:00"),
+                    "2021-02-01T00:00:00.000+00:00"),
             datetime.datetime.fromisoformat(
-                "2021-03-14T21:59:59.999+00:00")
+                    "2021-03-14T21:59:59.999+00:00")
         )
         dicts_list = DatabaseHandler.get_intervalled_tasks(date_range)
 
@@ -247,10 +246,9 @@ class TestDatabaseHandler(TestCase):
              'autoshift': False}
         ]
         # exclude 'id' because it can vary depending on case
-        for d in dicts_list:
-            del d['id']
-        for d in expected_output:
-            del d['id']
+        dicts_list = remove_ids(dicts_list)
+        expected_output = remove_ids(expected_output)
+
         self.assertEquals(dicts_list, expected_output)
 
     def test_get_additional_fields(self):
@@ -262,11 +260,10 @@ class TestDatabaseHandler(TestCase):
         )
 
         qs = Task.objects.values_list('id').filter(
-            init_date__range=date_range)
+                init_date__range=date_range)
         id_set = set(i[0] for i in qs)
 
         additional_fields = DatabaseHandler.get_additional_fields(id_set)
-
         expected_output = {
             'files': [
                 {'id': 1,
@@ -292,63 +289,73 @@ class TestDatabaseHandler(TestCase):
             ]
         }
         # get rid of any is-s
-        for d in additional_fields['files']:
-            del d['id']
-            del d['related_task_id']
-        for d in additional_fields['completions']:
-            del d['id']
-            del d['related_task_id']
-
-        for d in expected_output['files']:
-            del d['id']
-            del d['related_task_id']
-        for d in expected_output['completions']:
-            del d['id']
-            del d['related_task_id']
+        additional_fields['files'] = remove_ids(additional_fields['files'])
+        additional_fields['completions'] = remove_ids(
+                additional_fields['completions'])
+        expected_output['files'] = remove_ids(additional_fields['files'])
+        expected_output['completions'] = remove_ids(
+                additional_fields['completions'])
 
         self.assertEquals(first=additional_fields,
                           second=expected_output)
 
-    def test_add_overall_task(self):
-        # without files
-        task1_dict = {
+    def test_create_task_and_related(self):
+        """task_dict_with_related simulates a dict with the fields of
+        model Task and models related to it, which came from client.
+        From the field of task_dict_with_related should be created Task
+        and models related to it: Completion and File-s.
+        """
+        # task dict with fields from related models as it comes form client 
+        task_dict_with_related = {
             'id': None,
-            'date': "2021-02-01T00:00:00.000+00:00",
-            'init_date': "2021-02-01T00:00:00.000+00:00",
-            'title': 'created task#1',
-            'description': 'no files',
+            'date': "2021-02-01T00:00:00+00:00",
+            'init_date': "2021-02-01T00:00:00+00:00",
+            'title': 'task created for test_create_task_and_related()',
+            'description': 'with 2 files',
             'interval': 'no',
             'autoshift': False,
+            'completion': "2021-02-01T00:00:00+00:00",
+            'files': [
+                {'id': None,
+                 'link': 'file_1/for/created_Task',
+                 'related_task_id': None},
+                {'id': None,
+                 'link': 'file_2/for/created_Task',
+                 'related_task_id': None} 
+            ]
         }
-        DatabaseHandler.add_overall_task(task1_dict)
+        DatabaseHandler.create_task_and_related(task_dict_with_related)
+        
+        created_Task = Task.objects\
+            .get(title='task created for test_create_task_and_related()')
 
-        task1_dict_from_db = Task.objects\
-            .select_related('completion')\
-            .annotate(
-                date=Cast('init_date', output_field=CharField()),
-            )\
-            .values(
-                'id',
-                'date',
-                'title',
-                'description',
-                'interval',
-                'autoshift',
-            )\
-            .filter(title='created task#1')[0]
-
-        # test equals of dates separately
+        # is there the Task with our title and date there? 
         self.assertEquals(
-            datetime.datetime.fromisoformat(task1_dict['init_date']),
-            datetime.datetime.fromisoformat(task1_dict_from_db['date'] + ':00')
-        )
-        # other fields excluding dates and id
-        del task1_dict['id']
-        del task1_dict['init_date']
-        del task1_dict['date']
-        del task1_dict_from_db['id']
-        del task1_dict_from_db['date']
-        self.assertEquals(task1_dict, task1_dict_from_db)
+            first=(created_Task.title,
+                   created_Task.init_date.isoformat()),
+            second=(task_dict_with_related['title'],
+                    task_dict_with_related['init_date']))
+        
+        # is there Completion model related to created_Task?
+        try:
+            Completion.objects.get(
+                    related_task=created_Task,
+                    date_completed=datetime.datetime.fromisoformat(
+                            task_dict_with_related['completion'])
+            )
+        except Exception as err:
+            self.fail(str(err))
+        
+        # are there two File models related to created_Task?
+        try:
+            File.objects.get(
+                    related_task=created_Task,
+                    link='file_1/for/created_Task')
+            File.objects.get(
+                    related_task=created_Task,
+                    link='file_2/for/created_Task')
+        except Exception as err:
+            self.fail(str(err))
 
     def test_update_overall_task(self):
         # without attached files
@@ -1041,7 +1048,7 @@ class TestTaskHandler(TestCase):
         self.intervalled_tasks_dicts = self.task_handler\
             ._get_tasks_by_intervall(datetime_objects=datetime_objects
         )
-        # for test_get_monthly_tasks_dicts()
+        # for test_get_tasks_by_timerange_dicts()
         self.monthly_tasks_dicts = self.task_handler\
             ._get_tasks_by_month(date_range)
         
@@ -1111,7 +1118,7 @@ class TestTaskHandler(TestCase):
         ]
         self.assertEquals(expected_output, self.intervalled_tasks_dicts)
 
-    def test_get_monthly_tasks_dicts(self): 
+    def test_get_tasks_by_timerange_dicts(self): 
         self.maxDiff = None
         expected_output = [
             {'id': 132,

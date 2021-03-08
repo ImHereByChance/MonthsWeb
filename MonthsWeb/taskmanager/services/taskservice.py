@@ -3,7 +3,7 @@ from .dateservice import DatesHandler
 
 
 class RepeatingTasksGenerator:
-    """ If task repeat according to user-defined time interval,
+    """ If task should repeat according to user-defined time interval,
     this class generates the copies of such task for each date when
     it should be repeated (in range of the given dates list).
     """
@@ -205,7 +205,7 @@ class TaskHandler:
         dictionaries with task for those dates (excluding interval
         tasks).
         """
-        monthly_tasks = self.db_service.get_monthly_tasks(date_range)
+        monthly_tasks = self.db_service.get_tasks_by_timerange(date_range)
         # need to add actual task's date, which is the same as task's creation
         # date (init_date) if the task is not intervalled (like these).
         for dct in monthly_tasks:
@@ -254,12 +254,12 @@ class TaskHandler:
     #                       ***
     #                      other
     def _is_db_service_valid(self, db_service) -> bool:
-        """Check the consistens of the service class object which
+        """Check the consistens of the assertive class object which
         handles database."""
 
         obligatory_attrs = [
             'get_intervalled_tasks',
-            'get_monthly_tasks',
+            'get_tasks_by_timerange',
             'get_additional_fields'
         ]
         for attr in obligatory_attrs:
