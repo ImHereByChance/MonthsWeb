@@ -56,7 +56,7 @@ class Task(models.Model):
 
 class File(models.Model):
     """ File, attached to the user-created task (text document,
-    spreadsheat, etc.). File represented as a link to the place
+    spreadsheet, etc.). File represented as a link to the place
     where the task stored.
     """
     # address to access the task
@@ -83,7 +83,8 @@ class Completion(models.Model):
     
     def save(self, *args, **kwargs):
         if Completion.objects\
-        .filter(date_completed__date=self.date_completed)\
+        .filter(date_completed__date=self.date_completed,
+                related_task=self.related_task)\
         .exists():
             raise IntegrityError(
                         'Completion must be unique for one Task and one date')

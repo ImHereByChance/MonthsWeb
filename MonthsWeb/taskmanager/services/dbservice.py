@@ -4,7 +4,8 @@ from django.utils import timezone
 
 
 class DatabaseHandler:
-    """ Select, create, update, delete and other interactions with database.
+    """ Select, create, update, delete and other interactions
+    with database.
     """
     @staticmethod
     def get_tasks_by_timerange(date_range: tuple) -> list:
@@ -24,9 +25,10 @@ class DatabaseHandler:
 
     @staticmethod
     def get_intervalled_tasks(date_range: tuple) -> list:
-        """ 1. Takes a tuple of two `datetime` objects, where the first is the
-        beginning- and the second is the end- of the time period.
-        2. Returns list of all interval-based tasks in the given `date_range`.
+        """ 1. Takes a tuple of two `datetime` objects, where the first
+        is the beginning- and the second is the end- of the time period
+        2. Returns list of all interval-based tasks in the given
+        `date_range`.
         """
         _, date_until = date_range  # needs only end-date of period
 
@@ -67,49 +69,41 @@ class DatabaseHandler:
     @staticmethod
     def create_task_and_related(task_and_related: dict) -> None:
         """Takes a dict where the keys are the fields of
-        `models.Task` and the field from related models
-        and insert the into database..
+        `models.Task` and related models `File`, `Completion`,
+        and inserts the into database.
         """
         # ISOstring to datetime object
         task_creation_date = timezone.datetime.fromisoformat(
                 task_and_related['init_date'])
-        # for compatability purposes 
-        if task_and_related['autoshift'] == 'no':
-            task_and_related['autoshift'] = False
-        elif task_and_related['autoshift'] == 'yes':
-            task_and_related['autoshift'] = True
-
+        # insert Task
         created_task = Task.objects.create(
                 init_date=task_creation_date,
                 title=task_and_related['title'],
                 description=task_and_related['description'],
                 interval=task_and_related['interval'],
-                autoshift=task_and_related['autoshift'])
-        
-        # insert related
-        if task_and_related['completion']:
-            task_completion_date = timezone.datetime.fromisoformat(
-                    task_and_related['completion'])
-            Completion.objects.create(
-                related_task=created_task,
-                date_completed=task_completion_date)
-        for file_ in task_and_related['files']:
-            File.objects.create(related_task=created_task,
-                                link=file_['link'])
+                autoshift=task_and_related['autoshift']
+        )
+        # create attached File models
+        try:
+            for file_ in task_and_related['files']:
+                File.objects.create(related_task=created_task,
+                                    link=file_['link'])
+        except KeyError:
+            pass
 
     @staticmethod
-    def update_overall_task(overall_task: dict) -> None:
-        """ Takes a dict of all fields of the task and updates this
-        task it by id.
+    def update_task_and_related(task_and_related: dict) -> None:
+        """ Takes a dict of all fields of the Task and updates this
+        model by id (with related models File and Comletion).
         """
         # copy to not to mutate original dict
-        updated_dict = {k: v for k, v in overall_task.items()}
+        updated_dict = {k: v for k, v in task_and_related.items()}
 
         # filter non required fields that may cause KeyError
         non_required = []
         for key in updated_dict.keys():
-            if key not in ['id', 'init_date', 'title',
-                           'description', 'interval', 'autoshift']:
+            if key not in ['id', 'init_date', 'title', 'description',
+                           'interval', 'autoshift']:
                 non_required.append(key)
         if non_required:
             for k in non_required:
@@ -118,21 +112,22 @@ class DatabaseHandler:
         # ISOstring to datetime
         if updated_dict['init_date']:
             updated_dict['init_date'] = timezone.datetime\
-                .fromisoformat(overall_task['init_date'])
+                .fromisoformat(task_and_related['init_date'])
 
         # Update fields
         Task.objects\
-            .filter(id=overall_task['id'])\
+            .filter(id=task_and_related['id'])\
             .update(**updated_dict)
 
         # TODO: attached files
 
     @staticmethod
     def delete_task(task: dict) -> None:
-        """ Delete a task by id from database (including all related to it via
-        foreign key).
+        """ Delete a task by id from database (including all related
+        to it via foreign key).
         As an argument can be provided a dict, that contains
-        {'id': <integer id>} key-value pair or plain integer id of the task.
+        {'id': <integer id>} key-value pair or plain integer id of
+        the task.
         """
         if isinstance(task, dict):
             task_id = task['id']
@@ -147,8 +142,9 @@ class DatabaseHandler:
     def check_uncheck_task(task_dict: dict) -> None:
         """ Creates an entry in the "Completion" table if
         task_dict['completion'] have a value (it must be a datetime str
-        formated as "2020-01-01 00:00:00"). If task_dict['completion'] == False
-        deletes appropriate entry about task complition.
+        formated as "2020-01-01 00:00:00"). If
+        task_dict['completion'] == False deletes appropriate entry
+        about task complition.
         """
         task_id = task_dict['id']
         completion = task_dict['completion']
@@ -168,8 +164,9 @@ class DatabaseHandler:
 
     @staticmethod
     def shift_tasks(today: datetime) -> None:
-        """Changes the date of the uncompleted tasks with `Autoshift=True` 
-        to the given date (shifts them to today if they does't completed yet)
+        """Changes the date of the uncompleted tasks with
+        `Autoshift=True` to the given date (shifts them to
+        today if they does't completed yet)
         """
         nested_query = Completion.objects.values_list('id', flat=True)\
             .filter(date_completed__date__lt=today.date())

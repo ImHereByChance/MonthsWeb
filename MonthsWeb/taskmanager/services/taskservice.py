@@ -147,14 +147,13 @@ class RepeatingTasksGenerator:
 
 
 class TaskHandler:
-    """Retrieve the tasks form database, make copies of tasks if it must
-    repeat according to certain time interval and another hard logic
-    related to the user tasks entities"""
-    
+    """Retrieves the tasks form database, make copies of the them if 
+    they should repeat.
+    Other related to the user tasks entities
+    """
     def __init__(self, db_service):
         # an objects which can handle the database records about Task,
-        # Completion and File entities. Should have methods listed in
-        # self._is_db_service_valid(self, db_service) to work well.
+        # Completion and File entities. 
         self.db_service = db_service
         
         if not self._is_db_service_valid(db_service):
@@ -165,10 +164,9 @@ class TaskHandler:
 
     def generate_tasklist_for_dates(self, monthdates_objects: list) -> list:
         """Takes a list of `datetime.datetime` objects and returns a
-        list of ALL tasks (as dicts) that appears on those dates (their
-        interval settings).
+        list of all tasks (as dicts) that appears on those dates,
+        including repeating.
         """
-        # tuple of first and last date in the month
         date_range = (monthdates_objects[0], monthdates_objects[-1])
         
         tasks_by_interval = self._get_tasks_by_intervall(monthdates_objects)
@@ -183,14 +181,13 @@ class TaskHandler:
         return tasks_total
 
     #                           ***
-    # ancillary methods for self.generate_tasklist_for_dates() method
+    # ancillary methods for self.generate_tasklist_for_dates()
 
     def _get_tasks_by_intervall(self, datetime_objects: list) -> list:
         """Takes a list of datetime.datetime objects and returns a list
-        of tasks (as dicts) that appears on those dates according to
+        of tasks (as dicts) that repeated on those dates according to
         their interval settings.
         """
-        # extract first and last dates from datetime_objects
         date_range = datetime_objects[0], datetime_objects[-1]
         
         intervalled_tasks = self.db_service.get_intervalled_tasks(date_range)
@@ -201,9 +198,9 @@ class TaskHandler:
         return matched
 
     def _get_tasks_by_month(self, date_range: tuple) -> list:
-        """Takes a list of datetime objects and returns a list of
-        dictionaries with task for those dates (excluding interval
-        tasks).
+        """Takes a list of datetime objects and returns for those dates
+        a list of tasks (as_dicts). 
+        (excluding repetiong).
         """
         monthly_tasks = self.db_service.get_tasks_by_timerange(date_range)
         # need to add actual task's date, which is the same as task's creation
@@ -213,8 +210,10 @@ class TaskHandler:
         return monthly_tasks
 
     def _add_remain_fields(self, task_dicts: list) -> list:
-        """ Takes list of Tasks and add to them fields that requires
-        additional request to database: "files", "completion"."""
+        """Takes list of Tasks and adds to each of fields that requires
+        additional request to related tables in the database: "files",
+        "completion".
+        """
         task_id_list = set(task_dict['id'] for task_dict in task_dicts)
         additional_fields = self.db_service.get_additional_fields(task_id_list)
         

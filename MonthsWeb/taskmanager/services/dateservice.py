@@ -9,7 +9,7 @@ class DatesHandler:
     """ Class for hard logic related to dates and time."""
    
     @staticmethod
-    def is_end_of_month(dt_obj: datetime) -> False:
+    def is_end_of_month(dt_obj: datetime) -> bool:
         """ Is this `datetime` object the last day of it's month?"""
         if dt_obj.day not in (28, 29, 30, 31):
             return False
@@ -23,15 +23,15 @@ class DatesHandler:
     @staticmethod
     def generate_month_dates(date: Union[str, datetime.datetime], 
                              as_objects: bool = False) -> list:
-        """ 1. Takes a date-string in ISOformat (e.g. 
+        """ 1. Takes a date-string in ISOformat (e.g.
         '2022-05-06T00:00:00+00:00') or `datetime` object.
         2. Extracts the month from the given date.
         3. Return a list of all days in this month as ISOstrings
-        (by default) or `as_objects` datetime. 
-            
-        List contains extra-days to make 6 full weeks and look as
-        pretty a calendar: 
+        (by default) or `as_objects` datetime.
 
+        List contains extra-days to make 6 full weeks and look as
+        a pretty calendar:
+        
              January(2020)                   
         Mo Tu We Th Fr Sa Su  \n
         30 31  1  2  3  4  5  \n
@@ -61,6 +61,7 @@ class DatesHandler:
             raise err('argument should be a date string in ISOformat ',
                       '(e.g. "2022-05-06T00:00:00+00:00") or ',
                       'datetime.datetime/datetime.date object')
+
         # initialize calendar and make list of dates of the given month
         # and extra-days to make 6 full weeks of this month.
         c = calendar.Calendar()
