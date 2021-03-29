@@ -1,5 +1,6 @@
 import datetime
 from .dateservice import DatesHandler
+from django.contrib.auth.models import User
 
 
 class RepeatingTasksGenerator:
@@ -162,15 +163,16 @@ class TaskHandler:
     #                               ***
     #                              public
 
-    def generate_tasklist_for_dates(self, monthdates_objects: list) -> list:
+    def generate_tasklist_for_dates(self, monthdates_objects: list,
+                                    user: User) -> list:
         """Takes a list of `datetime.datetime` objects and returns a
         list of all tasks (as dicts) that appears on those dates,
         including repeating.
         """
         date_range = (monthdates_objects[0], monthdates_objects[-1])
         
-        tasks_by_interval = self._get_tasks_by_intervall(monthdates_objects)
-        tasks_by_month = self._get_tasks_by_month(date_range)
+        tasks_by_interval = self._get_tasks_by_intervall(monthdates_objects, user)
+        tasks_by_month = self._get_tasks_by_month(date_range, user)
 
         tasks_total = tasks_by_month + tasks_by_interval
 
@@ -183,26 +185,27 @@ class TaskHandler:
     #                           ***
     # ancillary methods for self.generate_tasklist_for_dates()
 
-    def _get_tasks_by_intervall(self, datetime_objects: list) -> list:
+    def _get_tasks_by_intervall(self, datetime_objects: list,
+                                user: User) -> list:
         """Takes a list of datetime.datetime objects and returns a list
         of tasks (as dicts) that repeated on those dates according to
         their interval settings.
         """
         date_range = datetime_objects[0], datetime_objects[-1]
         
-        intervalled_tasks = self.db_service.get_intervalled_tasks(date_range)
+        intervalled_tasks = self.db_service.get_intervalled_tasks(date_range, user)
         matched = RepeatingTasksGenerator.generate(
             datetime_objects=datetime_objects,
             intervalled_tasks=intervalled_tasks
         )
         return matched
 
-    def _get_tasks_by_month(self, date_range: tuple) -> list:
+    def _get_tasks_by_month(self, date_range: tuple, user: User) -> list:
         """Takes a list of datetime objects and returns for those dates
         a list of tasks (as_dicts). 
-        (excluding repetiong).
+        (excluding repeated).
         """
-        monthly_tasks = self.db_service.get_tasks_by_timerange(date_range)
+        monthly_tasks = self.db_service.get_tasks_by_timerange(date_range, user)
         # need to add actual task's date, which is the same as task's creation
         # date (init_date) if the task is not intervalled (like these).
         for dct in monthly_tasks:

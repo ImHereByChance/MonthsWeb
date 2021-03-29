@@ -1,18 +1,42 @@
 import json
-from django.http.response import JsonResponse
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
+from django.http.response import JsonResponse
+from django.shortcuts import redirect, render
 from .models import Task
 from .services.dbservice import DatabaseHandler 
 from .services.dateservice import DatesHandler
 from .services.taskservice import TaskHandler
+from .forms import RegisterForm
 
 
 task_service = TaskHandler(db_service=DatabaseHandler)
 
 
+@login_required
 def index(request):
-    return render(request, 'taskmanager/index.html')
+	context = {'username': request.user.username}
+	return render(request, 'taskmanager/index.html', context)
+
+
+def register(request):
+	if request.method == 'POST':
+		form = RegisterForm(request.POST)
+
+		if form.is_valid():
+			form.save()
+			username = form.cleaned_data['username']
+			password = form.cleaned_data['password1']
+			user = authenticate(username=username, password=password)
+			login(request, user)
+			return redirect('index')
+	else:
+		form = RegisterForm()
+	
+	context = {'form': form}
+	return render(request, 'registration/register.html', context)
 
 
 def change_date(request):
@@ -20,7 +44,8 @@ def change_date(request):
 	
 	dates_objects = DatesHandler.generate_month_dates(date, as_objects=True)
 	dates_strings = [dt.isoformat() for dt in dates_objects]
-	task_dicts = task_service.generate_tasklist_for_dates(dates_objects)
+	task_dicts = task_service.generate_tasklist_for_dates(dates_objects,
+														  user=request.user)
 	
 	change_month_pack = {
 		'dates': dates_strings,
@@ -33,7 +58,7 @@ def change_date(request):
 def tasks(request):
 	if request.method == 'POST':
 		task_dict = json.loads(request.body)
-		DatabaseHandler.create_task_and_related(task_dict)
+		DatabaseHandler.create_task_and_related(task_dict, request.user)
 		return HttpResponse(status=201)
 	else:
 		return HttpResponse(status=405)
@@ -53,9 +78,10 @@ def tasks_by_id(request, task_id):
 		if 'checkUncheck' in request.headers.keys():
 			DatabaseHandler.check_uncheck_task(task_dict)
 		else:
-			task_dict = json.loads(request.body)
 			DatabaseHandler.update_task_and_related(task_dict)
 		return HttpResponse(status=201)
 
 	else:
 		return HttpResponse(status=405)
+
+

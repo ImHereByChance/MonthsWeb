@@ -1,6 +1,7 @@
 from ..models import Task, File, Completion
 from datetime import datetime
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class DatabaseHandler:
@@ -8,7 +9,7 @@ class DatabaseHandler:
     with database.
     """
     @staticmethod
-    def get_tasks_by_timerange(date_range: tuple) -> list:
+    def get_tasks_by_timerange(date_range: tuple, user: User) -> list:
         """Retrieve from database all `models.Task` in given time range
         (related models `Completion` and `File` are not touched). 
         """
@@ -19,12 +20,12 @@ class DatabaseHandler:
                     'description',
                     'interval',
                     'autoshift')\
-            .filter(init_date__range=date_range)
+            .filter(init_date__range=date_range, user=user)
 
         return list(retrieved_values)
 
     @staticmethod
-    def get_intervalled_tasks(date_range: tuple) -> list:
+    def get_intervalled_tasks(date_range: tuple, user: User) -> list:
         """ 1. Takes a tuple of two `datetime` objects, where the first
         is the beginning- and the second is the end- of the time period
         2. Returns list of all interval-based tasks in the given
@@ -39,7 +40,7 @@ class DatabaseHandler:
                     'description',
                     'interval',
                     'autoshift')\
-            .filter(init_date__lt=date_until)\
+            .filter(init_date__lt=date_until, user=user)\
             .exclude(interval='no')
 
         return list(retrieved_values)
@@ -67,7 +68,7 @@ class DatabaseHandler:
         return additional_fields
 
     @staticmethod
-    def create_task_and_related(task_and_related: dict) -> None:
+    def create_task_and_related(task_and_related: dict, user: User) -> None:
         """Takes a dict where the keys are the fields of
         `models.Task` and related models `File`, `Completion`,
         and inserts the into database.
@@ -81,7 +82,8 @@ class DatabaseHandler:
                 title=task_and_related['title'],
                 description=task_and_related['description'],
                 interval=task_and_related['interval'],
-                autoshift=task_and_related['autoshift']
+                autoshift=task_and_related['autoshift'],
+                user=user
         )
         # create attached File models
         try:

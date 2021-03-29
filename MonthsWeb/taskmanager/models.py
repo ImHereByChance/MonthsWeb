@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db import models
 from django.db.models import Q
@@ -14,6 +15,7 @@ class Task(models.Model):
     "every_month" etc.);
     6) autoshift (a value indicating whether the task should be
     rescheduled to the next date if it was not completed on time);
+    7) user (creator and owner of the task)
 
     Task has related models that store additional information about it:
     1) File (attaced to the Task, such as text document, spreadsheat, etc.)
@@ -30,6 +32,9 @@ class Task(models.Model):
     # a value indicating whether the task should be rescheduled to the
     # next date if it was not completed on time (shifted if not completed)
     autoshift = models.BooleanField(default=False)
+    # owner of the task
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+
     
     class Meta:
         # model should have interval or autoshift only
