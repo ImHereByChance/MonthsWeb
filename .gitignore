@@ -2,3 +2,4 @@ env/
 .vscode/
 blocknote.txt
 __pycache__/
+setup_cons.py
