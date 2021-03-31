@@ -6,16 +6,6 @@ from django.db.models import Q
 
 class Task(models.Model):
     """A model containing basic information about a user-created task.
-    This information is represented by the following fields:
-    1) id;
-    2) init_date (task creation date);
-    3) title (title of the task);
-    4) description (description of the task);
-    5) interval (when to repeat the task, e.g. "every_day",
-    "every_month" etc.);
-    6) autoshift (a value indicating whether the task should be
-    rescheduled to the next date if it was not completed on time);
-    7) user (creator and owner of the task)
 
     Task has related models that store additional information about it:
     1) File (attaced to the Task, such as text document, spreadsheat, etc.)

@@ -18,7 +18,7 @@
         form {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
+            align-items: center;
             background: #A2C7FA;
             padding: 3rem;
             border-radius: 2rem;
@@ -60,22 +60,36 @@
             margin-top: 20px;
             color: #4174bb;
         }
+        ul.errorlist.nonfield {
+            display: flex;
+            flex-direction: column;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-width: 200px;
+            text-align: justify;
+            margin-top: 1rem;
+            color: darkred;
+        }
     </style>
 </head>
 <body>
-    {% if form.errors %}
-    <p>Something wrong with what you typing!</p>
-    {% endif %}
-
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
 
         <label for="username">User name: </label>
         {{ form.username }}
-        <label for="password">Password: </label>
-        {{ form.password }} 
+        {{ form.username.errors }}
 
-        <input type="submit" value="login">
+        <label for="password">Password: </label>
+        {{ form.password }}
+        {{ form.password.errors }}
+
+        {% if form.errors %}
+            {{ form.non_field_errors }}
+        {% endif %}
+
+        <input type="submit" value="sign in">
         <input type="hidden" name="next" value="{{ next }}">
 
         <a href="{% url 'register' %}">Register</a>

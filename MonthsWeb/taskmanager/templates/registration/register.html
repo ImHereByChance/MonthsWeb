@@ -18,7 +18,7 @@
         form {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
+            align-items: center;
             background: #A2C7FA;
             padding: 3rem;
             border-radius: 2rem;
@@ -60,24 +60,48 @@
             margin-top: 20px;
             color: #4174bb;
         }
+        ul.errorlist.nonfield {
+            display: flex;
+            flex-direction: column;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-width: 200px;
+            text-align: justify;
+            margin-top: 1rem;
+            color: darkred;
+        }
+
+        ul.errorlist {
+            list-style: none;
+            padding: 0;
+            margin: 0px;
+            max-width: 200px;
+            color: darkred;
+            text-align: center;
+        }
         </style>
 </head>
 <body>
     <form method="POST" action="{% url 'register' %}">
         {% csrf_token %}
 
-        {% if form.errors %}
-        <p>There are errors in the form!</p>
-        {% endif %}
-
         <label for='username'>Username:</label>
 		{{ form.username }}
+        {{ form.username.errors }}
         <label for='email'>Email:</label>
-		{{ form.email }}
+        {{ form.email }}
+		{{ form.email.errors }}
 		<label for='password'>Password:</label>
 		{{ form.password1 }}
+        {{ form.password.errors }}
 		<label for='password2'>Password again:</label>
 		{{ form.password2 }}
+        {{ form.password2.errors }}
+
+        <!-- {% if form.errors %}
+            {{ form.non_field_errors }}
+        {% endif %} -->
 
         <input type="submit" value="Register">
         

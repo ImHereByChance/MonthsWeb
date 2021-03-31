@@ -1,15 +1,16 @@
 import json
+
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
+
+from .forms import RegisterForm
 from .models import Task
 from .services.dbservice import DatabaseHandler 
 from .services.dateservice import DatesHandler
 from .services.taskservice import TaskHandler
-from .forms import RegisterForm
 
 
 task_service = TaskHandler(db_service=DatabaseHandler)
@@ -24,7 +25,6 @@ def index(request):
 def register(request):
 	if request.method == 'POST':
 		form = RegisterForm(request.POST)
-
 		if form.is_valid():
 			form.save()
 			username = form.cleaned_data['username']
