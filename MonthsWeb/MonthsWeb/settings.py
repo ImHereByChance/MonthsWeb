@@ -124,6 +124,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/taskmanager/'
 
 LOGOUT_REDIRECT_URL = '/accounts/login'
