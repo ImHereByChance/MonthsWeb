@@ -6,7 +6,7 @@
     --extradark: #50617A;
 }
 
-
+/* SCROLLVAR SETTINSG */
 #tp-taskList::-webkit-scrollbar-track
 {
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
@@ -36,6 +36,7 @@ html, body, #_main-container {
 }
 
 main {
+    flex-grow: 1;
     display: flex;
     justify-content: center;
 }
@@ -48,7 +49,6 @@ main {
     overflow: hidden;
     border-radius: 5px;
     box-shadow: 0px 0px 5px 0px #4174bb;
-    resize: both;
 }
 
 select,
@@ -168,6 +168,7 @@ header {
     align-items: center;
     color: var(--baselight);
     cursor: pointer;
+    transition: 0.2s;
 }
 
 #account {
@@ -192,7 +193,9 @@ header {
     transition: 0.2s;
 }
 
-#account:hover {}
+#account:hover {
+    box-shadow: 0px 4px 16px 0px rgb(0 0 0 / 20%);
+}
 
 #account:hover path {
     stroke: #deecff;
@@ -221,7 +224,7 @@ header {
     border-bottom: 1px solid #5689d640;
     padding: 7px 8px;
     text-decoration: none;
-    transition: 0.3s;
+    transition: 0.2s;
 }
 
 .dropdown-item:hover {
@@ -312,7 +315,7 @@ header {
 #c-topbar__monthLabel {
     display: flex;
     align-items: center;
-    color: aliceblue;
+    color: #bad3f6;
 }
 
 /*TASK PANEL*/
@@ -329,7 +332,7 @@ header {
     background-color: var(--additlight);
     display: flex;
     justify-content: space-between;
-    color: aliceblue;
+    color: #bad3f6;
     padding-top: 5px;
 }
 
@@ -341,6 +344,7 @@ header {
 #tp-createTaskBt {
     height: 44px;
     width: 44px;
+    justify-self: end;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -380,6 +384,7 @@ header {
     margin: 10px 5px;
     min-width: 370px;
     overflow-y: scroll;
+    overflow-x: unset;
     text-align: center;
     color: #bfc9d2;
     border-left: 1px solid var(--basedark);
@@ -388,12 +393,10 @@ header {
 /*single task item*/
 .tp-taskitem {
     background-color: var(--baselight);
-    border-radius: 2px;
-    transition: 0.2s;
+    border-radius: 4px;
+    transition: 0.1s;
     border: solid 1px var(--additlight);
-    margin-bottom: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin: 0px 5px 5px;
     flex-basis: 56px;
     flex-shrink: 0;
     display: flex;
@@ -403,8 +406,8 @@ header {
 }
 
 .tp-taskitem:hover {
-    border-color: #ffffff;
-    background-color: #b8d4fa;
+    border-color: #c2dbfd;
+    background-color: #abcefd;
 }
 
 .tp-taskitem 
@@ -426,8 +429,6 @@ header {
     padding: 0px 5px;
 }
 
-div#w35103 {}
-
 .tp-taskitemTitle {
     overflow: hidden;
     overflow-wrap: anywhere;
@@ -437,10 +438,10 @@ div#w35103 {}
 
 .tp-taskitemDescr {
     border-radius: 2px;
-    background-color: #c9d2ef;
+    background-color: #ffffff38;
     overflow-wrap: anywhere;
     font-size: 14px;
-    margin: 3px;
+    padding: 3px;
 }
 
 .ti-SaveTaskBt:hover path {
@@ -479,6 +480,7 @@ div#w35103 {}
 .tp-taskitemSaveClose{
     align-self: flex-end;
     margin-top: 3px;
+    margin-bottom: 5px;
 }
 
 .tp-taskTimeSettings {
@@ -498,7 +500,9 @@ div#w35103 {}
 
 .tp-SettingsElement label {
     margin-bottom: 5px;
+    margin-left: 2px;
     font-size: 14px;
+    color: #283a56;
 }
 
 .tp-taskFilesArea {
@@ -510,3 +514,67 @@ div#w35103 {}
     border-radius: 2px;
     margin-bottom: 5px;
 }
+
+
+/* POP-UP WINDOW */
+.popup {
+  width: 300px;
+  height: 200px;
+  margin-left: -150px;
+  margin-top: -100px;
+  top: 50%;
+  left: 50%;
+}
+
+
+/* popup animations */
+.tp-taskitem *{
+    animation-duration: 0.4s;
+    animation-name: faden;
+    /* animation-iteration-count: infinite; */
+}
+
+@keyframes faden {
+  from {
+    
+  }
+  
+  to {
+    
+  }
+}
+
+.popup-defaultError {
+  background-color: #d0e3ff;
+  position: fixed;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px 0px #ff0030;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  fill: #244574;
+  color: #244574;
+}
+
+.popup > button {
+  height: 36px;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bad3f6;
+  font-size: larger;
+  background-color: var(--additdark);
+  border: none;
+  border-radius: 3px;
+  transition: 0.3s;
+}
+
+.popup > button:hover {
+  background-color: crimson
+} 
+
+
+/* *** */
