@@ -1,8 +1,11 @@
+{% load i18n %}
+
+
 <!DOCTYPE html>
 
 <html>
 <head>
-    <title>register</title>
+    <title>{% translate "registration page" %}</title>
     <style type="text/css">
         body {
             height: 100%;
@@ -87,16 +90,16 @@
     <form method="POST" action="{% url 'register' %}">
         {% csrf_token %}
 
-        <label for='username'>Username:</label>
+        <label for='username'>{% translate "User name: " %}</label>
 		{{ form.username }}
         {{ form.username.errors }}
-        <label for='email'>Email:</label>
+        <label for='email'>{% translate "Email:" %}</label>
         {{ form.email }}
 		{{ form.email.errors }}
-		<label for='password'>Password:</label>
+		<label for='password'>{% translate "Password:" %}</label>
 		{{ form.password1 }}
         {{ form.password.errors }}
-		<label for='password2'>Password again:</label>
+		<label for='password2'>{% translate "Password again:" %}</label>
 		{{ form.password2 }}
         {{ form.password2.errors }}
 
@@ -104,9 +107,9 @@
             {{ form.non_field_errors }}
         {% endif %} -->
 
-        <input type="submit" value="Register">
+        <input type="submit" value={% translate "Register" %}>
         
-        <a href="{% url 'login' %}">Sign in</a>
+        <a href="{% url 'login' %}">{% translate "Sign in" %}</a>
     </form>
 </body>
 </html>

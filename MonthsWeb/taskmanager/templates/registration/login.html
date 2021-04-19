@@ -1,7 +1,11 @@
+{% load i18n %}
+{% load static %}
+
+
 <!DOCTYPE html>
 <html>
 <head>
-	<title>login page</title>
+	<title>{% translate "login page" %}</title>
     <style type="text/css">
         body {
             height: 100%;
@@ -77,11 +81,11 @@
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
 
-        <label for="username">User name: </label>
+        <label for="username">{% translate "User name: " %}</label>
         {{ form.username }}
         {{ form.username.errors }}
 
-        <label for="password">Password: </label>
+        <label for="password">{% translate "Password: " %} </label>
         {{ form.password }}
         {{ form.password.errors }}
 
@@ -89,10 +93,10 @@
             {{ form.non_field_errors }}
         {% endif %}
 
-        <input type="submit" value="sign in">
+        <input type="submit" value={% translate "sign in" %}>
         <input type="hidden" name="next" value="{{ next }}">
 
-        <a href="{% url 'register' %}">Register</a>
+        <a href="{% url 'register' %}">{% translate "Register" %}</a>
     </form>
 
 </body>

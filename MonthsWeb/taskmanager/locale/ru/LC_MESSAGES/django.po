@@ -1,0 +1,75 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-04-19 16:49+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: taskmanager/templates/registration/login.html:8
+msgid "login page"
+msgstr "вход"
+
+#: taskmanager/templates/registration/login.html:84
+#: taskmanager/templates/registration/register.html:93
+msgid "User name: "
+msgstr "Логин:"
+
+#: taskmanager/templates/registration/login.html:88
+msgid "Password: "
+msgstr "Пароль:"
+
+#: taskmanager/templates/registration/login.html:96
+msgid "sign in"
+msgstr "войти"
+
+#: taskmanager/templates/registration/login.html:99
+#: taskmanager/templates/registration/register.html:110
+msgid "Register"
+msgstr "Регистрация"
+
+#: taskmanager/templates/registration/register.html:8
+msgid "registration page"
+msgstr "регистрация"
+
+#: taskmanager/templates/registration/register.html:96
+msgid "Email:"
+msgstr "Email:"
+
+#: taskmanager/templates/registration/register.html:99
+msgid "Password:"
+msgstr "Пароль:"
+
+#: taskmanager/templates/registration/register.html:102
+msgid "Password again:"
+msgstr "Пароль повтороно:"
+
+#: taskmanager/templates/registration/register.html:112
+msgid "Sign in"
+msgstr "Войти"
+
+#: taskmanager/templates/taskmanager/index.html:37
+msgid "account"
+msgstr "аккаунт"
+
+#: taskmanager/templates/taskmanager/index.html:40
+msgid "log out"
+msgstr "выйти"
+
+#: taskmanager/templates/taskmanager/index.html:41
+msgid "settings"
+msgstr "настройки"
