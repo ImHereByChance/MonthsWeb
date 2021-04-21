@@ -15,7 +15,12 @@
         <title>task manager</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <script defer="defer" src="{% static 'taskmanager/main.779a9c7483a915265ef5.js' %}"></script>
+        <script type="text/javascript">
+            window.onload = () => {
+                launchApp(_mainContainer, {LOCALE_TAG: '{{ language }}'})
+            }
+        </script>
+        <script defer="defer" src="{% static 'taskmanager/main.e071fbe3e5c38696b2d3.js' %}"></script>
         <link rel="stylesheet" type="text/css" href="{% static 'taskmanager/style/main.css' %}">
     </head>
     

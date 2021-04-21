@@ -8,6 +8,7 @@ class RepeatingTasksGenerator:
     this class generates the copies of such task for each date when
     it should be repeated (in range of the given dates list).
     """
+
     @classmethod
     def generate(cls, datetime_objects: list,
                  intervalled_tasks: list) -> list:
@@ -16,7 +17,7 @@ class RepeatingTasksGenerator:
         2) list of user-made tasks (as dicts) which must be repeated
         according to specified `task['interval']` (e.g 'every_day',
         'every_workday' etc.).
-    
+
         2 Returns a list of tasks (as dicts) with new key ['date'],
         that denote when task should be repeated (task creation date -
         `['init_date']` is not included).
@@ -25,7 +26,7 @@ class RepeatingTasksGenerator:
         for date_obj in datetime_objects:
             for task in intervalled_tasks:
                 if cls._is_match(task=task, checkdate=date_obj):
-                    matched_dict_copy = {k:v for k,v in task.items()}
+                    matched_dict_copy = {k: v for k, v in task.items()}
                     matched_dict_copy['date'] = date_obj
                     list_of_matched.append(matched_dict_copy)
 
@@ -35,11 +36,11 @@ class RepeatingTasksGenerator:
     def _is_match(cls, task: dict, checkdate: datetime.datetime) -> bool:
         """ Checks whether the task with interval settings should
         appear on particular date(checkdate arg) or not.
-        """    
+        """
         intervals_map = {
             'every_day': cls._every_day,
             'every_workday': cls._every_workday,
-            'every_week': cls._every_week,            
+            'every_week': cls._every_week,
             'every_month': cls._every_month,
             'every_year': cls._every_year,
             'special': cls._special
@@ -48,7 +49,7 @@ class RepeatingTasksGenerator:
         init_date = task['init_date']
         options = None  # TODO: fix when complex intervals will be implemented
         check_func = intervals_map[interval]
-        
+
         if not interval.startswith('special'):
             return check_func(init_date, checkdate)
         elif not options:
@@ -59,7 +60,7 @@ class RepeatingTasksGenerator:
 
     @classmethod
     def _every_day(cls, init_date: datetime.datetime,
-                   checkdate:datetime.datetime) -> None:
+                   checkdate: datetime.datetime) -> None:
         """ Returns `True` if `checkdate` matches 'every_day', interval.
         Otherwise returns False. Date when the Task was created
         (`init_date`) always returns as `False`.
@@ -71,7 +72,7 @@ class RepeatingTasksGenerator:
 
     @classmethod
     def _every_workday(cls, init_date: datetime.datetime,
-                       checkdate:datetime.datetime) -> None:
+                       checkdate: datetime.datetime) -> None:
         """ Returns `True` if `checkdate` matches 'every_workday'
         interval (every MONDAY-FRIDAY). Otherwise returns `False`.
         Date when the Task was created (`init_date`) always returns
@@ -86,7 +87,7 @@ class RepeatingTasksGenerator:
 
     @classmethod
     def _every_week(cls, init_date: datetime.datetime,
-                    checkdate:datetime.datetime) -> None:
+                    checkdate: datetime.datetime) -> None:
         """ Returns `True` if `checkdate` match interval 'every_week',
         otherwise returns False. Date when the Task was created
         (`init_date`) always returns as `False`.
@@ -100,11 +101,11 @@ class RepeatingTasksGenerator:
 
     @classmethod
     def _every_month(cls, init_date: datetime.datetime,
-                     checkdate:datetime.datetime) -> None:
+                     checkdate: datetime.datetime) -> None:
         """ Returns `True` if `checkdate` match interval 'every_month',
         otherwise returns False. Date when the Task was created
         (`init_date`) always returns as `False`.
-        
+
         If the month of the `init_date` is 31 and a checking month have
         only 30 or less days returns `True` on the latest date of the
         month.
@@ -125,7 +126,7 @@ class RepeatingTasksGenerator:
 
     @classmethod
     def _every_year(cls, init_date: datetime.datetime,
-                    checkdate:datetime.datetime) -> None:
+                    checkdate: datetime.datetime) -> None:
         """ Returns `True` if `checkdate` matches 'every_year',
         interval. Otherwise returns `False`. Date when the Task was created
         (`init_date`) always returns as `False`.
@@ -152,14 +153,15 @@ class TaskHandler:
     they should repeat.
     Other related to the user tasks entities
     """
+
     def __init__(self, db_service):
         # an objects which can handle the database records about Task,
-        # Completion and File entities. 
+        # Completion and File entities.
         self.db_service = db_service
-        
+
         if not self._is_db_service_valid(db_service):
             raise ValueError('invalid value of the db_service argument')
-    
+
     #                               ***
     #                              public
 
@@ -170,15 +172,16 @@ class TaskHandler:
         including repeating.
         """
         date_range = (monthdates_objects[0], monthdates_objects[-1])
-        
-        tasks_by_interval = self._get_tasks_by_intervall(monthdates_objects, user)
+
+        tasks_by_interval = self._get_tasks_by_intervall(
+            monthdates_objects, user)
         tasks_by_month = self._get_tasks_by_month(date_range, user)
 
         tasks_total = tasks_by_month + tasks_by_interval
 
         if tasks_total:
             tasks_total = self._add_remain_fields(tasks_total)
-            tasks_total =  self._convert_dates_to_strings(tasks_total)
+            tasks_total = self._convert_dates_to_strings(tasks_total)
 
         return tasks_total
 
@@ -192,8 +195,9 @@ class TaskHandler:
         their interval settings.
         """
         date_range = datetime_objects[0], datetime_objects[-1]
-        
-        intervalled_tasks = self.db_service.get_intervalled_tasks(date_range, user)
+
+        intervalled_tasks = self.db_service.get_intervalled_tasks(
+            date_range, user)
         matched = RepeatingTasksGenerator.generate(
             datetime_objects=datetime_objects,
             intervalled_tasks=intervalled_tasks
@@ -205,7 +209,8 @@ class TaskHandler:
         a list of tasks (as_dicts). 
         (excluding repeated).
         """
-        monthly_tasks = self.db_service.get_tasks_by_timerange(date_range, user)
+        monthly_tasks = self.db_service.get_tasks_by_timerange(
+            date_range, user)
         # need to add actual task's date, which is the same as task's creation
         # date (init_date) if the task is not intervalled (like these).
         for dct in monthly_tasks:
@@ -219,7 +224,7 @@ class TaskHandler:
         """
         task_id_list = set(task_dict['id'] for task_dict in task_dicts)
         additional_fields = self.db_service.get_additional_fields(task_id_list)
-        
+
         for task in task_dicts:
             # adding fielsd with default values
             task['files'] = []
@@ -229,7 +234,7 @@ class TaskHandler:
                 if file_['related_task_id'] == task['id']:
                     task['files'].append(file_)
             # if date is marked as completed on it's ['date'],
-            # set ['completion'] = ['date'] 
+            # set ['completion'] = ['date']
             for completion in additional_fields['completions']:
                 if (completion['date_completed'].date() == task['date'].date()
                         and completion['related_task_id'] == task['id']):
@@ -237,14 +242,14 @@ class TaskHandler:
                     break
 
         return task_dicts
-    
+
     def _convert_dates_to_strings(self, task_dicts: list) -> list:
         """Takes a list of task (as dicts) and convert all `datetime`
         objects in it ISOformat date-strings (recursively, including
         nested arrays).
         """
         for dct in task_dicts:
-            for key, value in dct.items():    
+            for key, value in dct.items():
                 # recursive convertion of nested containers
                 if type(value) in [list, tuple, set]:
                     self._convert_dates_to_strings(value)
