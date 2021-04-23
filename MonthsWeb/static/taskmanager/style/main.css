@@ -1,0 +1,709 @@
+:root {
+    /*colors*/
+    --basedark: #718AAD;
+    --baselight: #A2C7FA;
+    --additdark: #4174BB;
+    --additlight: #579BFA;
+    --extradark: #50617A;
+    /*sizes*/
+    --xs: 0px;
+    --vs: 320px;
+    --sm: 576px;
+    --md: 768px;
+    --lg: 992px;
+    --xl: 1200px;
+    --xxl: 1400px;
+}
+
+
+/**/
+
+
+/*MAIN */
+html {
+    overflow-y: hidden;
+    height: 100%;
+}
+
+html, body, #_main-container {
+    font-family: arial;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}
+
+#_main-container {
+    max-width: var(--lg);
+    min-width: 256px;
+    margin: 20px 0px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px #4174bb;
+    resize: both;
+}
+
+select,
+textarea,
+input {
+    min-height: 26px;
+    border-radius: 3px;
+    border: 0px;
+    background-color: white;
+    outline-color: #a2c7fa;
+    margin: 1px;
+    padding-left: 5px;
+}
+
+textarea {
+  padding-top: 5px;
+}
+
+/*all elements in the center shoud follow these rules*/
+.center-area {
+    max-width: 1000px;
+}
+
+/*COMMON ELEMENTS */
+body {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: var(--baselight);
+    flex-direction: column;
+    margin: 0px;
+    align-items: stretch;
+}
+
+button {
+    cursor: pointer;
+}
+
+
+button > * {
+  pointer-events: none;
+}
+
+.button-icon24 {
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: 0.3s;
+    padding: 0px;
+    margin-right: 1px;
+    background-color: #ffffff00;
+    color: white;
+}
+
+.button-icon12 {
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: 0.3s;
+    padding: 0;
+    background-color: #ffffff00;
+}
+
+.button-icon24:focus {
+    outline-color: #5689d6;
+    }
+
+.button-icon24:active {
+    outline: none;
+}
+
+.svg-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50px;
+  outline: none;
+  display: flex;
+}
+
+.svg-icon12 {
+  width: 12px;
+  height: 12px;
+}
+
+.svg-icon path,
+.svg-icon polygon,
+.svg-icon rect {
+  fill: var(--additdark);
+}
+
+.svg-icon12 circle, .svg-icon circle  {
+  stroke: #4691f6;
+  stroke-width: 1;
+}
+
+
+/*SCROLLBARS*/
+#tp-taskList::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  background-color: #5987c6;
+}
+
+#tp-taskList::-webkit-scrollbar
+{
+  width: 10px;
+}
+
+#tp-taskList::-webkit-scrollbar-thumb
+{
+  background-color: #325a95;
+}
+
+
+/*HEADER*/
+header {
+    height: 60px;
+    background: var(--additdark);
+    display: flex;
+    justify-content: center;
+}
+
+.header-main-area {
+    flex-basis: 1000px;
+    align-self: stretch;
+    max-width: 1000px;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0px 20px 0px 20px;
+}
+
+.header-element {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    align-items: center;
+    color: var(--baselight);
+    cursor: pointer;
+}
+
+#account {
+    align-self: center;
+    position: relative;
+}
+
+#account .svg-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#account
+    .svg-icon path,
+    .svg-icon polygon,
+    .svg-icon rect,
+    .svg-icon circle {
+    stroke: var(--baselight);
+    transition: 0.2s;
+}
+
+#account:hover {}
+
+#account:hover path {
+    stroke: #deecff;
+}
+
+#account:hover .dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: transparent;
+}
+
+.dropdown-content {
+    display: none;
+    min-width: 120px;
+    position: absolute;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    top: 56px;
+    right: 0px;
+}
+
+.dropdown-item {
+    color: var(--baselight);
+    background: var(--additdark);
+    font-weight: 600;
+    border-bottom: 1px solid #5689d640;
+    padding: 7px 8px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.dropdown-item:hover {
+  background-color: #bad3f6;
+  color: #325c95;
+}
+
+
+/*CALENDAR*/
+#c-calendar {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--additdark);
+}
+
+#c-topbar {
+    flex-basis: 48px;
+    background-color: var(--additlight);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 2px;
+}
+
+#c-daysFrame {
+    margin: auto;
+    height: 216px;
+    width: 256px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    /* background-color: #a85e5e; */
+}
+
+/*DAY BUTTON*/
+.c-daysFrame__dayButton {
+    height: 36px;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    border: #679de999 solid 1px;
+    transition: 0.3s;
+}
+
+.c-daysFrame__dayButton:hover {
+    background-color: var(--additlight);
+    border-color: var(--baselight);
+    box-shadow: inset 0px 0px 6px 0px var(--baselight);
+}
+
+.c-daysFrame__dayButton:focus {
+    outline: none;
+    border: 1px solid var(--baselight);
+}
+
+.c-daysFrame__dayButton:active {
+}
+
+.--no-tasks {
+    background-color: var(--additdark);
+}
+.--tasks-done {
+    background-color: #5689d6;
+}
+.--got-tasks {
+    background-color: #355f9e;
+}
+
+.--out-month {
+    color: #9ec7ff;
+}
+
+.c-topbar__swtcMonthBt {
+    height: 43px;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s;
+}
+
+.c-topbar__swtcMonthBt:hover path {
+    fill: var(--baselight);
+    transition: 0.2s;
+}
+
+#c-topbar__monthLabel {
+    display: flex;
+    align-items: center;
+    color: aliceblue;
+}
+
+/*TASK PANEL*/
+#tp-taskpanel {
+    flex-grow: 1;
+    background: var(--additdark);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+#tp-topbar {
+    min-height: 48px;
+    background-color: var(--additlight);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: aliceblue;
+}
+
+#tp-dateLabel {
+    align-self: center;
+    margin-left: 4rem;
+}
+
+#tp-createTaskBt {
+    height: 44px;
+    width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s;
+    background-color: var(--additlight);
+    margin-right: 20px;
+}
+
+#tp-createTaskBt .svg-icon {
+    width:36px;
+    height: 36px;
+}
+
+#tp-createTaskBt
+    .svg-icon path,
+    .svg-icon polygon,
+    .svg-icon rect,
+    .svg-icon circle {
+    stroke: var(--baselight);
+    transition: 0.2s;
+}
+
+#tp-createTaskBt:hover > 
+    .svg-icon path,
+    .svg-icon polygon,
+    .svg-icon rect,
+    .svg-icon circle{
+    stroke: #fffedf;
+}
+
+/*container where located taskitelms*/
+#tp-taskList {
+    flex-basis: 30%;
+    flex-grow: 1;
+    padding-right: 5px;
+    display: flex;
+    flex-direction: column;
+    margin: 10px 5px;
+    overflow-y: scroll;
+    text-align: center;
+    color: #bfc9d2;
+    border-left: 1px solid var(--basedark);
+}
+
+/*single task item*/
+.tp-taskitem {
+    background-color: var(--baselight);
+    border-radius: 2px;
+    transition: 0.2s;
+    border: solid 1px var(--additlight);
+    margin-bottom: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    flex-basis: 56px;
+    display: flex;
+    align-items: center;
+    text-align: initial;
+    color: black;
+}
+
+.tp-taskitem:hover {
+    border-color: #ffffff;
+    background-color: #b8d4fa;
+}
+
+.tp-taskitem .button-icon12:focus {
+    border: 1px dashed var(--extradark);   
+}
+
+.tp-taskCheckout {
+    margin-left: 5px;
+}
+
+/*section with task-settings, task-title and task-description*/
+.tp-taskitemMain {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tp-taskitemTitle {
+    color: #1f2938;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    margin: 3px;
+}
+
+.tp-taskitemDescr {
+    border-radius: 2px;
+    background-color: #ffffff52;
+    color: #202730;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    margin: 3px;
+    padding: 5px;
+}
+
+.ti-SaveTaskBt:hover path {
+    fill: #0e9d8c;
+}
+
+.ti-CloseEditorBt:hover path {
+    fill: #dd2c59e3;
+}
+
+/*buttons, that displais in to the right of tp-taskitem when it is not unfold*/
+.tp-taskitemRightBtns * {
+    display: flex;
+    flex-direction: column;
+    transition: 0.2s;
+}
+
+.tp-taskitemRightBtns .button-icon24 path {
+  fill: #5689d6;
+}
+
+.tp-RightBtnsDelTask:hover path {
+    fill:crimson;
+}
+
+.tp-RightBtnsEditTask:hover path {
+    fill: var(--baselight);
+    fill: #202e5f;
+}
+
+.tp-taskitem:hover > .tp-taskitemRightBtns .button-icon24 {
+    display: block 
+}
+
+.tp-taskTimeSettings {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 14px;
+    margin: 0px 5px;
+}
+
+.tp-taskTimeSettings
+  .tp-SettingsElement {
+    margin: 2px 0px;
+}
+
+/*container for the 'save changes' and the 'close task redactor' buttons*/
+.tp-taskitemSaveClose{
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-evenly;
+    align-self: flex-end;
+}
+
+.rect-standart-button {
+    min-width: 50px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background-color: var(--additdark);
+    border: none;
+    border-radius: 3px;
+    transition: 0.3s;
+    margin: 1px;
+}
+
+.ti-save_task{
+  background-color: #22a587;
+}
+
+.ti-save_task:disabled {
+  opacity: 50%;
+}
+
+.ti-save_task:hover{
+  background-color: #2bc3a0;
+}
+
+.ti-closeEditor {
+  background-color: #cb2545;
+}
+
+.ti-closeEditor:disabled {
+  opacity: 50%;
+}
+
+.ti-closeEditor:hover {
+  background-color: #e72a4f;
+}
+
+.ti-closeEditorIconBt {
+  position: static;
+  right: 224px;
+  z-index:5;
+}
+
+/*container for wraping a task-item settings element and its label*/
+.tp-SettingsElement {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: stretch;
+    font-size: 14px;
+    margin: 2px 5px 0px 5px;
+}
+
+.tp-SettingsElement label {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.tp-taskFilesArea {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px;
+    border: solid 1px var(--extradark);
+    border-radius: 2px;
+    margin-bottom: 5px;
+}
+
+
+/* POP-UP WINDOW */
+.popup {
+  width: 320px;
+  height: 200px;
+  margin-left: -150px;
+  margin-top: -100px;
+  top: 50%;
+  left: 50%;
+}
+
+
+/* popup animations */
+.tp-taskitem *{
+    animation-duration: 0.4s;
+    animation-name: faden;
+    /* animation-iteration-count: infinite; */
+}
+
+@keyframes faden {
+  from {
+    
+  }
+  
+  to {
+    
+  }
+}
+
+.popup-defaultError {
+  background-color: #d0e3ff;
+  position: fixed;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px 0px #ff0030;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  fill: #244574;
+  color: #244574;
+  overflow: hidden;
+}
+
+.popup > button {
+  height: 36px;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bad3f6;
+  font-size: larger;
+  background-color: var(--additdark);
+  border: none;
+  border-radius: 3px;
+  transition: 0.3s;
+}
+
+.popup > button:hover {
+  background-color: crimson
+}
+
+.popup-caption {
+    max-width: 300px;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+
+
+
+/* MEDIA QUERIES */
+
+
+/*Small devices (landscape phones, 576px and up)*/
+@media (min-width: 576px) { ... }
+
+/* Vertical mobile screen(minimum) */
+@media (min-width: 320px) { ... }
+
+/*Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) {
+    #_main-container{
+        flex-direction: row;
+        overflow-y: hidden;
+    }
+
+    #c-daysFrame {
+        width: 336px;
+        height: 288px;
+        margin-top: 10px;
+        margin-left: 5px;
+    }
+
+    .c-daysFrame__dayButton {
+        height: 48px; 
+        width: 48px; 
+    }
+
+    .tp-taskitemMain {
+      padding-bottom: 5px;
+    }
+
+    .tp-taskTimeSettings {
+        flex-direction: row;
+        margin: 5px 5px 0px 5px
+    }
+
+    .tp-taskTimeSettings
+      .tp-SettingsElement {
+/*         margin: 0px 0px 5px; */
+    }
+}
+
+/*Large devices (desktops, 992px and up)*/
+@media (min-width: 992px) {
+    #_main-container{
+          margin: 20px
+      }
+
+}
+
+/*X-Large devices (large desktops, 1200px and up)*/
+@media (min-width: 1200px) { ... }
+
+/*XX-Large devices (larger desktops, 1400px and up)*/
+@media (min-width: 1400px) { ... }
+

@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '192.168.1.15'
+    'emilkadermetov.pythonanywhere.com' 
 ]
 
 
@@ -65,9 +65,10 @@ WSGI_APPLICATION = 'MonthsWeb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': '/etc/mysql/my.cnf',
-        },
+        'NAME': 'EmilKadermetov$monthsweb',
+	'USER': 'EmilKadermetov',
+	'PASSWORD': '9639729Emil',
+	'HOST': 'EmilKadermetov.mysql.pythonanywhere-services.com'
     }
 }
 
@@ -115,6 +116,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGIN_REDIRECT_URL = '/'
 
