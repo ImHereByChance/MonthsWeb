@@ -120,7 +120,6 @@ button > * {
 .svg-icon {
   width: 24px;
   height: 24px;
-  border-radius: 50px;
   outline: none;
   display: flex;
 }
@@ -180,18 +179,26 @@ header {
 .header-element {
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     padding: 5px;
     align-items: center;
     color: var(--baselight);
     cursor: pointer;
-}
-
-#account {
-    align-self: center;
+    margin-left: 5px;
     position: relative;
 }
 
-#account .svg-icon {
+.header-element
+    .svg-icon path,
+    .svg-icon polygon,
+    .svg-icon rect,
+    .svg-icon circle {
+    stroke: var(--baselight);
+    fill: var(--baselight);
+    transition: 0.2s;
+}
+
+.header-element .svg-icon {
     width: 28px;
     height: 28px;
     display: flex;
@@ -199,25 +206,13 @@ header {
     justify-content: center;
 }
 
-#account
-    .svg-icon path,
-    .svg-icon polygon,
-    .svg-icon rect,
-    .svg-icon circle {
-    stroke: var(--baselight);
-    transition: 0.2s;
-}
-
-#account:hover {}
-
-#account:hover path {
+.header-element:hover path  {
     stroke: #deecff;
+    fill: #deecff;
 }
 
-#account:hover .dropdown-content {
-    display: flex;
-    flex-direction: column;
-    border: transparent;
+.header-element:hover .header-element-caption {
+    color: #deecff;
 }
 
 .dropdown-content {
@@ -241,10 +236,26 @@ header {
 }
 
 .dropdown-item:hover {
-  background-color: #bad3f6;
-  color: #325c95;
+    background-color: #bad3f6;
+    color: #325c95;
 }
 
+#account:hover .acconunt-dropdown.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: transparent;
+}
+
+#language-code {
+    font-weight: bold;
+    font-size: large;
+}
+
+#switch-lang:hover .lang-dropdown.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: transparent;
+}
 
 /*CALENDAR*/
 #c-calendar {

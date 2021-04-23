@@ -1,4 +1,5 @@
 env/
+vars.sh
 .vscode/
 blocknote.txt
 __pycache__/
