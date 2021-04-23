@@ -440,6 +440,7 @@ header {
 }
 
 .tp-taskitemTitle {
+    color: #1f2938;
     overflow: hidden;
     overflow-wrap: anywhere;
     font-size: 14px;
@@ -448,10 +449,12 @@ header {
 
 .tp-taskitemDescr {
     border-radius: 2px;
-    background-color: #c9d2ef;
+    background-color: #ffffff52;
+    color: #202730;
     overflow-wrap: anywhere;
     font-size: 14px;
     margin: 3px;
+    padding: 5px;
 }
 
 .ti-SaveTaskBt:hover path {
