@@ -8,6 +8,7 @@ class DatabaseHandler:
     """ Select, create, update, delete and other interactions
     with database.
     """
+    
     @staticmethod
     def get_tasks_by_timerange(date_range: tuple, user: User) -> list:
         """Retrieve from database all `models.Task` in given time range

@@ -4,6 +4,9 @@ from django.db import models
 from django.db.models import Q
 
 
+# User task and related tables. #
+#################################
+
 class Task(models.Model):
     """A model containing basic information about a user-created task.
 
@@ -85,3 +88,15 @@ class Completion(models.Model):
                         'Completion must be unique for one Task and one date')
         
         super(Completion, self).save(*args, **kwargs)
+
+
+# User profile settings. #
+##########################
+
+class UserProfile(models.Model):
+    """A model for storing application user preferences."""
+
+    # standard Django User model as foreign key
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=False) 
+    # the interface language that has been explicitly set by the user
+    language = models.CharField(max_length=20, blank=True)

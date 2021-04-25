@@ -16,11 +16,16 @@ from .services.taskservice import TaskHandler
 
 task_service = TaskHandler(db_service=DatabaseHandler)
 
+@login_required
+def test_lang(request):
+    lang_code = request.user.language
+    return(HttpResponse(lang_code))
+
+
 
 @login_required
 def index(request):
     language = get_language()
-
     context = {'username': request.user.username, 'language': language}
     return render(request, 'taskmanager/index.html', context)
 
