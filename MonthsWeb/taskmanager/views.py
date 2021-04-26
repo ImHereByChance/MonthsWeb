@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
-from django.utils.translation import get_language
+from django.utils.translation import get_language, activate
 
 from .forms import RegisterForm
 from .models import Task
@@ -13,20 +13,19 @@ from .services.dbservice import DatabaseHandler
 from .services.dateservice import DatesHandler
 from .services.taskservice import TaskHandler
 
+from django.conf import settings
+
 
 task_service = TaskHandler(db_service=DatabaseHandler)
-
-@login_required
-def test_lang(request):
-    lang_code = request.user.language
-    return(HttpResponse(lang_code))
-
 
 
 @login_required
 def index(request):
-    language = get_language()
-    context = {'username': request.user.username, 'language': language}
+    language_code = get_language()
+    context = {
+        'username': request.user.username,
+        'language_code': language_code
+    }
     return render(request, 'taskmanager/index.html', context)
 
 

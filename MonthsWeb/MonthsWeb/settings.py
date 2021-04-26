@@ -1,4 +1,5 @@
 import os
+from django.utils.translation import gettext_lazy as _
 from pathlib import Path
 
 
@@ -10,6 +11,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
 
 ALLOWED_HOSTS = [
     '192.168.1.15',
@@ -100,18 +102,23 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-LOCALE_PATHS = [
-    '/taskmanager/locale'
+
+LANGUAGES = [
+    ('ru', _('Russian')),
+    ('en', _('English')),
 ]
 
-TIME_ZONE = 'Europe/Moscow'
+LOCALE_PATHS = [
+    '/taskmanager/locale',
+    '/locale'
+]
+
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
-
 
 
 # Static files (CSS, JavaScript, Images)

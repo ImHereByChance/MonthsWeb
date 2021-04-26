@@ -94,7 +94,7 @@ class Completion(models.Model):
 ##########################
 
 class UserProfile(models.Model):
-    """A model for storing application user preferences."""
+    """A model for storing user preferences."""
 
     # standard Django User model as foreign key
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=False) 

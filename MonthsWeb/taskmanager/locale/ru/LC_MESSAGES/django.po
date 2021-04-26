@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-19 16:49+0300\n"
+"POT-Creation-Date: 2021-04-26 16:12+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgid "login page"
 msgstr "вход"
 
 #: taskmanager/templates/registration/login.html:84
-#: taskmanager/templates/registration/register.html:93
+#: taskmanager/templates/registration/register.html:92
 msgid "User name: "
 msgstr "Логин:"
 
@@ -38,7 +38,7 @@ msgid "sign in"
 msgstr "войти"
 
 #: taskmanager/templates/registration/login.html:99
-#: taskmanager/templates/registration/register.html:110
+#: taskmanager/templates/registration/register.html:109
 msgid "Register"
 msgstr "Регистрация"
 
@@ -46,30 +46,30 @@ msgstr "Регистрация"
 msgid "registration page"
 msgstr "регистрация"
 
-#: taskmanager/templates/registration/register.html:96
+#: taskmanager/templates/registration/register.html:95
 msgid "Email:"
 msgstr "Email:"
 
-#: taskmanager/templates/registration/register.html:99
+#: taskmanager/templates/registration/register.html:98
 msgid "Password:"
 msgstr "Пароль:"
 
-#: taskmanager/templates/registration/register.html:102
+#: taskmanager/templates/registration/register.html:101
 msgid "Password again:"
 msgstr "Пароль повтороно:"
 
-#: taskmanager/templates/registration/register.html:112
+#: taskmanager/templates/registration/register.html:111
 msgid "Sign in"
 msgstr "Войти"
 
-#: taskmanager/templates/taskmanager/index.html:37
+#: taskmanager/templates/taskmanager/index.html:50
 msgid "account"
 msgstr "аккаунт"
 
-#: taskmanager/templates/taskmanager/index.html:40
+#: taskmanager/templates/taskmanager/index.html:53
 msgid "log out"
 msgstr "выйти"
 
-#: taskmanager/templates/taskmanager/index.html:41
+#: taskmanager/templates/taskmanager/index.html:54
 msgid "settings"
 msgstr "настройки"

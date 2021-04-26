@@ -3,9 +3,10 @@ from ..models import UserProfile
 
 
 def set_user_profile(user: User, **kwargs: dict) -> None:
-    """Set the values of the UserProfile fields (of the model related to
-    the user). The first positional argument must be a User object,
-    the rest must be keyword arguments, which are UserProfile fields. 
+    """Set the values of the UserProfile fields (the model related to
+    the user which stores personal settings). The first positional
+    argument must be a User object, the rest must be keyword arguments,
+    which are UserProfile fields. 
     """
     
     try:

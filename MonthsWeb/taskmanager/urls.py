@@ -8,6 +8,4 @@ urlpatterns = [
     path('tasks/', views.tasks, name='tasks'),
     path('tasks/<int:task_id>/', views.tasks_by_id, name='tasks_by_id'),
     path('register', views.register, name='register'),
-
-    path('test_lang', views.test_lang, name='test_lang')
 ]
