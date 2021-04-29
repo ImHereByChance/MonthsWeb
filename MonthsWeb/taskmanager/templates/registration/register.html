@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'taskmanager/style/authpages.css' %}">
 </head>
 <body>
+    
     <form method="POST" action="{% url 'register' %}" class="main-form">
         {% csrf_token %}
 
@@ -25,13 +26,12 @@
 		{{ form.password2 }}
         {{ form.password2.errors }}
 
-        <!-- {% if form.errors %}
-            {{ form.non_field_errors }}
-        {% endif %} -->
-
         <input type="submit" value={% translate "Register" %}>
         
         <a href="{% url 'login' %}">{% translate "Sign in" %}</a>
     </form>
+
+    {% include "registration/swithlangbutton.html" %}
+
 </body>
 </html>
