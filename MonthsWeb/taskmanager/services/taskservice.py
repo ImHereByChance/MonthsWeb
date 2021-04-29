@@ -255,7 +255,7 @@ class TaskHandler:
                     self._convert_dates_to_strings(value)
                 elif (isinstance(value, datetime.datetime)):
                     dct[key] = value.isoformat()
-        # now task dicts finally compled and can be sent to the client
+        # now task dicts finally complete and can be sent to the client
         return task_dicts
 
     #                       ***

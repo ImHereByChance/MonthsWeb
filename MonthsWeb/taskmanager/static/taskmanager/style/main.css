@@ -240,7 +240,12 @@ header {
     color: #325c95;
 }
 
-.dropdown-content button {border: none;display: flex;outline: none;font-size: inherit;}
+.dropdown-content button {
+    border: none;
+    display: flex;
+    outline: none;
+    font-size: inherit;
+}
 
 #account:hover .acconunt-dropdown.dropdown-content {
     display: flex;
