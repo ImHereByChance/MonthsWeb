@@ -98,5 +98,5 @@ class UserProfile(models.Model):
 
     # standard Django User model as foreign key
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=False) 
-    # the interface language that has been explicitly set by the user
+    # the language of the user interface
     language = models.CharField(max_length=20, blank=True)

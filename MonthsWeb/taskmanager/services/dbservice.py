@@ -146,9 +146,10 @@ class DatabaseHandler:
         """ Creates an entry in the "Completion" table if
         task_dict['completion'] have a value (it must be a datetime str
         formated as "2020-01-01 00:00:00"). If
-        task_dict['completion'] == False deletes appropriate entry
+        task_dict['completion'] == False, deletes appropriate entry
         about task complition.
         """
+        
         task_id = task_dict['id']
         completion = task_dict['completion']
         task_date = timezone.datetime.fromisoformat(task_dict['date'])
@@ -160,7 +161,7 @@ class DatabaseHandler:
         else:
             try:
                 Completion.objects.filter(
-                    date_completed__date=task_date.date(),
+                    date_completed__date=task_date,
                     related_task_id=task_id).delete()
             except Completion.DoesNotExist:
                 pass

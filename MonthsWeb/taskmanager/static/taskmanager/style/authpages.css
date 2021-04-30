@@ -22,6 +22,7 @@ body {
     justify-content: center;
     background: #579BFA;
 }
+
 html {
     height: 100%;
     width: 100%;
@@ -35,10 +36,11 @@ html {
     border-radius: 2rem;
     box-shadow: 0px 0px 20px 0px var(--additdark);
 }
+
 input[type="submit"] {
     align-self: center;
     height: 36px;
-    width: 80px;
+    min-width: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,7 +60,7 @@ label {
     margin-bottom: 3px;
 }
 input {
-    min-height: 26px;
+    height: 26px;
     border-radius: 5px;
     border: 0px;
     outline-color: #a2c7fa;
@@ -66,9 +68,10 @@ input {
 }
 input[type="submit"] {
     margin-top: 20px;
+    padding: 0px 5px;
 }
 a {
-    margin: auto;
+    align-self: center;
     margin-top: 20px;
     color: #4174bb;
 }
@@ -79,7 +82,7 @@ ul.errorlist.nonfield {
     padding: 0;
     margin: 0;
     max-width: 200px;
-    text-align: justify;
+    text-align: center;
     margin-top: 1rem;
     color: darkred;
 }
@@ -103,6 +106,9 @@ ul.errorlist {
 	font-weight: bold;
 	border-radius: 0px 5px 5px 0px;
 	box-shadow: 3px 4px 4px 0px #4174bb57;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	position: relative;
 }
 .set-user-language:hover {
@@ -119,6 +125,7 @@ ul.errorlist {
     z-index: 1;
     top: 0px;
     right: -120px;
+    box-shadow: 3px 4px 4px 0px #4174bb57;
 }
 .dropdown-item {
     color: var(--additdark);
@@ -142,10 +149,6 @@ ul.errorlist {
 }
 
 .lang-tag {
-    position: relative;
-    top: 11px;
-    left: 4px;
-    z-index: 2;
     color: var(--additdark);
     font-weight: 600;
 }
@@ -153,10 +156,10 @@ ul.errorlist {
 .arrow-icon {
     width: 10px;
     height: 10px;
-    position: relative;
-    top: -12px;
-    left: 30px;
-    z-index: 1;
+    /* position: relative; */
+    /* top: -12px; */
+    /* left: 30px; */
+    /* z-index: 1; */
 }
 
 .arrow-icon path {fill: var(--additdark);}
@@ -164,31 +167,67 @@ ul.errorlist {
 /* MEDIA QUERIES */
 
 /*Small devices (landscape phones, 576px and up)*/
-@media (min-width: 576px) {
+@media (max-width: 576px) {
+    
+    body {
+        height: auto;
+        width: auto;
+        flex-direction: column-reverse;
+        align-items: stretch;
+        padding: 1rem;
+    }
+    
+    form.main-form {
+        padding: 1rem;
+        justify-content: center;
+        align-items: stretch;
+    }
+    
+    a {
+        margin: 20px;
+    }
+    
+    input {
+        min-height: 40px;
+        font-size: larger;
+    }
 
+    input[type="submit"] {
+    	font-size: inherit;
+    }
+    
+    .set-user-language {
+        border-radius: 5px;
+        margin: 5px;
+    }
+
+    ul.errorlist.nonfield {
+    align-self: center;
+    }
+    
 }
 
 /* Vertical mobile screen(minimum) */
-@media (min-width: 320px) {
+@media (max-width: 320px) {
 
 }
 
 /*Medium devices (tablets, 768px and up)*/
-@media (min-width: 768px) {
+@media (max-width: 768px) {
 
 }
 
 /*Large devices (desktops, 992px and up)*/
-@media (min-width: 992px) {
+@media (max-width: 992px) {
 
 }
 
 /*X-Large devices (large desktops, 1200px and up)*/
-@media (min-width: 1200px) {
+@media (max-width: 1200px) {
 
 }
 
 /*XX-Large devices (larger desktops, 1400px and up)*/
-@media (min-width: 1400px) {
+@media (max-width: 1400px) {
 
 }
