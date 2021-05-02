@@ -170,7 +170,7 @@ class DatabaseHandler:
     def shift_tasks(today: datetime) -> None:
         """Changes the date of the uncompleted tasks with
         `Autoshift=True` to the given date (shifts them to
-        today if they does't completed yet)
+        today if they doesn't completed yet)
         """
         nested_query = Completion.objects.values_list('id', flat=True)\
             .filter(date_completed__date__lt=today.date())
