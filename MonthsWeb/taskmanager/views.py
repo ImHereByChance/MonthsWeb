@@ -13,23 +13,12 @@ from .services.dbservice import DatabaseHandler
 from .services.dateservice import DatesHandler
 from .services.taskservice import TaskHandler
 
-from django.conf import settings
-
 
 task_service = TaskHandler(db_service=DatabaseHandler)
 
 
-@login_required
-def index(request):
-    language_code = get_language()
-    context = {
-        'username': request.user.username,
-        'language_code': language_code
-    }
-    return render(request, 'taskmanager/index.html', context)
-
-
 def register(request):
+    """ Page to get the registration form or submit it."""
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -47,7 +36,22 @@ def register(request):
 
 
 @login_required
+def index(request):
+    """ Index page and also the entry point for the js app. """
+    language_code = get_language()
+    context = {
+        'username': request.user.username,
+        'language_code': language_code
+    }
+    return render(request, 'taskmanager/index.html', context)
+
+
+@login_required
 def change_date(request):
+    """ Returns json with tasks and dates (as isoformat strings) for the
+    date given in the get-request parameter. E.g.:
+    "getDatePack/?date=2021-06-01T00%3A00%3A00.000%2B00%3A00"
+    """
     date = request.GET['date']
 
     dates_objects = DatesHandler.generate_month_dates(date, as_objects=True)
@@ -65,6 +69,9 @@ def change_date(request):
 
 @login_required
 def tasks(request):
+    """ Endpoint for creating a task in the database. New task fields
+    should be submitted via post request as json object. 
+    """
     if request.method == 'POST':
         task_dict = json.loads(request.body)
         DatabaseHandler.create_task_and_related(task_dict, request.user)
@@ -75,6 +82,9 @@ def tasks(request):
 
 @login_required
 def tasks_by_id(request, task_id):
+    """ Endpoint for getting, deleting and updating a task in database.
+    e.i: tasks/<int:task_id>/
+    """
     if request.method == 'GET':
         task = Task.objects.values().get(id=task_id)
         return JsonResponse(task)
