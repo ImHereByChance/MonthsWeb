@@ -191,7 +191,6 @@ header {
     .svg-icon rect,
     .svg-icon circle {
     stroke: var(--baselight);
-    fill: var(--baselight);
     transition: 0.2s;
 }
 

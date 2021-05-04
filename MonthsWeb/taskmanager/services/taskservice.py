@@ -151,7 +151,6 @@ class RepeatingTasksGenerator:
 class TaskHandler:
     """Retrieves the tasks form database, make copies of the them if 
     they should repeat.
-    Other related to the user tasks entities
     """
 
     def __init__(self, db_service):
