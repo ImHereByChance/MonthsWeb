@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
-from django.utils.translation import get_language, activate
+from django.utils.translation import get_language
 
 from .forms import RegisterForm
 from .models import Task
@@ -86,19 +86,25 @@ def tasks_by_id(request, task_id):
     e.i: tasks/<int:task_id>/
     """
     if request.method == 'GET':
-        task = Task.objects.values().get(id=task_id)
-        return JsonResponse(task)
+        try:
+            task = Task.objects.values().get(id=task_id, user=request.user)
+            return JsonResponse(task)
+        except Task.DoesNotExist:
+            return HttpResponse(status=404)
 
     elif request.method == 'DELETE':
-        DatabaseHandler.delete_task(task_id)
-        return HttpResponse(status=200)
+        try:
+            DatabaseHandler.delete_task(task_id, user=request.user)
+            return HttpResponse(status=200)
+        except Task.DoesNotExist:
+            return HttpResponse(status=404)
 
     elif request.method == 'PUT':
         task_dict = json.loads(request.body)
         if 'checkUncheck' in request.headers.keys():
             DatabaseHandler.check_uncheck_task(task_dict)
         else:
-            DatabaseHandler.update_task_and_related(task_dict)
+            DatabaseHandler.update_task_and_related(task_dict, request.user)
         return HttpResponse(status=201)
 
     else:

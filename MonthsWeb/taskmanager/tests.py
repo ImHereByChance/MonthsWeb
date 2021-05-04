@@ -391,7 +391,7 @@ class TestDatabaseHandler(TestCase):
             'interval': 'every_month',
             'autoshift': False
         }
-        DatabaseHandler.update_task_and_related(expected_output_1)
+        DatabaseHandler.update_task_and_related(expected_output_1, user=self.test_user)
         updated_dict = Task.objects.values().filter(id=task_1.id)[0]
         del updated_dict['user_id']
         updated_dict['init_date'] = updated_dict['init_date'].isoformat()
@@ -401,14 +401,14 @@ class TestDatabaseHandler(TestCase):
     def test_delete_task(self):
         # delete by overall dict
         task_dict = Task.objects.values().filter(title='test task 6')[0]
-        DatabaseHandler.delete_task(task_dict)
+        DatabaseHandler.delete_task(task_dict, self.test_user)
         # check
         query_deleted_task = Task.objects.filter(title='test task 6')
         self.assertEquals(list(query_deleted_task), list(Task.objects.none()))
 
         # by explicit integer id
         task_id = Task.objects.get(title='test task 7').id
-        DatabaseHandler.delete_task(task_id)
+        DatabaseHandler.delete_task(task_id, self.test_user)
         # check
         query_deleted_task = Task.objects.filter(title='test task 7')
         self.assertEquals(list(query_deleted_task), list(Task.objects.none()))
