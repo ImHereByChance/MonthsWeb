@@ -345,7 +345,17 @@ header {
     display: flex;
     align-items: center;
     color: aliceblue;
+    cursor: pointer;
 }
+
+#c-topbar__monthLabel:hover {
+  text-decoration: underline;
+}
+
+#c-topbar__monthPicker {
+  display: none;
+}
+
 
 /*TASK PANEL*/
 #tp-taskpanel {

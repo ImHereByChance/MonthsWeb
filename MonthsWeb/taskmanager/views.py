@@ -1,13 +1,11 @@
 import json
 
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.http.response import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.utils.translation import get_language
 
-from .forms import RegisterForm
 from .models import Task
 from .services.dbservice import DatabaseHandler
 from .services.dateservice import DatesHandler
@@ -15,24 +13,6 @@ from .services.taskservice import TaskHandler
 
 
 task_service = TaskHandler(db_service=DatabaseHandler)
-
-
-def register(request):
-    """ Page to get the registration form or submit it."""
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            return redirect('index')
-    else:
-        form = RegisterForm()
-
-    context = {'form': form}
-    return render(request, 'registration/register.html', context)
 
 
 @login_required
