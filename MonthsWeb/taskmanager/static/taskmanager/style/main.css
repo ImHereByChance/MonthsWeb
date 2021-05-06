@@ -20,10 +20,7 @@
 
 
 /*MAIN */
-html {
-    overflow-y: hidden;
-    height: 100%;
-}
+html {height: 100%;}
 
 html, body, #_main-container {
     font-family: arial;
@@ -42,7 +39,7 @@ main {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    overflow: scroll;
+    /* overflow: scroll; */
     border-radius: 5px;
     box-shadow: 0px 0px 5px 0px #4174bb;
     resize: both;
@@ -120,7 +117,6 @@ button > * {
 .svg-icon {
   width: 24px;
   height: 24px;
-  border-radius: 50px;
   outline: none;
   display: flex;
 }
@@ -180,26 +176,16 @@ header {
 .header-element {
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     padding: 5px;
     align-items: center;
     color: var(--baselight);
     cursor: pointer;
-}
-
-#account {
-    align-self: center;
+    margin-left: 5px;
     position: relative;
 }
 
-#account .svg-icon {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#account
+.header-element
     .svg-icon path,
     .svg-icon polygon,
     .svg-icon rect,
@@ -208,16 +194,36 @@ header {
     transition: 0.2s;
 }
 
-#account:hover {}
-
-#account:hover path {
-    stroke: #deecff;
+#switch-lang 
+  .svg-icon path
+  {
+    stroke: var(--additdark);
+    fill: var(--baselight)
 }
 
-#account:hover .dropdown-content {
+#switch-lang:hover
+  .svg-icon path
+  {
+    stroke: #75a1dd;
+    fill: #deecff;
+}
+
+
+.header-element .svg-icon {
+    width: 28px;
+    height: 28px;
     display: flex;
-    flex-direction: column;
-    border: transparent;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-element:hover path  {
+    stroke: #deecff;
+    fill: #deecff;
+}
+
+.header-element:hover .header-element-caption {
+    color: #deecff;
 }
 
 .dropdown-content {
@@ -241,10 +247,33 @@ header {
 }
 
 .dropdown-item:hover {
-  background-color: #bad3f6;
-  color: #325c95;
+    background-color: #bad3f6;
+    color: #325c95;
 }
 
+.dropdown-content button {
+    border: none;
+    display: flex;
+    outline: none;
+    font-size: inherit;
+}
+
+#account:hover .acconunt-dropdown.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: transparent;
+}
+
+#language-code {
+    font-weight: bold;
+    font-size: large;
+}
+
+#switch-lang:hover .lang-dropdown.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: transparent;
+}
 
 /*CALENDAR*/
 #c-calendar {
@@ -331,7 +360,17 @@ header {
     display: flex;
     align-items: center;
     color: aliceblue;
+    cursor: pointer;
 }
+
+#c-topbar__monthLabel:hover {
+  text-decoration: underline;
+}
+
+#c-topbar__monthPicker {
+  display: none;
+}
+
 
 /*TASK PANEL*/
 #tp-taskpanel {
@@ -654,16 +693,17 @@ header {
 
 
 /*Small devices (landscape phones, 576px and up)*/
-@media (min-width: 576px) { ... }
+@media (min-width: 576px) { }
 
 /* Vertical mobile screen(minimum) */
-@media (min-width: 320px) { ... }
+@media (min-width: 320px) { }
 
 /*Medium devices (tablets, 768px and up)*/
 @media (min-width: 768px) {
     #_main-container{
         flex-direction: row;
         overflow-y: hidden;
+        overflow-x: auto;
     }
 
     #c-daysFrame {
@@ -698,12 +738,24 @@ header {
     #_main-container{
           margin: 20px
       }
-
 }
 
 /*X-Large devices (large desktops, 1200px and up)*/
-@media (min-width: 1200px) { ... }
+@media (min-width: 1200px) { }
 
 /*XX-Large devices (larger desktops, 1400px and up)*/
-@media (min-width: 1400px) { ... }
+@media (min-width: 1400px) { }
 
+@media (max-height: 426px){
+    body {
+      height: auto;
+    }
+
+    #_main-container {
+      margin: 0;
+    }
+
+    #c-daysFrame {
+      margin-top: 0;
+    }
+}

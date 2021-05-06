@@ -151,7 +151,6 @@ class RepeatingTasksGenerator:
 class TaskHandler:
     """Retrieves the tasks form database, make copies of the them if 
     they should repeat.
-    Other related to the user tasks entities
     """
 
     def __init__(self, db_service):
@@ -255,7 +254,7 @@ class TaskHandler:
                     self._convert_dates_to_strings(value)
                 elif (isinstance(value, datetime.datetime)):
                     dct[key] = value.isoformat()
-        # now task dicts finally compled and can be sent to the client
+        # now task dicts finally complete and can be sent to the client
         return task_dicts
 
     #                       ***

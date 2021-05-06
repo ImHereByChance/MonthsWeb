@@ -8,6 +8,7 @@ class DatabaseHandler:
     """ Select, create, update, delete and other interactions
     with database.
     """
+    
     @staticmethod
     def get_tasks_by_timerange(date_range: tuple, user: User) -> list:
         """Retrieve from database all `models.Task` in given time range
@@ -94,7 +95,7 @@ class DatabaseHandler:
             pass
 
     @staticmethod
-    def update_task_and_related(task_and_related: dict) -> None:
+    def update_task_and_related(task_and_related: dict, user: User) -> None:
         """ Takes a dict of all fields of the Task and updates this
         model by id (with related models File and Comletion).
         """
@@ -118,36 +119,38 @@ class DatabaseHandler:
 
         # Update fields
         Task.objects\
-            .filter(id=task_and_related['id'])\
+            .filter(id=task_and_related['id'], user=user)\
             .update(**updated_dict)
 
         # TODO: attached files
 
     @staticmethod
-    def delete_task(task: dict) -> None:
-        """ Delete a task by id from database (including all related
+    def delete_task(task: dict, user: User) -> None:
+        """ Delete a task from database (including all related
         to it via foreign key).
-        As an argument can be provided a dict, that contains
-        {'id': <integer id>} key-value pair or plain integer id of
-        the task.
+        As an arguments should be provided:
+        1) a dict, that contains {'id': <integer id>} key-value pair
+        or an integer Task.id;
+        2) a User object (owner of the task: Task.user)
         """
         if isinstance(task, dict):
             task_id = task['id']
         elif isinstance(task, int):
             task_id = task
         else:
-            raise TypeError('the argument must be type of dict or int')
+            raise TypeError('the task argument must be type of dict or int')
 
-        Task.objects.filter(id=task_id).delete()
+        Task.objects.filter(id=task_id, user=user).delete()
 
     @staticmethod
     def check_uncheck_task(task_dict: dict) -> None:
         """ Creates an entry in the "Completion" table if
         task_dict['completion'] have a value (it must be a datetime str
         formated as "2020-01-01 00:00:00"). If
-        task_dict['completion'] == False deletes appropriate entry
+        task_dict['completion'] == False, deletes appropriate entry
         about task complition.
         """
+        
         task_id = task_dict['id']
         completion = task_dict['completion']
         task_date = timezone.datetime.fromisoformat(task_dict['date'])
@@ -159,7 +162,7 @@ class DatabaseHandler:
         else:
             try:
                 Completion.objects.filter(
-                    date_completed__date=task_date.date(),
+                    date_completed__date=task_date,
                     related_task_id=task_id).delete()
             except Completion.DoesNotExist:
                 pass
@@ -168,7 +171,7 @@ class DatabaseHandler:
     def shift_tasks(today: datetime) -> None:
         """Changes the date of the uncompleted tasks with
         `Autoshift=True` to the given date (shifts them to
-        today if they does't completed yet)
+        today if they doesn't completed yet)
         """
         nested_query = Completion.objects.values_list('id', flat=True)\
             .filter(date_completed__date__lt=today.date())

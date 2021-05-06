@@ -3,6 +3,10 @@
 
 
 <!doctype html>
+<<<<<<< HEAD
+=======
+
+>>>>>>> dev
 <html>
     <head>
         <meta charset="utf-8">
@@ -10,31 +14,54 @@
         <title>task manager</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width,initial-scale=1">
+<<<<<<< HEAD
         <link rel="stylesheet" type="text/css" href="{% static 'taskmanager/style/main.css' %}">
+=======
+>>>>>>> dev
         
         <script type="text/javascript">
             window.onload = () => {
                 launchApp(_mainContainer, {LOCALE_TAG: '{{ language_code }}'})
             }
         </script>
+<<<<<<< HEAD
         <script defer="defer" src="{% static 'taskmanager/main.a1a8ad4ce3520bbccdb4.js' %}"></script>
+=======
+        <script defer="defer" src="{% static 'taskmanager/main.99370da16d263653ac3b.js' %}"></script>
+        
+        <link rel="stylesheet" type="text/css" href="{% static 'taskmanager/style/main.css' %}">
+>>>>>>> dev
     </head>
     
     
     <body>
         <header>
             <div class="header-main-area center-area">
+                
+                <div id="switch-lang" class="header-element">
+                    {% include 'taskmanager/svgpaths/language_icon.html' %}
+
+                    {% get_language_info for language_code as current_language %}
+                    <div class="header-element-caption"> {{ current_language.name_local }}</div>
+                    
+                        <form action="{% url 'set_language' %}" method="post" class="lang-dropdown dropdown-content">{% csrf_token %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        
+                        {% for language in languages %}
+                            <button type="submit" name="language" value={{ language.code }} class="dropdown-item">{{ language.name_local }}</button>
+                        {% endfor %}
+                </div>
+                
                 <div id="account" class="header-element">
-                    <svg class="svg-icon" viewBox="0 0 20 20">
-                        <path fill="none" d="M10,10.9c2.373,0,4.303-1.932,4.303-4.306c0-2.372-1.93-4.302-4.303-4.302S5.696,4.223,5.696,6.594C5.696,8.969,7.627,10.9,10,10.9z M10,3.331c1.801,0,3.266,1.463,3.266,3.263c0,1.802-1.465,3.267-3.266,3.267c-1.8,0-3.265-1.465-3.265-3.267C6.735,4.794,8.2,3.331,10,3.331z"></path>
-                        <path fill="none" d="M10,12.503c-4.418,0-7.878,2.058-7.878,4.685c0,0.288,0.231,0.52,0.52,0.52c0.287,0,0.519-0.231,0.519-0.52c0-1.976,3.132-3.646,6.84-3.646c3.707,0,6.838,1.671,6.838,3.646c0,0.288,0.234,0.52,0.521,0.52s0.52-0.231,0.52-0.52C17.879,14.561,14.418,12.503,10,12.503z"></path>
-                    </svg>
+                    {% include 'taskmanager/svgpaths/account_icon.html' %}
+
                     {% if username %}
                     <div class="header-element-caption">{{ username }}</div>
                     {% else %}
                     <div class="header-element-caption">{% translate "account" %}</div>
                     {% endif %}
-                    <div class="dropdown-content">
+                    <div class="acconunt-dropdown dropdown-content">
                         <a href="{% url 'logout' %}" class="dropdown-item">{% translate "log out" %}</a>
                         <div class="dropdown-item">{% translate "settings" %}</div>    
                     </div>
