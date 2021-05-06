@@ -194,6 +194,21 @@ header {
     transition: 0.2s;
 }
 
+#switch-lang 
+  .svg-icon path
+  {
+    stroke: var(--additdark);
+    fill: var(--baselight)
+}
+
+#switch-lang:hover
+  .svg-icon path
+  {
+    stroke: #75a1dd;
+    fill: #deecff;
+}
+
+
 .header-element .svg-icon {
     width: 28px;
     height: 28px;
