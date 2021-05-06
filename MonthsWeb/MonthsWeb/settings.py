@@ -1,4 +1,6 @@
 import os
+
+from django.utils.translation import gettext_lazy as _
 from pathlib import Path
 
 
@@ -69,7 +71,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'EmilKadermetov$monthsweb',
 	'USER': 'EmilKadermetov',
-	'PASSWORD': '9639729Emil',
+	'PASSWORD': os.getenv('DATABASE_PASSWORD'),
 	'HOST': 'EmilKadermetov.mysql.pythonanywhere-services.com'
     }
 }
@@ -99,8 +101,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+LANGUAGES = [
+    ('ru', _('Russian')),
+    ('en', _('English')),
+]
+
 LOCALE_PATHS = [
-    '/taskmanager/locale'
+    '/taskmanager/locale',
+    '/users/locale',
+    '/locale'
 ]
 
 TIME_ZONE = 'Europe/Moscow'
