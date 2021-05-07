@@ -112,8 +112,9 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = [
+    '/locale',
     '/taskmanager/locale',
-    '/locale'
+    '/users/locale',
 ]
 
 USE_I18N = True
