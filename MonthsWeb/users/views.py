@@ -28,7 +28,9 @@ def register(request):
 
 @login_required
 def change_user_details(request):
-    """TODO: fill this docstring"""
+    """ A view to handle the form that in charge of changing the
+    fields of the User model (excluding password).
+    """
     if request.method == 'POST':
         form = UserDetailsChangingForm(request.POST, instance=request.user)
         
@@ -49,24 +51,25 @@ def change_user_details(request):
 
 @login_required
 def change_password(request):
-    """ TODO: fill this docstring"""
-    if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
+    """ A view to handle the form for userpasswords changing. """
 
+    if request.method == 'POST':
+        password_canged_form = PasswordChangeForm(request.user,
+                                                  request.POST)
         context = {
-            'user_details_form': form,
-            'password_change_form': PasswordChangeForm(request.user),
+            'user_details_form': UserDetailsChangingForm(instance=request.user),
+            'password_change_form': password_canged_form,
         }
 
-        if form.is_valid():
-            form.save()
+        if password_canged_form.is_valid():
+            password_canged_form.save()
             username = request.user.username
-            password = form.cleaned_data['new_password1']
+            password = password_canged_form.cleaned_data['new_password1']
             user = authenticate(username=username, password=password)
             login(request, user)
             context['password_changed_msg'] = 'password changed'
-
-        return redirect(reverse('user_settings'), kwargs=context)
+        
+        return render(request, 'registration/user_settings.html', context)
 
     else:
         return HttpResponse(status=405)
@@ -74,11 +77,17 @@ def change_password(request):
 
 @login_required
 def user_settings(request):
-    """TODO: fill this docstring"""
+    """ The view that returns the page with usersettings. Settings are
+    made up of individual forms that are handled by their own views
+    (current view only renders the page with thouse forms - not handles
+    them, hence the only allowed method is get).
+    """
     
+    if not request.method == 'GET':
+        return HttpResponse(status=405)
+
     user_details_form = UserDetailsChangingForm(instance=request.user)
     password_change_form = PasswordChangeForm(request.user)
-    
     
     context = {
         'password_change_form': password_change_form,
@@ -86,4 +95,6 @@ def user_settings(request):
     }
 
     return render(request, 'registration/user_settings.html', context)
+
+
 
