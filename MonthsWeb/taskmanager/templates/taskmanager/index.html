@@ -52,7 +52,7 @@
                     {% endif %}
                     <div class="acconunt-dropdown dropdown-content">
                         <a href="{% url 'logout' %}" class="dropdown-item">{% translate "log out" %}</a>
-                        <div class="dropdown-item">{% translate "settings" %}</div>    
+                        <div class="dropdown-item"><a href={% url 'user_settings' %}>{% translate "settings" %}</a></div>    
                     </div>
                 </div>
             </div>
