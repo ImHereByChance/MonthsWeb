@@ -15,12 +15,13 @@
     --xxl: 1400px;
 }
 
-
 /**/
 
-
 /*MAIN */
-html {height: 100%;}
+
+html {
+    height: 100%;
+}
 
 html, body, #_main-container {
     font-family: arial;
@@ -45,9 +46,7 @@ main {
     resize: both;
 }
 
-select,
-textarea,
-input {
+select, textarea, input {
     min-height: 26px;
     border-radius: 3px;
     border: 0px;
@@ -58,15 +57,21 @@ input {
 }
 
 textarea {
-  padding-top: 5px;
+    padding-top: 5px;
+}
+
+a {
+    text-decoration: none;
 }
 
 /*all elements in the center shoud follow these rules*/
+
 .center-area {
     max-width: 1000px;
 }
 
 /*COMMON ELEMENTS */
+
 body {
     display: flex;
     width: 100%;
@@ -81,9 +86,8 @@ button {
     cursor: pointer;
 }
 
-
-button > * {
-  pointer-events: none;
+button>* {
+    pointer-events: none;
 }
 
 .button-icon24 {
@@ -108,55 +112,50 @@ button > * {
 
 .button-icon24:focus {
     outline-color: #5689d6;
-    }
+}
 
 .button-icon24:active {
     outline: none;
 }
 
 .svg-icon {
-  width: 24px;
-  height: 24px;
-  outline: none;
-  display: flex;
+    width: 24px;
+    height: 24px;
+    outline: none;
+    display: flex;
 }
 
 .svg-icon12 {
-  width: 12px;
-  height: 12px;
+    width: 12px;
+    height: 12px;
 }
 
-.svg-icon path,
-.svg-icon polygon,
-.svg-icon rect {
-  fill: var(--additdark);
+.svg-icon path, .svg-icon polygon, .svg-icon rect {
+    fill: var(--additdark);
 }
 
-.svg-icon12 circle, .svg-icon circle  {
-  stroke: #4691f6;
-  stroke-width: 1;
+.svg-icon12 circle, .svg-icon circle {
+    stroke: #4691f6;
+    stroke-width: 1;
 }
-
 
 /*SCROLLBARS*/
-#tp-taskList::-webkit-scrollbar-track
-{
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-  background-color: #5987c6;
+
+#tp-taskList::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #5987c6;
 }
 
-#tp-taskList::-webkit-scrollbar
-{
-  width: 10px;
+#tp-taskList::-webkit-scrollbar {
+    width: 10px;
 }
 
-#tp-taskList::-webkit-scrollbar-thumb
-{
-  background-color: #325a95;
+#tp-taskList::-webkit-scrollbar-thumb {
+    background-color: #325a95;
 }
-
 
 /*HEADER*/
+
 header {
     height: 60px;
     background: var(--additdark);
@@ -185,29 +184,20 @@ header {
     position: relative;
 }
 
-.header-element
-    .svg-icon path,
-    .svg-icon polygon,
-    .svg-icon rect,
-    .svg-icon circle {
+.header-element .svg-icon path, .svg-icon polygon, .svg-icon rect, .svg-icon circle {
     stroke: var(--baselight);
     transition: 0.2s;
 }
 
-#switch-lang 
-  .svg-icon path
-  {
+#switch-lang .svg-icon path {
     stroke: var(--additdark);
     fill: var(--baselight)
 }
 
-#switch-lang:hover
-  .svg-icon path
-  {
+#switch-lang:hover .svg-icon path {
     stroke: #75a1dd;
     fill: #deecff;
 }
-
 
 .header-element .svg-icon {
     width: 28px;
@@ -217,7 +207,7 @@ header {
     justify-content: center;
 }
 
-.header-element:hover path  {
+.header-element:hover path {
     stroke: #deecff;
     fill: #deecff;
 }
@@ -230,7 +220,7 @@ header {
     display: none;
     min-width: 120px;
     position: absolute;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
     top: 56px;
     right: 0px;
@@ -276,6 +266,7 @@ header {
 }
 
 /*CALENDAR*/
+
 #c-calendar {
     display: flex;
     flex-direction: column;
@@ -303,6 +294,7 @@ header {
 }
 
 /*DAY BUTTON*/
+
 .c-daysFrame__dayButton {
     height: 36px;
     width: 36px;
@@ -325,15 +317,16 @@ header {
     border: 1px solid var(--baselight);
 }
 
-.c-daysFrame__dayButton:active {
-}
+.c-daysFrame__dayButton:active {}
 
 .--no-tasks {
     background-color: var(--additdark);
 }
+
 .--tasks-done {
     background-color: #5689d6;
 }
+
 .--got-tasks {
     background-color: #355f9e;
 }
@@ -364,15 +357,15 @@ header {
 }
 
 #c-topbar__monthLabel:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 #c-topbar__monthPicker {
-  display: none;
+    display: none;
 }
 
-
 /*TASK PANEL*/
+
 #tp-taskpanel {
     flex-grow: 1;
     background: var(--additdark);
@@ -407,28 +400,21 @@ header {
 }
 
 #tp-createTaskBt .svg-icon {
-    width:36px;
+    width: 36px;
     height: 36px;
 }
 
-#tp-createTaskBt
-    .svg-icon path,
-    .svg-icon polygon,
-    .svg-icon rect,
-    .svg-icon circle {
+#tp-createTaskBt .svg-icon path, .svg-icon polygon, .svg-icon rect, .svg-icon circle {
     stroke: var(--baselight);
     transition: 0.2s;
 }
 
-#tp-createTaskBt:hover > 
-    .svg-icon path,
-    .svg-icon polygon,
-    .svg-icon rect,
-    .svg-icon circle{
+#tp-createTaskBt:hover>.svg-icon path, .svg-icon polygon, .svg-icon rect, .svg-icon circle {
     stroke: #fffedf;
 }
 
 /*container where located taskitelms*/
+
 #tp-taskList {
     flex-basis: 30%;
     flex-grow: 1;
@@ -443,6 +429,7 @@ header {
 }
 
 /*single task item*/
+
 .tp-taskitem {
     background-color: var(--baselight);
     border-radius: 2px;
@@ -464,7 +451,7 @@ header {
 }
 
 .tp-taskitem .button-icon12:focus {
-    border: 1px dashed var(--extradark);   
+    border: 1px dashed var(--extradark);
 }
 
 .tp-taskCheckout {
@@ -472,6 +459,7 @@ header {
 }
 
 /*section with task-settings, task-title and task-description*/
+
 .tp-taskitemMain {
     flex-grow: 1;
     display: flex;
@@ -502,6 +490,7 @@ header {
 }
 
 /*buttons, that displais in to the right of tp-taskitem when it is not unfold*/
+
 .tp-taskitemRightBtns * {
     display: flex;
     flex-direction: column;
@@ -509,11 +498,11 @@ header {
 }
 
 .tp-taskitemRightBtns .button-icon24 path {
-  fill: #5689d6;
+    fill: #5689d6;
 }
 
 .tp-RightBtnsDelTask:hover path {
-    fill:crimson;
+    fill: crimson;
 }
 
 .tp-RightBtnsEditTask:hover path {
@@ -521,8 +510,8 @@ header {
     fill: #202e5f;
 }
 
-.tp-taskitem:hover > .tp-taskitemRightBtns .button-icon24 {
-    display: block 
+.tp-taskitem:hover>.tp-taskitemRightBtns .button-icon24 {
+    display: block
 }
 
 .tp-taskTimeSettings {
@@ -533,13 +522,13 @@ header {
     margin: 0px 5px;
 }
 
-.tp-taskTimeSettings
-  .tp-SettingsElement {
+.tp-taskTimeSettings .tp-SettingsElement {
     margin: 2px 0px;
 }
 
 /*container for the 'save changes' and the 'close task redactor' buttons*/
-.tp-taskitemSaveClose{
+
+.tp-taskitemSaveClose {
     margin-top: 5px;
     display: flex;
     justify-content: space-evenly;
@@ -560,37 +549,38 @@ header {
     margin: 1px;
 }
 
-.ti-save_task{
-  background-color: #22a587;
+.ti-save_task {
+    background-color: #22a587;
 }
 
 .ti-save_task:disabled {
-  opacity: 50%;
+    opacity: 50%;
 }
 
-.ti-save_task:hover{
-  background-color: #2bc3a0;
+.ti-save_task:hover {
+    background-color: #2bc3a0;
 }
 
 .ti-closeEditor {
-  background-color: #cb2545;
+    background-color: #cb2545;
 }
 
 .ti-closeEditor:disabled {
-  opacity: 50%;
+    opacity: 50%;
 }
 
 .ti-closeEditor:hover {
-  background-color: #e72a4f;
+    background-color: #e72a4f;
 }
 
 .ti-closeEditorIconBt {
-  position: static;
-  right: 224px;
-  z-index:5;
+    position: static;
+    right: 224px;
+    z-index: 5;
 }
 
 /*container for wraping a task-item settings element and its label*/
+
 .tp-SettingsElement {
     display: flex;
     flex-direction: column;
@@ -615,66 +605,61 @@ header {
     margin-bottom: 5px;
 }
 
-
 /* POP-UP WINDOW */
+
 .popup {
-  width: 320px;
-  height: 200px;
-  margin-left: -150px;
-  margin-top: -100px;
-  top: 50%;
-  left: 50%;
+    width: 320px;
+    height: 200px;
+    margin-left: -150px;
+    margin-top: -100px;
+    top: 50%;
+    left: 50%;
 }
 
-
 /* popup animations */
-.tp-taskitem *{
+
+.tp-taskitem * {
     animation-duration: 0.4s;
     animation-name: faden;
     /* animation-iteration-count: infinite; */
 }
 
 @keyframes faden {
-  from {
-    
-  }
-  
-  to {
-    
-  }
+    from {}
+    to {}
 }
 
 .popup-defaultError {
-  background-color: #d0e3ff;
-  position: fixed;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px 0px #ff0030;
-  z-index: 9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-  fill: #244574;
-  color: #244574;
-  overflow: hidden;
+    background-color: #d0e3ff;
+    position: fixed;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px 0px #ff0030;
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    fill: #244574;
+    color: #244574;
+    overflow: hidden;
 }
 
-.popup > button {
-  height: 36px;
-  width: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #bad3f6;
-  font-size: larger;
-  background-color: var(--additdark);
-  border: none;
-  border-radius: 3px;
-  transition: 0.3s;
+.popup>button {
+    height: 36px;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bad3f6;
+    font-size: larger;
+    background-color: var(--additdark);
+    border: none;
+    border-radius: 3px;
+    transition: 0.3s;
 }
 
-.popup > button:hover {
-  background-color: crimson
+.popup>button:hover {
+    background-color: crimson
 }
 
 .popup-caption {
@@ -683,76 +668,70 @@ header {
     word-break: break-word;
 }
 
-
-
-
 /* MEDIA QUERIES */
 
-
 /*Small devices (landscape phones, 576px and up)*/
-@media (min-width: 576px) { }
+
+@media (min-width: 576px) {}
 
 /* Vertical mobile screen(minimum) */
-@media (min-width: 320px) { }
+
+@media (min-width: 320px) {}
 
 /*Medium devices (tablets, 768px and up)*/
+
 @media (min-width: 768px) {
-    #_main-container{
+    #_main-container {
         flex-direction: row;
         overflow-y: hidden;
         overflow-x: auto;
     }
-
     #c-daysFrame {
         width: 336px;
         height: 288px;
         margin-top: 10px;
         margin-left: 5px;
     }
-
     .c-daysFrame__dayButton {
-        height: 48px; 
-        width: 48px; 
+        height: 48px;
+        width: 48px;
     }
-
     .tp-taskitemMain {
-      padding-bottom: 5px;
+        padding-bottom: 5px;
     }
-
     .tp-taskTimeSettings {
         flex-direction: row;
         margin: 5px 5px 0px 5px
     }
-
-    .tp-taskTimeSettings
-      .tp-SettingsElement {
-/*         margin: 0px 0px 5px; */
+    .tp-taskTimeSettings .tp-SettingsElement {
+        /*         margin: 0px 0px 5px; */
     }
 }
 
 /*Large devices (desktops, 992px and up)*/
+
 @media (min-width: 992px) {
-    #_main-container{
-          margin: 20px
-      }
+    #_main-container {
+        margin: 20px
+    }
 }
 
 /*X-Large devices (large desktops, 1200px and up)*/
-@media (min-width: 1200px) { }
+
+@media (min-width: 1200px) {}
 
 /*XX-Large devices (larger desktops, 1400px and up)*/
-@media (min-width: 1400px) { }
 
-@media (max-height: 426px){
+@media (min-width: 1400px) {}
+
+@media (max-height: 426px) {
     body {
-      height: auto;
+        height: auto;
     }
-
     #_main-container {
-      margin: 0;
+        margin: 0;
     }
-
     #c-daysFrame {
-      margin-top: 0;
+        margin-top: 0;
     }
 }
