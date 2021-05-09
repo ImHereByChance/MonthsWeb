@@ -11,14 +11,14 @@
     
     <title>{% translate "user settings" %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'users/style/usersetting.css' %}">
-
-    
 </head>
 <body>
-        <h1>TMP: <a href={% url 'index' %}>main page</a></h1>
+        <h1>{% translate "Settings" %}</h1>
     <main>
+        
         <form  method="POST" action={% url 'user_details_change' %} class="settings-form">
             {% csrf_token %}
+            <h3>{% translate "User details" %}</h3>
             {% for field in user_details_form %}
                 <div class="form-group">
                     <p class="label-and-input">
@@ -38,6 +38,7 @@
 
         <form method="POST" action="{% url 'password_change' %}" class="settings-form">
             {% csrf_token %}
+            <h3>{% translate "Password changing" %}</h3>
             {% for field in password_change_form %}
                 <div class="form-group">
                     <p class="label-and-input">
@@ -54,6 +55,7 @@
                 </div>
             {% endif %}
         </form>
+
     </main>
 
 </body>

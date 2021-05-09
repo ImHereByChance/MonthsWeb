@@ -31,28 +31,43 @@ html {
 main {
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    background: cyan;
+    padding: 20px 20px 10px;
+    background: var(--baselight);
+    border-radius: 1rem;
+}
+
+h1 {
+    align-self: center;
+    color: #1e4e91;
+    text-shadow: 0 0 1px #a2c7fa;
+}
+
+h3 {
+    margin: 15px 0px 0px;
+    align-self: center;
+    color: var(--additdark);
 }
 
 .settings-form {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    background: var(--baselight);
-    border-bottom: 1px solid var(--extradark);
-    padding-bottom: 10px;
+    align-items: stretch;
+    background: #c9e0ff;
+    border-radius: 1rem;
+    padding: 0px 10px 10px;
     margin-bottom: 10px;
 }
 
 .form-group {
     margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .label-and-input {
     display: flex;
     align-items: baseline;
-    justify-content: space-around;
+    justify-content: flex-end;
     margin: 0;
 }
 
@@ -112,6 +127,7 @@ ul.errorlist.nonfield {
 }
 
 ul.errorlist {
+    max-width: 260px;
     align-self: center;
     list-style: none;
     padding: 0;
@@ -219,15 +235,17 @@ ul.errorlist {
         padding: 1rem;
     }
     main {
-        padding: 1rem;
         justify-content: center;
         align-items: stretch;
+        padding: 0;
+        background: none;
     }
     a {
         margin: 20px;
     }
     .settings-form {
         align-items: center;
+        padding: 0;
     }
     .label-and-input {
         flex-direction: column;
@@ -241,6 +259,7 @@ ul.errorlist {
     }
     input[type="submit"] {
         font-size: inherit;
+        margin-bottom: 10px;
     }
     .set-user-language {
         border-radius: 5px;
@@ -249,11 +268,10 @@ ul.errorlist {
     ul.errorlist.nonfield {
         align-self: center;
     }
+    .success-messange {
+        margin-bottom: 5px;
+    }
 }
-
-/* Vertical mobile screen(minimum) */
-
-@media (max-width: 320px) {}
 
 /*Medium devices (tablets, 768px and up)*/
 
@@ -270,3 +288,7 @@ ul.errorlist {
 /*XX-Large devices (larger desktops, 1400px and up)*/
 
 @media (max-width: 1400px) {}
+
+/* Vertical mobile screen(minimum) */
+
+@media (max-width: 320px) {}
