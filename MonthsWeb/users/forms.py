@@ -11,6 +11,12 @@ class UserDetailsChangingForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name',)
+        label = {
+            'usename': _('User name: '),
+            'email': _('Email: '),
+            'first_name': _('First name: '),
+            'last_name': _('Last name: ')
+        }
 
     def clean_email(self):
         new_email = self.cleaned_data['email']
@@ -20,7 +26,6 @@ class UserDetailsChangingForm(forms.ModelForm):
             .exists():
             raise ValidationError(
                 _('A user with that email already exists.'),
-                code='not_unique_email'
             )
         return new_email
     

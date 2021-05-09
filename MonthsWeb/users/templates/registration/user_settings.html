@@ -19,22 +19,16 @@
     <main>
         <form  method="POST" action={% url 'user_details_change' %} class="settings-form">
             {% csrf_token %}
-
-            <label for='username'>{% translate "User name: " %}</label>
-            {{ user_details_form.username }}
-            {{ user_details_form.username.errors }}
-            <label for='email'>{% translate "Email:" %}</label>
-            {{ user_details_form.email }}
-            {{ user_details_form.email.errors }}
-            <label for='first_name'>{% translate "First name: " %}</label>
-            {{ user_details_form.first_name }}
-            {{ user_details_form.first_name.errors }}
-            <label for="last_name">{% translate "Last name: " %}</label>
-            {{ user_details_form.last_name }}
-            {{ user_details_form.last_name.errors}}
-
+            {% for field in user_details_form %}
+                <div class="form-group">
+                    <p class="label-and-input">
+                        <label for="{{ field.name }}">{{ field.label }}</label>
+                        {{ field }}
+                    </p>
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
             <input type="submit" value={% translate "Save" %}>
-
             {% if user_detail_canged_msg %}
                 <div class="success-messange">
                     <span>&#10004;</span>{{ user_detail_canged_msg }}
@@ -44,25 +38,21 @@
 
         <form method="POST" action="{% url 'password_change' %}" class="settings-form">
             {% csrf_token %}
-
-            <label for='old_password'>{% translate "Old password: " %}</label>
-            {{ password_change_form.old_password }}
-            {{ password_change_form.old_password.errors }}
-            <label for='new_password1'>{% translate "New password:" %}</label>
-            {{ password_change_form.new_password1 }}
-            {{ password_change_form.new_password1.errors }}
-            <label for='new_password2'>{% translate "New password again:" %}</label>
-            {{ password_change_form.new_password2 }}
-            {{ password_change_form.new_password2.errors }}
-
+            {% for field in password_change_form %}
+                <div class="form-group">
+                    <p class="label-and-input">
+                        <label for="{{ field.name }}">{{ field.label }}</label>
+                        {{ field }}
+                    </p>
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
             <input type="submit" value={% translate "Change" %}>
-
             {% if password_changed_msg %}
                 <div class="success-messange">
                     <span>&#10004;</span>{{ password_changed_msg }}
                 </div>
             {% endif %}
-        
         </form>
     </main>
 

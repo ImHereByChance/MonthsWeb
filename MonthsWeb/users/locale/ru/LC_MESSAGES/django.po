@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-06 01:55+0300\n"
+"POT-Creation-Date: 2021-05-09 04:42+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,18 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: users/forms.py:22 users/forms.py:46
+msgid "A user with that email already exists."
+msgstr "Пользователь с этим email уже существует"
+
 #: users/templates/registration/login.html:12
 msgid "login page"
 msgstr "вход"
 
 #: users/templates/registration/login.html:20
 #: users/templates/registration/register.html:20
+#: users/templates/registration/user_settings.html:23
 msgid "User name: "
 msgstr "Логин"
 
@@ -46,6 +52,7 @@ msgid "registration page"
 msgstr "регистрация"
 
 #: users/templates/registration/register.html:23
+#: users/templates/registration/user_settings.html:26
 msgid "Email:"
 msgstr "Email:"
 
@@ -60,3 +67,45 @@ msgstr "Пароль повтороно:"
 #: users/templates/registration/register.html:35
 msgid "Sign in"
 msgstr "Войти"
+
+#: users/templates/registration/user_settings.html:12
+msgid "user settings"
+msgstr "Пользовательские настройки"
+
+#: users/templates/registration/user_settings.html:29
+#, fuzzy
+#| msgid "User name: "
+msgid "First name: "
+msgstr "Логин"
+
+#: users/templates/registration/user_settings.html:32
+#, fuzzy
+#| msgid "User name: "
+msgid "Last name: "
+msgstr "Логин"
+
+#: users/templates/registration/user_settings.html:36
+msgid "Save"
+msgstr "Сохранить"
+
+#: users/templates/registration/user_settings.html:48
+#, fuzzy
+#| msgid "Password: "
+msgid "Old password: "
+msgstr "Пароль"
+
+#: users/templates/registration/user_settings.html:51
+#, fuzzy
+#| msgid "Password:"
+msgid "New password:"
+msgstr "Пароль:"
+
+#: users/templates/registration/user_settings.html:54
+#, fuzzy
+#| msgid "Password again:"
+msgid "New password again:"
+msgstr "Пароль повтороно:"
+
+#: users/templates/registration/user_settings.html:58
+msgid "Change"
+msgstr "Сменить"
