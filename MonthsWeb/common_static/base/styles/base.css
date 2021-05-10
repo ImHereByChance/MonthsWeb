@@ -1,0 +1,224 @@
+:root {
+    /*colors*/
+    --basedark: #718AAD;
+    --baselight: #A2C7FA;
+    --additdark: #4174BB;
+    --additlight: #579BFA;
+    --extradark: #50617A;
+    /*sizes*/
+    --xs: 0px;
+    --vs: 320px;
+    --sm: 576px;
+    --md: 768px;
+    --lg: 992px;
+    --xl: 1200px;
+    --xxl: 1400px;
+}
+
+/**/
+
+/*MAIN */
+
+html {
+    height: 100%;
+}
+
+html, body {
+    font-family: arial;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+/*all elements in the center shoud follow these rules*/
+
+.center-area {
+    max-width: 1000px;
+}
+
+/*COMMON ELEMENTS */
+
+body {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: var(--baselight);
+    flex-direction: column;
+    margin: 0px;
+    align-items: stretch;
+}
+
+button {
+    cursor: pointer;
+}
+
+button>* {
+    pointer-events: none;
+}
+
+.svg-icon {
+    width: 24px;
+    height: 24px;
+    outline: none;
+    display: flex;
+}
+
+.svg-icon12 {
+    width: 12px;
+    height: 12px;
+}
+
+.svg-icon path, .svg-icon polygon, .svg-icon rect {
+    fill: var(--additdark);
+}
+
+.svg-icon12 circle, .svg-icon circle {
+    stroke: #4691f6;
+    stroke-width: 1;
+}
+
+/*HEADER*/
+
+header {
+    height: 60px;
+    background: var(--additdark);
+    display: flex;
+    justify-content: center;
+}
+
+.header-main-area {
+    flex-basis: 1000px;
+    align-self: stretch;
+    max-width: 1000px;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0px 20px 0px 20px;
+}
+
+.header-element {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 5px;
+    align-items: center;
+    color: var(--baselight);
+    cursor: pointer;
+    margin-left: 5px;
+    position: relative;
+}
+
+.header-element .svg-icon path, .svg-icon polygon, .svg-icon rect, .svg-icon circle {
+    stroke: var(--baselight);
+    transition: 0.2s;
+}
+
+#switch-lang .svg-icon path {
+    stroke: var(--additdark);
+    fill: var(--baselight)
+}
+
+#switch-lang:hover .svg-icon path {
+    stroke: #75a1dd;
+    fill: #deecff;
+}
+
+.header-element .svg-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-element:hover path {
+    stroke: #deecff;
+    fill: #deecff;
+}
+
+.header-element:hover .header-element-caption {
+    color: #deecff;
+}
+
+.dropdown-content {
+    display: none;
+    min-width: 120px;
+    position: absolute;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    top: 56px;
+    right: 0px;
+}
+
+.dropdown-item {
+    color: var(--baselight);
+    background: var(--additdark);
+    font-weight: 600;
+    border-bottom: 1px solid #5689d640;
+    padding: 7px 8px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.dropdown-item:hover {
+    background-color: #bad3f6;
+    color: #325c95;
+}
+
+.dropdown-content button {
+    border: none;
+    display: flex;
+    outline: none;
+    font-size: inherit;
+}
+
+#account:hover .acconunt-dropdown.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: transparent;
+}
+
+#language-code {
+    font-weight: bold;
+    font-size: large;
+}
+
+#switch-lang:hover .lang-dropdown.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: transparent;
+}
+
+/* MEDIA QUERIES */
+
+/*Small devices (landscape phones, 576px and up)*/
+
+@media (min-width: 576px) {}
+
+/* Vertical mobile screen(minimum) */
+
+@media (min-width: 320px) {}
+
+/*Medium devices (tablets, 768px and up)*/
+
+@media (min-width: 768px) {}
+
+/*Large devices (desktops, 992px and up)*/
+
+@media (min-width: 992px) {}
+
+/*X-Large devices (large desktops, 1200px and up)*/
+
+@media (min-width: 1200px) {}
+
+/*XX-Large devices (larger desktops, 1400px and up)*/
+
+@media (min-width: 1400px) {}
+
+@media (max-height: 426px) {}

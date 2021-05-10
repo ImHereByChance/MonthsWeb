@@ -1,64 +1,21 @@
+{% extends 'base/base.html' %}
 {% load static %}
 {% load i18n %}
-
-
-<!doctype html>
-
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>task manager</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
         
-        <script type="text/javascript">
-            window.onload = () => {
-                launchApp(_mainContainer, {LOCALE_TAG: '{{ language_code }}'})
-            }
-        </script>
-        <script defer="defer" src="{% static 'taskmanager/main.99370da16d263653ac3b.js' %}"></script>
-        
-        <link rel="stylesheet" type="text/css" href="{% static 'taskmanager/style/main.css' %}">
-    </head>
-    
-    
-    <body>
-        <header>
-            <div class="header-main-area center-area">
-                
-                <div id="switch-lang" class="header-element">
-                    {% include 'taskmanager/svgpaths/language_icon.html' %}
+{% block title %}
+    <title>task manager</title>
+{% endblock title %}
 
-                    {% get_language_info for language_code as current_language %}
-                    <div class="header-element-caption"> {{ current_language.name_local }}</div>
-                    
-                        <form action="{% url 'set_language' %}" method="post" class="lang-dropdown dropdown-content">{% csrf_token %}
-                        {% get_available_languages as LANGUAGES %}
-                        {% get_language_info_list for LANGUAGES as languages %}
-                        
-                        {% for language in languages %}
-                            <button type="submit" name="language" value={{ language.code }} class="dropdown-item">{{ language.name_local }}</button>
-                        {% endfor %}
-                </div>
-                
-                <div id="account" class="header-element">
-                    {% include 'taskmanager/svgpaths/account_icon.html' %}
+{% block extrahead %}
+    <script type="text/javascript">
+        window.onload = () => {
+            launchApp(_mainContainer, {LOCALE_TAG: '{{ language_code }}'})
+        }
+    </script>
+    <script defer="defer" src="{% static 'taskmanager/main.99370da16d263653ac3b.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'taskmanager/style/index.css' %}">
+{% endblock extrahead %}  
 
-                    {% if username %}
-                    <div class="header-element-caption">{{ username }}</div>
-                    {% else %}
-                    <div class="header-element-caption">{% translate "account" %}</div>
-                    {% endif %}
-                    <div class="acconunt-dropdown dropdown-content">
-                        <a href="{% url 'logout' %}" class="dropdown-item">{% translate "log out" %}</a>
-                        <a href={% url 'user_settings' %}><div class="dropdown-item">{% translate "settings" %}</div></a>   
-                    </div>
-                </div>
-            </div>
-        </header>
-    <main>
-        <div id="_main-container" class="center-element"></div>
-    </main>
-    </body>
-</html>
+{% block maincontent %}
+    <div id="_main-container" class="center-element"></div>
+{% endblock maincontent %}

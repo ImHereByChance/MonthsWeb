@@ -89,3 +89,7 @@ def tasks_by_id(request, task_id):
 
     else:
         return HttpResponse(status=405)
+
+
+def base(request):
+    return render(request, 'base/base.html', {'username': request.user.username})

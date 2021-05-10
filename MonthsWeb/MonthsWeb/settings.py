@@ -50,7 +50,7 @@ ROOT_URLCONF = 'MonthsWeb.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ BASE_DIR / 'common_templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -112,6 +112,7 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = [
+    BASE_DIR / 'locale',
     '/locale',
     '/taskmanager/locale',
     '/users/locale',
@@ -129,6 +130,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    ('common_static', BASE_DIR / 'common_static'),
+]
 
 LOGIN_REDIRECT_URL = '/'
 
