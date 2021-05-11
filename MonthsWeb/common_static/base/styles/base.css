@@ -15,8 +15,6 @@
     --xxl: 1400px;
 }
 
-/**/
-
 /*MAIN */
 
 html {
@@ -33,8 +31,7 @@ main {
     height: 100%;
 }
 
-a {
-}
+a {}
 
 /*all elements in the center shoud follow these rules*/
 
@@ -124,10 +121,22 @@ header {
     transition: 0.2s;
 }
 
-#account > a {
+#mainpage-link {
+    margin: auto;
+    margin-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    text-decoration: none;
+}
+
+#account>a {
     margin: 0;
     padding: 0;
     text-decoration: none;
+}
+
+#mainpage-link .svg-icon path {
+    fill: var(--baselight);
 }
 
 #switch-lang .svg-icon path {
@@ -153,12 +162,20 @@ header {
     fill: #deecff;
 }
 
+#mainpage-link:hover path {
+    fill: #ffffff;
+}
+
 .header-element:hover .header-element-caption {
     color: #deecff;
 }
 
 .header-element:hover #log-in-sign {
     color: #deecff;
+}
+
+#calendar-icon {
+    margin-bottom: 1px;
 }
 
 .dropdown-content {
@@ -215,9 +232,7 @@ header {
 /*Small devices (landscape phones, 576px and up)*/
 
 @media (min-width: 576px) {
-    .dropdown-item {
-        
-    }
+    .dropdown-item {}
 }
 
 /* Vertical mobile screen(minimum) */

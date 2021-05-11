@@ -23,6 +23,11 @@
         <header>
             <div class="header-main-area center-area">
                 
+                <a href="{% url 'index' %}" class="header-element" id="mainpage-link">
+                    {% include 'svgpaths/calendar_icon.html' %}
+                    <div class="header-element-caption">{% translate "Mainpage" %}</div>
+                </a>
+
                 <div id="switch-lang" class="header-element">
                     {% include 'svgpaths/language_icon.html' %}
                     {% get_current_language as LANGUAGE_CODE %}
@@ -40,7 +45,6 @@
                 </div>
                 
                 <div id="account" class="header-element">
-                    
                     {% if user.is_authenticated %}    
                         {% include 'svgpaths/account_icon.html' %}
                         <div class="header-element-caption">{{ user.username }}</div>
@@ -55,6 +59,7 @@
                         </a>
                     {% endif %}
                 </div>
+
             </div>
         </header>
             <main>
