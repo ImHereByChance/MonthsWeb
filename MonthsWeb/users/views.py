@@ -35,7 +35,7 @@ def change_user_details(request):
         form = UserDetailsChangingForm(request.POST, instance=request.user)
         
         context = {
-            'user': request.user.user,
+            'user': request.user,
             'user_details_form': form,
             'password_change_form': PasswordChangeForm(request.user),
         }
