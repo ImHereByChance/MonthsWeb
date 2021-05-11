@@ -1,41 +1,40 @@
+{% extends 'base/base.html' %}
 {% load static %}
 {% load i18n %}
 
 <!DOCTYPE html>
 
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    
-    <title>{% translate "registration page" %}</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'users/style/authpages.css' %}">
-</head>
-<body>
-    
-    <form method="POST" action="{% url 'register' %}" class="main-form">
-        {% csrf_token %}
+    {% block title %}
+        <title>{% translate "registration page" %}</title>
+    {% endblock title %}
 
-        <label for='username'>{% translate "User name: " %}</label>
-		{{ form.username }}
-        {{ form.username.errors }}
-        <label for='email'>{% translate "Email:" %}</label>
-        {{ form.email }}
-		{{ form.email.errors }}
-		<label for='password'>{% translate "Password:" %}</label>
-		{{ form.password1 }}
-        {{ form.password.errors }}
-		<label for='password2'>{% translate "Password again:" %}</label>
-		{{ form.password2 }}
-        {{ form.password2.errors }}
+    {% block extrahead %}
+        <link rel="stylesheet" type="text/css" href="{% static 'users/style/authpages.css' %}">
+    {% endblock extrahead %}
 
-        <input type="submit" value={% translate "Register" %}>
-        
-        <a href="{% url 'login' %}">{% translate "Sign in" %}</a>
-    </form>
+    {% block maincontent %}
+        <form method="POST" action="{% url 'register' %}" class="main-form">
+            {% csrf_token %}
 
-    {% include "registration/swithlangbutton.html" %}
+            <h1>Register</h1>
+            
+            <label for='username'>{% translate "User name" %}</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+            <label for='email'>{% translate "Email" %}</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+            <label for='password'>{% translate "Password" %}</label>
+            {{ form.password1 }}
+            {{ form.password.errors }}
+            <label for='password2'>{% translate "Password again" %}</label>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
 
+            <input type="submit" value={% translate "Register" %}>
+            
+            <a href="{% url 'login' %}">{% translate "Sign in" %}</a>
+        </form>
+    {% endblock maincontent %}
 </body>
 </html>

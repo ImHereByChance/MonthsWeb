@@ -1,27 +1,27 @@
+{% extends 'base/base.html' %}
 {% load i18n %}
 {% load static %}
 
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    
-	<title>{% translate "login page" %}</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'users/style/authpages.css' %}">
-</head>
-<body>
+{% block title %}
+	<title>{% translate "logginig in" %}</title>
+{% endblock title %}
 
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="{% static 'users/style/authpages.css' %}">
+{% endblock extrahead %}
+
+{% block maincontent %}
     <form method="post" action="{% url 'login' %}" class="main-form">
         {% csrf_token %}
 
-        <label for="username">{% translate "User name: " %}</label>
+        <h1>{% translate "Log in" %}</h1>
+
+        <label for="username">{% translate "User name" %}</label>
         {{ form.username }}
         {{ form.username.errors }}
 
-        <label for="password">{% translate "Password: " %} </label>
+        <label for="password">{% translate "Password" %} </label>
         {{ form.password }}
         {{ form.password.errors }}
 
@@ -29,13 +29,10 @@
             {{ form.non_field_errors }}
         {% endif %}
 
-        <input type="submit" value="{% translate 'sign in' %}">
+        <input type="submit" value="{% translate 'Log in' %}">
         <input type="hidden" name="next" value="{{ next }}">
 
         <a href="{% url 'register' %}">{% translate "Register" %}</a>
     </form>
-    
-    {% include "registration/swithlangbutton.html" %}
+{% endblock maincontent %}
 
-</body>
-</html>

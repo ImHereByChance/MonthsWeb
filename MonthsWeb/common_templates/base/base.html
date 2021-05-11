@@ -2,17 +2,20 @@
 {% load i18n %}
 
 
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width,initial-scale=1">        
+        
         {% block title %}
             <title>taskmanager</title>
         {% endblock title %}
+        
         <link rel="stylesheet" type="text/css" href="{% static 'common_static/base/styles/base.css' %}">
+        
         {% block extrahead %}{% endblock extrahead %}
     </head>
     
@@ -27,34 +30,38 @@
                     <div class="header-element-caption"> {{ current_language.name_local }}</div>
                     
                         <form action="{% url 'set_language' %}" method="post" class="lang-dropdown dropdown-content">{% csrf_token %}
-                        {% get_available_languages as LANGUAGES %}
-                        {% get_language_info_list for LANGUAGES as languages %}
-                        
-                        {% for language in languages %}
-                            <button type="submit" name="language" value={{ language.code }} class="dropdown-item">{{ language.name_local }}</button>
-                        {% endfor %}
+                            {% get_available_languages as LANGUAGES %}
+                            {% get_language_info_list for LANGUAGES as languages %}
+                            
+                            {% for language in languages %}
+                                <button type="submit" name="language" value={{ language.code }} class="dropdown-item">{{ language.name_local }}</button>
+                            {% endfor %}
+                        </form>
                 </div>
                 
                 <div id="account" class="header-element">
-                    {% include 'svgpaths/account_icon.html' %}
-
-                    {% if username %}
-                    <div class="header-element-caption">{{ username }}</div>
+                    
+                    {% if user.is_authenticated %}    
+                        {% include 'svgpaths/account_icon.html' %}
+                        <div class="header-element-caption">{{ username }}</div>
+                        <div class="acconunt-dropdown dropdown-content">
+                            <a href="{% url 'logout' %}" class="dropdown-item">{% translate "log out" %}</a>
+                            <a href={% url 'user_settings' %} class="dropdown-item">{% translate "settings" %}</a>   
+                        </div>
                     {% else %}
-                    <div class="header-element-caption">{% translate "account" %}</div>
+                        <a href="{% url 'login' %}" class="header-element">
+                            {% include 'svgpaths/account_icon.html' %}
+                            <div class "header-element-caption" id="log-in-sign">{% translate "Log in" %}</div>
+                        </a>
                     {% endif %}
-                    <div class="acconunt-dropdown dropdown-content">
-                        <a href="{% url 'logout' %}" class="dropdown-item">{% translate "log out" %}</a>
-                        <a href={% url 'user_settings' %}><div class="dropdown-item">{% translate "settings" %}</div></a>   
-                    </div>
                 </div>
             </div>
         </header>
-    <main>
-        {% block maincontent %}
-            <h1>This is the base templated for extending</h1>
-        {% endblock maincontent %}
-    </main>
-        {% block bodybottom %}{% endblock bodybottom %}
+            <main>
+                {% block maincontent %}
+                    <h1>This is the base templated for extending</h1>
+                {% endblock maincontent %}
+            </main>
+            {% block bodybottom %}{% endblock bodybottom %}
     </body>
 </html>

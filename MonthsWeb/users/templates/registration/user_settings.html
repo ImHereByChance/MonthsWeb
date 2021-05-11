@@ -1,62 +1,58 @@
+{% extends 'base/base.html' %}
 {% load static %}
 {% load i18n %}
 
-<!DOCTYPE html>
 
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    
+{% block title %}
     <title>{% translate "user settings" %}</title>
+{% endblock title %}
+
+{% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% static 'users/style/usersetting.css' %}">
-</head>
-<body>
-        <h1>{% translate "Settings" %}</h1>
-    <main>
-        
-        <form  method="POST" action={% url 'user_details_change' %} class="settings-form">
-            {% csrf_token %}
-            <h3>{% translate "User details" %}</h3>
-            {% for field in user_details_form %}
-                <div class="form-group">
-                    <p class="label-and-input">
-                        <label for="{{ field.name }}">{{ field.label }}</label>
-                        {{ field }}
-                    </p>
-                    {{ field.errors }}
-                </div>
-            {% endfor %}
-            <input type="submit" value={% translate "Save" %}>
-            {% if user_detail_canged_msg %}
-                <div class="success-messange">
-                    <span>&#10004;</span>{{ user_detail_canged_msg }}
-                </div>
-            {% endif %}
-        </form>
+{% endblock extrahead %}
 
-        <form method="POST" action="{% url 'password_change' %}" class="settings-form">
-            {% csrf_token %}
-            <h3>{% translate "Password changing" %}</h3>
-            {% for field in password_change_form %}
-                <div class="form-group">
-                    <p class="label-and-input">
-                        <label for="{{ field.name }}">{{ field.label }}</label>
-                        {{ field }}
-                    </p>
-                    {{ field.errors }}
-                </div>
-            {% endfor %}
-            <input type="submit" value={% translate "Change" %}>
-            {% if password_changed_msg %}
-                <div class="success-messange">
-                    <span>&#10004;</span>{{ password_changed_msg }}
-                </div>
-            {% endif %}
-        </form>
+{% block maincontent %}
+        <div class="forms-container">
+            <h1>{% translate "Settings" %}</h1>
 
-    </main>
+            <form  method="POST" action={% url 'user_details_change' %} class="settings-form">
+                {% csrf_token %}
+                <h3>{% translate "User details" %}</h3>
+                {% for field in user_details_form %}
+                    <div class="form-group">
+                        <p class="label-and-input">
+                            <label for="{{ field.name }}">{{ field.label }}</label>
+                            {{ field }}
+                        </p>
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                <input type="submit" value={% translate "Save" %}>
+                {% if user_detail_canged_msg %}
+                    <div class="success-messange">
+                        <span>&#10004;</span>{{ user_detail_canged_msg }}
+                    </div>
+                {% endif %}
+            </form>
 
-</body>
-</html>
+            <form method="POST" action="{% url 'password_change' %}" class="settings-form">
+                {% csrf_token %}
+                <h3>{% translate "Password changing" %}</h3>
+                {% for field in password_change_form %}
+                    <div class="form-group">
+                        <p class="label-and-input">
+                            <label for="{{ field.name }}">{{ field.label }}</label>
+                            {{ field }}
+                        </p>
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                <input type="submit" value={% translate "Change" %}>
+                {% if password_changed_msg %}
+                    <div class="success-messange">
+                        <span>&#10004;</span>{{ password_changed_msg }}
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+{% endblock maincontent %}

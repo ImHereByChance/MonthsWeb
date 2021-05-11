@@ -1,16 +1,11 @@
-:root {
-    /*colors*/
-    --basedark: #718AAD;
-    --baselight: #A2C7FA;
-    --additdark: #4174BB;
-    --additlight: #579BFA;
-    --extradark: #50617A;
-}
-
-/*REGISTER AND LOGIN PAGES STYLES*/
 
 html, body {
     font-family: arial;
+}
+
+main {
+    height: auto;
+    margin: auto;
 }
 
 body {
@@ -18,8 +13,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    justify-content: start;
     background: #579BFA;
 }
 
@@ -28,18 +22,12 @@ html {
     width: 100%;
 }
 
-main {
+.forms-container {
     display: flex;
     flex-direction: column;
     padding: 20px 20px 10px;
     background: var(--baselight);
     border-radius: 1rem;
-}
-
-h1 {
-    align-self: center;
-    color: #1e4e91;
-    text-shadow: 0 0 1px #a2c7fa;
 }
 
 h3 {
@@ -108,12 +96,6 @@ input[type="submit"] {
     padding: 0px 5px;
 }
 
-a {
-    align-self: center;
-    margin-top: 20px;
-    color: #4174bb;
-}
-
 ul.errorlist.nonfield {
     display: flex;
     flex-direction: column;
@@ -171,31 +153,6 @@ ul.errorlist {
     display: flex;
 }
 
-.dropdown-content {
-    display: none;
-    flex-direction: column;
-    min-width: 120px;
-    position: absolute;
-    z-index: 1;
-    top: 0px;
-    right: -120px;
-    box-shadow: 3px 4px 4px 0px #4174bb57;
-}
-
-.dropdown-item {
-    color: var(--additdark);
-    background: var(--baselight);
-    height: 41px;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.dropdown-item:hover {
-    color: var(--baselight);
-    background: var(--additdark);
-    text-decoration: underline;
-}
-
 .dropdown-content button {
     border: none;
     border-bottom: 1px solid #50617a33;
@@ -228,16 +185,19 @@ ul.errorlist {
 /*Small devices (landscape phones, 576px and up)*/
 
 @media (max-width: 576px) {
-    body {
+    
+    .forms-container {
         height: auto;
         width: auto;
         align-items: stretch;
-        padding: 1rem;
+        border-radius: 0;
     }
     main {
-        justify-content: center;
+        flex-direction: column;
+        justify-content: stretch;
         align-items: stretch;
-        padding: 0;
+        padding: 0px;
+        margin: 0px;
         background: none;
     }
     a {

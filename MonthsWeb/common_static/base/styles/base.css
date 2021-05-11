@@ -34,7 +34,6 @@ main {
 }
 
 a {
-    text-decoration: none;
 }
 
 /*all elements in the center shoud follow these rules*/
@@ -61,6 +60,12 @@ button {
 
 button>* {
     pointer-events: none;
+}
+
+h1 {
+    align-self: center;
+    color: #1e4e91;
+    text-shadow: 0 0 1px #a2c7fa;
 }
 
 .svg-icon {
@@ -119,6 +124,12 @@ header {
     transition: 0.2s;
 }
 
+#account > a {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
 #switch-lang .svg-icon path {
     stroke: var(--additdark);
     fill: var(--baselight)
@@ -143,6 +154,10 @@ header {
 }
 
 .header-element:hover .header-element-caption {
+    color: #deecff;
+}
+
+.header-element:hover #log-in-sign {
     color: #deecff;
 }
 
@@ -199,7 +214,11 @@ header {
 
 /*Small devices (landscape phones, 576px and up)*/
 
-@media (min-width: 576px) {}
+@media (min-width: 576px) {
+    .dropdown-item {
+        
+    }
+}
 
 /* Vertical mobile screen(minimum) */
 
