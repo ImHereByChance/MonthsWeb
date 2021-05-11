@@ -43,7 +43,7 @@
                     
                     {% if user.is_authenticated %}    
                         {% include 'svgpaths/account_icon.html' %}
-                        <div class="header-element-caption">{{ username }}</div>
+                        <div class="header-element-caption">{{ user.username }}</div>
                         <div class="acconunt-dropdown dropdown-content">
                             <a href="{% url 'logout' %}" class="dropdown-item">{% translate "log out" %}</a>
                             <a href={% url 'user_settings' %} class="dropdown-item">{% translate "settings" %}</a>   

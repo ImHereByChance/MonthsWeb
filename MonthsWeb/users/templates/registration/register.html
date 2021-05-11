@@ -17,8 +17,14 @@
             {% csrf_token %}
 
             <h1>Register</h1>
-            
-            <label for='username'>{% translate "User name" %}</label>
+
+            {% for field in form %}
+                <label for="{{ field.name }}">{{ field.label }}</label>
+                {{ field }}
+                {{ field.errors }}
+            {% endfor %}
+
+            {% comment %} <label for='username'>{% translate "User name" %}</label>
             {{ form.username }}
             {{ form.username.errors }}
             <label for='email'>{% translate "Email" %}</label>
@@ -29,7 +35,7 @@
             {{ form.password.errors }}
             <label for='password2'>{% translate "Password again" %}</label>
             {{ form.password2 }}
-            {{ form.password2.errors }}
+            {{ form.password2.errors }} {% endcomment %}
 
             <input type="submit" value={% translate "Register" %}>
             

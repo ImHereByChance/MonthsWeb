@@ -7,6 +7,4 @@ urlpatterns = [
     path('getDatePack/', views.change_date, name='change_date'),
     path('tasks/', views.tasks, name='tasks'),
     path('tasks/<int:task_id>/', views.tasks_by_id, name='tasks_by_id'),
-
-    path('base', views.base, name='base')
 ]

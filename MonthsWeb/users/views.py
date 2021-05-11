@@ -35,7 +35,7 @@ def change_user_details(request):
         form = UserDetailsChangingForm(request.POST, instance=request.user)
         
         context = {
-            'username': request.user.username,
+            'user': request.user.user,
             'user_details_form': form,
             'password_change_form': PasswordChangeForm(request.user),
         }
@@ -58,7 +58,7 @@ def change_password(request):
         password_canged_form = PasswordChangeForm(request.user,
                                                   request.POST)
         context = {
-            'username': request.user.username,
+            'user': request.user,
             'user_details_form': UserDetailsChangingForm(instance=request.user),
             'password_change_form': password_canged_form,
         }
@@ -92,7 +92,7 @@ def user_settings(request):
     password_change_form = PasswordChangeForm(request.user)
     
     context = {
-        'username': request.user.username,
+        'user': request.user,
         'password_change_form': password_change_form,
         'user_details_form': user_details_form,
     }

@@ -20,7 +20,7 @@ def index(request):
     """ Index page and also the entry point for the js app. """
     language_code = get_language()
     context = {
-        'username': request.user.username,
+        'user': request.user,
         'language_code': language_code
     }
     return render(request, 'taskmanager/index.html', context)
@@ -89,7 +89,3 @@ def tasks_by_id(request, task_id):
 
     else:
         return HttpResponse(status=405)
-
-
-def base(request):
-    return render(request, 'base/base.html', {'username': request.user.username})
