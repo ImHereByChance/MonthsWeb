@@ -84,6 +84,37 @@ h1 {
     stroke-width: 1;
 }
 
+/* MESSAGES */
+
+ul.errorlist {
+    align-self: flex-end;
+    max-width: 360px;
+    list-style: none;
+    padding: 2px;
+    margin: 0px;
+    text-align: end;
+    margin-top: 3px;
+    font-size: smaller;
+    border-radius: 3px;
+    color: darkred;
+    background: #db70934a;
+}
+
+ul.success-messages {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    color:teal;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 0;
+}
+
+errorlist li {
+    margin-bottom: 2px;
+}
+
 /*HEADER*/
 
 header {
@@ -249,6 +280,15 @@ header {
 /* Vertical mobile screen(minimum) */
 
 @media (max-width: 320px) {}
+
+/*Small devices (landscape phones, 576px and up)*/
+
+@media (max-width: 576px) {
+    ul.errorlist {
+        align-self: center;
+        text-align: center;
+    }
+}
 
 /*Medium devices (tablets, 768px and up)*/
 

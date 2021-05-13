@@ -15,44 +15,84 @@
         <div class="forms-container">
             <h1>{% translate "Settings" %}</h1>
 
-            <form  method="POST" action={% url 'user_details_change' %} class="settings-form">
+            <form  method="POST" action={% url 'user_settings' %} class="settings-form">
                 {% csrf_token %}
+                
                 <h3>{% translate "User details" %}</h3>
+                
                 {% for field in user_details_form %}
                     <div class="form-group">
+                        
                         <p class="label-and-input">
                             <label for="{{ field.name }}">{{ field.label }}</label>
                             {{ field }}
                         </p>
-                        {{ field.errors }}
+                        
+                        {% for field_name, err_list in error_messages.items %}
+                            {% if field.name == field_name %}
+                                <ul class="errorlist">
+                                    {% for err in err_list %}
+                                        <li>{{ err }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endfor %}
+
                     </div>
                 {% endfor %}
+                
                 <input type="submit" value={% translate "Save" %}>
-                {% if user_detail_canged_msg %}
-                    <div class="success-messange">
-                        <span>&#10004;</span>{{ user_detail_canged_msg }}
-                    </div>
-                {% endif %}
+                <input type="hidden" name="form_name" value="user_details_form">
+
+                    
+                    <ul class="success-messages">
+                    {% for msg in success_messages.user_details_form%}
+                        <li>
+                            <span>&#10004;</span>{{ msg }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                    
+
             </form>
 
-            <form method="POST" action="{% url 'password_change' %}" class="settings-form">
+            <form method="POST" action="{% url 'user_settings' %}" class="settings-form">
                 {% csrf_token %}
                 <h3>{% translate "Password changing" %}</h3>
+                
                 {% for field in password_change_form %}
                     <div class="form-group">
+                        
                         <p class="label-and-input">
                             <label for="{{ field.name }}">{{ field.label }}</label>
                             {{ field }}
                         </p>
-                        {{ field.errors }}
+                        
+                        {% for field_name, err_list in error_messages.items %}
+
+                            {% if field.name == field_name %}
+                                <ul class="errorlist">
+                                    {% for err in err_list %}
+                                        <li>{{ err }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+
+                        {% endfor %}
                     </div>
+
                 {% endfor %}
-                <input type="submit" value={% translate "Change" %}>
-                {% if password_changed_msg %}
-                    <div class="success-messange">
-                        <span>&#10004;</span>{{ password_changed_msg }}
-                    </div>
-                {% endif %}
+
+                <input type="submit" value={% translate "Save" %}>
+                <input type="hidden" name="form_name" value="password_change_form">
+
+                <ul class="success-messages">
+                    {% for msg in success_messages.password_change_form%}
+                        <li>
+                            <span>&#10004;</span>{{ msg }}
+                        </li>
+                    {% endfor %}
+                </ul>
             </form>
         </div>
 {% endblock maincontent %}

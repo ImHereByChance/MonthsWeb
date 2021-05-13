@@ -72,29 +72,10 @@ input[type="submit"] {
 }
 
 ul.errorlist.nonfield {
-    display: flex;
-    flex-direction: column;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
     max-width: 200px;
-    text-align: center;
-    margin-top: 1rem;
-    color: darkred;
-    font-size: smaller;
-    margin: auto;
+    text-align:center;
 }
 
-ul.errorlist {
-    list-style: none;
-    padding: 0;
-    margin: 0px;
-    margin-top: 3px;
-    max-width: 200px;
-    font-size: smaller;
-    color: darkred;
-    text-align: center;
-}
 
 /* MEDIA QUERIES */
 
@@ -122,17 +103,11 @@ ul.errorlist {
         border-radius: 5px;
         margin: 5px;
     }
-    ul.errorlist {
-        margin: auto;
-        margin-top: 3px;
-        margin-bottom: 0px;
-        font-size: medium;
-    }
     ul.errorlist.nonfield {
+        max-width: 100%;
         align-self: center;
         margin-top: 3px;
         margin-bottom: 0;
-        font-size: medium;
     }
     .dropdown-item {
         margin: 10px 0px;

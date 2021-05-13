@@ -96,38 +96,6 @@ input[type="submit"] {
     padding: 0px 5px;
 }
 
-ul.errorlist.nonfield {
-    display: flex;
-    flex-direction: column;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    max-width: 200px;
-    text-align: center;
-    margin-top: 1rem;
-    color: darkred;
-}
-
-ul.errorlist {
-    max-width: 260px;
-    align-self: center;
-    list-style: none;
-    padding: 0;
-    margin: 0px;
-    color: darkred;
-    text-align: center;
-    margin-top: 1px;
-    font-size: smaller;
-}
-
-.success-messange {
-    align-self: center;
-    display: flex;
-    align-items: center;
-    min-height: 20px;
-    margin-top: 5px;
-    color: teal;
-}
 
 /*LANGUAGE CHOOSING*/
 
@@ -226,9 +194,6 @@ ul.errorlist {
     }
     ul.errorlist.nonfield {
         align-self: center;
-    }
-    .success-messange {
-        margin-bottom: 5px;
     }
 }
 
