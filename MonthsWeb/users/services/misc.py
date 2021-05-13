@@ -7,13 +7,14 @@ def dispatch_messages(messages: list) -> dict:
     """ Takes django messages object (list-like) and turns it to a dict
     like that:
     ```
-    { error_messages: { first_list: [message1, message2, ...],
-                        second_list: [message3, message4], 
+    { "error_messages": { "first_list": ["message1", "message2", ...],
+                        "second_list": ["message3", "message4"], 
                         ... },
-      success_messages: { first_list: [message1, ... ],
-                          ... }
+      "success_messages": { "first_list": ["message1", ... ],
+                          ... },
+      ...
     ```
-    Tag of the message (debug, info, error, etc) and names of the dicts
+    The tag of the message (debug, info, error, etc) and names of the dicts
     with the messages of that level ('debug_messages', 'error_messages,
     etc) been generated automatically. The key-names of the lists nested
     in these "level dicts" been provident by the arg "extra_tags" for
@@ -29,7 +30,6 @@ def dispatch_messages(messages: list) -> dict:
             dict_of_dicts.update({dict_name: dict()})
             level_dict = dict_of_dicts.get(dict_name)
 
-
         list_name = msg.extra_tags or 'nameless'
         field_list = level_dict.get(list_name)
 
@@ -37,11 +37,10 @@ def dispatch_messages(messages: list) -> dict:
             level_dict.update({
                 list_name: list()
             })
-        
+
         level_dict.get(list_name).append(msg.message)
-    
+
     return dict_of_dicts
-        
 
 
 def set_user_profile(user: User, **kwargs: dict) -> None:
@@ -50,7 +49,7 @@ def set_user_profile(user: User, **kwargs: dict) -> None:
     argument must be a User object, the rest must be keyword arguments,
     which are `models.UserProfile` fields. 
     """
-    
+
     try:
         user.userprofile
     except UserProfile.DoesNotExist:

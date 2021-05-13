@@ -52,7 +52,7 @@ def user_settings(request):
         return render(request, 'registration/user_settings.html', context)
 
     elif request.method == 'POST':
-        
+
         form_name = request.POST.get('form_name')  # <input type="hidden" ...
 
         if form_name == 'user_details_form':
@@ -71,7 +71,7 @@ def user_settings(request):
             'user_details_form': user_details_form,
             'password_change_form': password_change_form,
             'submitted_form': form_name
-        }    
+        }
 
         for form in (user_details_form, password_change_form):
             if form.is_bound:

@@ -73,9 +73,8 @@ input[type="submit"] {
 
 ul.errorlist.nonfield {
     max-width: 200px;
-    text-align:center;
+    text-align: center;
 }
-
 
 /* MEDIA QUERIES */
 

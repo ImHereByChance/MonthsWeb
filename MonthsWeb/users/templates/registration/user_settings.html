@@ -44,16 +44,13 @@
                 <input type="submit" value={% translate "Save" %}>
                 <input type="hidden" name="form_name" value="user_details_form">
 
-                    
                     <ul class="success-messages">
                     {% for msg in success_messages.user_details_form%}
                         <li>
                             <span>&#10004;</span>{{ msg }}
                         </li>
                     {% endfor %}
-                    </ul>
-                    
-
+                    </ul>                    
             </form>
 
             <form method="POST" action="{% url 'user_settings' %}" class="settings-form">
@@ -95,4 +92,5 @@
                 </ul>
             </form>
         </div>
+
 {% endblock maincontent %}

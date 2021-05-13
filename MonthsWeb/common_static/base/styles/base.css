@@ -105,7 +105,7 @@ ul.success-messages {
     display: flex;
     align-items: center;
     list-style: none;
-    color:teal;
+    color: teal;
     border-radius: 5px;
     margin: 5px;
     padding: 0;
@@ -174,7 +174,6 @@ header {
 }
 
 #switch-lang:hover .svg-icon path {
-    /* stroke: #75a1dd; */
     fill: #deecff;
 }
 
@@ -277,10 +276,6 @@ header {
     }
 }
 
-/* Vertical mobile screen(minimum) */
-
-@media (max-width: 320px) {}
-
 /*Small devices (landscape phones, 576px and up)*/
 
 @media (max-width: 576px) {
@@ -305,5 +300,9 @@ header {
 /*XX-Large devices (larger desktops, 1400px and up)*/
 
 @media (max-width: 1400px) {}
+
+/* Vertical mobile screen(minimum) */
+
+@media (max-width: 320px) {}
 
 @media (max-height: 426px) {}
