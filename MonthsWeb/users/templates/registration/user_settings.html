@@ -16,7 +16,7 @@
         <div class="forms-container">
             <h1>{% translate "Settings" %}</h1>
 
-            <form  method="POST" action={% url 'user_settings' %} class="settings-form">
+            <form  method="POST" action={% url 'change_user_details' %} class="settings-form">
                 {% csrf_token %}
                 
                 <h3>{% translate "User details" %}</h3>
@@ -43,7 +43,6 @@
                 {% endfor %}
                 
                 <input type="submit" value={% translate "Save" %}>
-                <input type="hidden" name="form_name" value="user_details_form">
 
                     <ul class="success-messages">
                     {% for msg in success_messages.user_details_form%}
@@ -51,10 +50,10 @@
                             <span>&#10004;</span>{{ msg }}
                         </li>
                     {% endfor %}
-                    </ul>                    
+                    </ul>                
             </form>
 
-            <form method="POST" action="{% url 'user_settings' %}" class="settings-form">
+            <form method="POST" action="{% url 'change_user_password' %}" class="settings-form">
                 {% csrf_token %}
                 <h3>{% translate "Password changing" %}</h3>
                 
@@ -82,7 +81,6 @@
                 {% endfor %}
 
                 <input type="submit" value={% translate "Save" %}>
-                <input type="hidden" name="form_name" value="password_change_form">
 
                 <ul class="success-messages">
                     {% for msg in success_messages.password_change_form%}
