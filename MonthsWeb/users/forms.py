@@ -11,12 +11,6 @@ class UserDetailsChangingForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name',)
-        label = {
-            'usename': _('User name: '),
-            'email': _('Email: '),
-            'first_name': _('First name: '),
-            'last_name': _('Last name: ')
-        }
 
     def clean_email(self):
         new_email = self.cleaned_data['email']
