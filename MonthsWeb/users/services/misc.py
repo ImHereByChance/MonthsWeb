@@ -49,14 +49,12 @@ def set_user_profile(user: User, **kwargs: dict) -> None:
     argument must be a User object, the rest must be keyword arguments,
     which are `models.UserProfile` fields. 
     """
-
-    try:
-        user.userprofile
-    except UserProfile.DoesNotExist:
-        UserProfile.objects.create(user=user)
+    
+    user_profile, _ = UserProfile.objects.get_or_create(user=user)
 
     for key, value in kwargs.items():
-        if hasattr(user.userprofile, key):
-            setattr(user.userprofile, key, value)
+        if hasattr(user_profile, key):
+            setattr(user_profile, key, value)
+            user_profile.save()
         else:
             raise KeyError(f'invalid property given: {key}')
