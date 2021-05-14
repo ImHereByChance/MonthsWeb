@@ -63,6 +63,10 @@ h1 {
     text-shadow: 0 0 1px #a2c7fa;
 }
 
+input[type="submit"]:disabled {
+  filter: opacity(0.5)
+}
+
 .svg-icon {
     width: 24px;
     height: 24px;

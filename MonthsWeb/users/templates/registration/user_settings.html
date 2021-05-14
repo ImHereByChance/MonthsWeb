@@ -9,6 +9,7 @@
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% static 'users/style/usersetting.css' %}">
+    <script src="{% static 'common_static/base/scripts/formChangesDetector.js' %}"></script>
 {% endblock extrahead %}
 
 {% block maincontent %}
@@ -94,3 +95,12 @@
         </div>
 
 {% endblock maincontent %}
+
+{% block bodybottom %}
+    <script>
+        const settingsForms = document.querySelectorAll('form.settings-form')
+        for (let form of settingsForms) {
+            new FormChangesDetector(form)
+        }
+    </script>
+{% endblock bodybottom %}
