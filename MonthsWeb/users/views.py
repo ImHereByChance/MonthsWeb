@@ -5,9 +5,11 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import redirect, render
 from django.views import View
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 
 from .forms import RegisterForm, UserDetailsChangingForm
 from .services.misc import dispatch_messages
+from .view_classes import UserSettingsPageForm 
 
 
 class UserRegistration(View):
@@ -31,61 +33,38 @@ class UserRegistration(View):
             return redirect('index')
 
 
-class UserDetailsChanging(View):
+class UserDetailsChanging(UserSettingsPageForm):
     """ A view to handle the form that in charge of changing the
     fields of the User model (excluding password).
     """
-
     form_class = UserDetailsChangingForm
+    form_name = 'user_details_form'
+    redirect_view_name = 'user_settings'
+    success_message = _('changes saved')
 
     @method_decorator(login_required)
     def post(self, request):
-        form = self.form_class(data=request.POST,
-                               instance=request.user)
-        if form.is_valid():
-            messages.success(request=request,
-                             message='changes saved',
-                             extra_tags='user_details_form')
-            form.save()
-        else:
-            for field_name, error_list in form.errors.items():
-                for err_msg in error_list:
-                    messages.error(request=request,
-                                   message=err_msg,
-                                   extra_tags=field_name)
-
-        return redirect('user_settings')
+        return super().post(request, data=request.POST, instance=request.user)
 
 
-class ChangingUserPassword(View):
+class UserPasswordChanging(UserSettingsPageForm):
     """ A view for processing the form that in charge of changing user
     passwords (by entering the old and new passwords).
     """
     form_class = PasswordChangeForm
+    form_name = 'password_change_form'
+    redirect_view_name = 'user_settings'
+    success_message = _('password successfully saved')
 
-    @method_decorator(login_required)
     def post(self, request):
-        form = self.form_class(data=request.POST, user=request.user)
-
-        if form.is_valid():
-            messages.success(request=request,
-                             message='Successfully Changed',
-                             extra_tags='password_change_form')
-            form.save()
-
-            username = request.user.username
-            password = form.cleaned_data['new_password1']
-            user = authenticate(username=username, password=password)
-            login(request, user)
-
-        else:
-            for field_name, error_list in form.errors.items():
-                for err_msg in error_list:
-                    messages.error(request=request,
-                                   message=err_msg,
-                                   extra_tags=field_name)
-
-        return redirect('user_settings')
+        return super().post(request, data=request.POST, user=request.user)
+    
+    def on_success(self, request, form):
+        super().on_success(request, form)
+        username = request.user.username
+        password = form.cleaned_data['new_password1']
+        user = authenticate(username=username, password=password)
+        login(request, user)
 
 
 class UserSettings(View):
