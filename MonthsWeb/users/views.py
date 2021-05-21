@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.views import PasswordResetView
+from django.http.response import HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -93,3 +95,19 @@ class UserSettings(View):
             context.update(messages_dict)
 
         return render(request, self.template_name, context)
+
+
+class ResetUserPassword(PasswordResetView):
+    """Slightly customized django default PasswordResetView"""
+    
+    template_name = 'registration/password_reset.html'
+    
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseForbidden()
+        return super().get(self, request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseForbidden()
+        return super().post(self, request, *args, **kwargs)
