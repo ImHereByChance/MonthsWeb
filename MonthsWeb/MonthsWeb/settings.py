@@ -43,7 +43,7 @@ ROOT_URLCONF = 'MonthsWeb.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / 'common_templates'],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -111,11 +111,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    ('common_static', BASE_DIR / 'common_static'),
-]
-
 
 # redirect urls
 
