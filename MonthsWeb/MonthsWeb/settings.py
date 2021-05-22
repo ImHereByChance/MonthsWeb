@@ -22,9 +22,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'accounts.apps.AccountsConfig',
     'common.apps.CommonConfig',
     'taskmanager.apps.TaskmanagerConfig',
-    'users.apps.UsersConfig'
 ]
 
 MIDDLEWARE = [
@@ -98,7 +98,7 @@ LOCALE_PATHS = [
     BASE_DIR / 'locale',
     '/locale',
     '/taskmanager/locale',
-    '/users/locale',
+    '/accounts/locale',
 ]
 
 USE_I18N = True
