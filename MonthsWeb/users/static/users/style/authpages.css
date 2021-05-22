@@ -71,10 +71,15 @@ input[type="submit"] {
     padding: 0px 5px;
 }
 
-.main-form>a {
+.main-form a {
     align-self: center;
     margin-top: 20px;
+    font-size: smaller;
     color: #4174bb;
+}
+
+.main-form a:hover {
+    color: #23426c;
 }
 
 ul.errorlist.nonfield {
@@ -127,6 +132,9 @@ ul.errorlist.nonfield {
         padding: 10px;
         background: #ff000000;
         box-shadow: none;
+    }
+    .main-form a {
+        font-size:unset
     }
 }
 
