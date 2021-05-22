@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.views import PasswordResetDoneView, PasswordResetView, PasswordChangeDoneView
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.views import View
