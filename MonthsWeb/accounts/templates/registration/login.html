@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+{% load i18n %}
+{% load static %}
+
+
+{% block title %}
+	<title>{% translate "logginig in" %}</title>
+{% endblock title %}
+
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/style/authpages.css' %}">
+{% endblock extrahead %}
+
+{% block maincontent %}
+    <form method="post" action="{% url 'login' %}" class="main-form">
+        {% csrf_token %}
+
+        <h1>{% translate "Log in" %}</h1>
+
+        <label for="username">{{ form.username.label }}</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+
+        <label for="password"> {{ form.password.label }} </label>
+        {{ form.password }}
+        {{ form.password.errors }}
+
+        {% if form.errors %}
+            {{ form.non_field_errors }}
+        {% endif %}
+
+        <input type="submit" value="{% translate 'Log in' %}">
+        <input type="hidden" name="next" value="{{ next }}">
+        
+        <a href="{% url 'password_reset' %}">{% translate "Reset password" %}</a>
+        <a href="{% url 'register' %}">{% translate "Register new account" %}</a>
+
+    </form>
+{% endblock maincontent %}

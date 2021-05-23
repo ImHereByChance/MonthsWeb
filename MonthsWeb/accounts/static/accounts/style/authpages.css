@@ -1,0 +1,159 @@
+/*REGISTER AND LOGIN PAGES STYLES*/
+
+html {
+    width: 100%;
+}
+
+main {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #579BFA;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+.main-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--baselight);
+    padding: 3rem;
+    border-radius: 2rem;
+    box-shadow: 0px 0px 20px 0px var(--additdark);
+}
+
+.main-form p {
+    max-width: 500px;
+    color: #3b495c;
+    text-align: center;
+}
+
+input[type="submit"] {
+    align-self: center;
+    height: 36px;
+    min-width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4174BB;
+    color: #eff6ff;
+    border: #579bfa9e solid 1px;
+    border-radius: 2px;
+    transition: 0.3s;
+}
+
+input[type="submit"]:hover {
+    background: #579bfa;
+}
+
+label {
+    color: #3b495c;
+    margin: auto;
+    margin-top: 1rem;
+    margin-bottom: 3px;
+}
+
+input {
+    height: 26px;
+    border-radius: 5px;
+    border: 0px;
+    outline-color: #a2c7fa;
+    text-align: center;
+}
+
+input[type="submit"] {
+    margin-top: 20px;
+    padding: 0px 5px;
+}
+
+.main-form a {
+    align-self: center;
+    margin-top: 20px;
+    font-size: smaller;
+    color: #4174bb;
+}
+
+.main-form a:hover {
+    color: #23426c;
+}
+
+ul.errorlist.nonfield {
+    max-width: 200px;
+    text-align: center;
+}
+
+/* MEDIA QUERIES */
+
+/*Small devices (landscape phones, 576px and up)*/
+
+@media (max-width: 576px) {
+    body {
+        width: auto;
+    }
+    form.main-form {
+        justify-content: center;
+        align-items: stretch;
+        align-self: stretch;
+        width: 100%;
+        border-radius: 0;
+    }
+    input {
+        min-height: 40px;
+        font-size: larger;
+    }
+    input[type="submit"] {
+        font-size: inherit;
+    }
+    .set-user-language {
+        border-radius: 5px;
+        margin: 5px;
+    }
+    ul.errorlist.nonfield {
+        max-width: 100%;
+        align-self: center;
+        margin-top: 3px;
+        margin-bottom: 0;
+    }
+    .dropdown-item {
+        margin: 10px 0px;
+        align-self: flex-end;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px 0px var(--additdark);
+    }
+    .dropdown-content {
+        padding: 10px;
+        background: #ff000000;
+        box-shadow: none;
+    }
+    .main-form a {
+        font-size:unset
+    }
+}
+
+/* Vertical mobile screen(minimum) */
+
+@media (max-width: 320px) {}
+
+/*Medium devices (tablets, 768px and up)*/
+
+@media (max-width: 768px) {}
+
+/*Large devices (desktops, 992px and up)*/
+
+@media (max-width: 992px) {}
+
+/*X-Large devices (large desktops, 1200px and up)*/
+
+@media (max-width: 1200px) {}
+
+/*XX-Large devices (larger desktops, 1400px and up)*/
+
+@media (max-width: 1400px) {}

@@ -1,0 +1,104 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block title %}
+    <title>{% translate "user settings" %}</title>
+{% endblock title %}
+
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/style/usersetting.css' %}">
+    <script src="{% static 'base/scripts/formChangesDetector.js' %}"></script>
+{% endblock extrahead %}
+
+{% block maincontent %}
+        <div class="forms-container">
+            <h1>{% translate "Settings" %}</h1>
+
+            <form  method="POST" action={% url 'change_user_details' %} class="settings-form">
+                {% csrf_token %}
+                
+                <h3>{% translate "User details" %}</h3>
+                
+                {% for field in user_details_form %}
+                    <div class="form-group">
+                        
+                        <p class="label-and-input">
+                            <label for="{{ field.name }}">{{ field.label }}</label>
+                            {{ field }}
+                        </p>
+                        
+                        {% for field_name, err_list in error_messages.items %}
+                            {% if field.name == field_name %}
+                                <ul class="errorlist">
+                                    {% for err in err_list %}
+                                        <li>{{ err }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
+                {% endfor %}
+                
+                <input type="submit" value={% translate "Save" %}>
+
+                    <ul class="success-messages">
+                    {% for msg in success_messages.user_details_form%}
+                        <li>
+                            <span>&#10004;</span>{{ msg }}
+                        </li>
+                    {% endfor %}
+                    </ul>                
+            </form>
+
+            <form method="POST" action="{% url 'change_user_password' %}" class="settings-form">
+                {% csrf_token %}
+                <h3>{% translate "Password changing" %}</h3>
+                
+                {% for field in password_change_form %}
+                    <div class="form-group">
+                        
+                        <p class="label-and-input">
+                            <label for="{{ field.name }}">{{ field.label }}</label>
+                            {{ field }}
+                        </p>
+                        
+                        {% for field_name, err_list in error_messages.items %}
+
+                            {% if field.name == field_name %}
+                                <ul class="errorlist">
+                                    {% for err in err_list %}
+                                        <li>{{ err }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+
+                        {% endfor %}
+                    </div>
+
+                {% endfor %}
+
+                <input type="submit" value={% translate "Save" %}>
+
+                <ul class="success-messages">
+                    {% for msg in success_messages.password_change_form%}
+                        <li>
+                            <span>&#10004;</span>{{ msg }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </form>
+        </div>
+
+{% endblock maincontent %}
+
+{% block bodybottom %}
+    <script>
+        const settingsForms = document.querySelectorAll('form.settings-form')
+        for (let form of settingsForms) {
+            new FormChangesDetector(form)
+        }
+    </script>
+{% endblock bodybottom %}

@@ -1,0 +1,150 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-05-23 13:37+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: accounts/forms.py:22 accounts/forms.py:48
+msgid "A user with that email already exists."
+msgstr "Пользователь с этим email уже существует"
+
+#: accounts/templates/registration/login.html:7
+msgid "logginig in"
+msgstr "Вход"
+
+#: accounts/templates/registration/login.html:18
+#: accounts/templates/registration/login.html:32
+#: accounts/templates/registration/password_reset_completed.html:19
+msgid "Log in"
+msgstr "Войти"
+
+#: accounts/templates/registration/login.html:35
+msgid "Reset password"
+msgstr "Восстановить пароль"
+
+#: accounts/templates/registration/login.html:36
+msgid "Register new account"
+msgstr "Зарегистрироваться"
+
+#: accounts/templates/registration/password_reset.html:7
+msgid "Password reset"
+msgstr "Сменить пароль"
+
+#: accounts/templates/registration/password_reset.html:17
+msgid ""
+"Forgotten your password? Enter your email address below, and we’ll email "
+"instructions for setting a new one."
+msgstr ""
+
+#: accounts/templates/registration/password_reset.html:21
+msgid "Reset my password"
+msgstr "Восстановить пароль"
+
+#: accounts/templates/registration/password_reset_completed.html:7
+#: accounts/templates/registration/password_reset_confirmation.html:7
+#: accounts/templates/registration/password_reset_sent.html:7
+msgid "Password reset sent"
+msgstr "Письмо отправлено"
+
+#: accounts/templates/registration/password_reset_completed.html:17
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr ""
+
+#: accounts/templates/registration/password_reset_confirmation.html:18
+#, fuzzy
+#| msgid "New password:"
+msgid "Enter new password"
+msgstr "Новый пароль:"
+
+#: accounts/templates/registration/password_reset_confirmation.html:19
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+
+#: accounts/templates/registration/password_reset_confirmation.html:21
+msgid "New password:"
+msgstr "Новый пароль:"
+
+#: accounts/templates/registration/password_reset_confirmation.html:24
+msgid "Confirm password:"
+msgstr "Подтвердите пароль:"
+
+#: accounts/templates/registration/password_reset_confirmation.html:27
+msgid "Change my password"
+msgstr "Сменить пароль"
+
+#: accounts/templates/registration/password_reset_confirmation.html:31
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+
+#: accounts/templates/registration/password_reset_sent.html:17
+msgid ""
+"We’ve emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+
+#: accounts/templates/registration/password_reset_sent.html:18
+msgid ""
+"If you don’t receive an email, please make sure you’ve entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+
+#: accounts/templates/registration/register.html:9
+msgid "registration page"
+msgstr "страница регистрации"
+
+#: accounts/templates/registration/register.html:28
+msgid "Register"
+msgstr "Регистрация"
+
+#: accounts/templates/registration/register.html:30
+msgid "Sign in"
+msgstr "Войти"
+
+#: accounts/templates/registration/user_settings.html:7
+msgid "user settings"
+msgstr "пользовательские настройки"
+
+#: accounts/templates/registration/user_settings.html:17
+msgid "Settings"
+msgstr "Пользовательские настройки"
+
+#: accounts/templates/registration/user_settings.html:22
+msgid "User details"
+msgstr "Пользовательские настройки"
+
+#: accounts/templates/registration/user_settings.html:45
+#: accounts/templates/registration/user_settings.html:83
+msgid "Save"
+msgstr "Сохранить"
+
+#: accounts/templates/registration/user_settings.html:58
+msgid "Password changing"
+msgstr "Пароль повтороно:"
+
+#: accounts/views.py:45
+msgid "changes saved"
+msgstr "изменения сохранены"
+
+#: accounts/views.py:59
+msgid "password successfully saved"
+msgstr "пароль обновлен"

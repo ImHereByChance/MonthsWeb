@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-09 04:42+0300\n"
+"POT-Creation-Date: 2021-05-23 13:37+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,14 +20,18 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: taskmanager/templates/taskmanager/index.html:51
-msgid "account"
-msgstr "аккаунт"
+#: common/templates/base/base.html:28
+msgid "Mainpage"
+msgstr "Главная"
 
-#: taskmanager/templates/taskmanager/index.html:54
+#: common/templates/base/base.html:52
 msgid "log out"
 msgstr "выйти"
 
-#: taskmanager/templates/taskmanager/index.html:55
+#: common/templates/base/base.html:53
 msgid "settings"
 msgstr "настройки"
+
+#: common/templates/base/base.html:58
+msgid "Log in"
+msgstr "Войти"

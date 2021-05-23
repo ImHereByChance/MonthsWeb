@@ -1,0 +1,34 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+
+
+<!DOCTYPE html>
+
+    {% block title %}
+        <title>{% translate "registration page" %}</title>
+    {% endblock title %}
+
+    {% block extrahead %}
+        <link rel="stylesheet" type="text/css" href="{% static 'accounts/style/authpages.css' %}">
+    {% endblock extrahead %}
+
+    {% block maincontent %}
+        <form method="POST" action="{% url 'register' %}" class="main-form">
+            {% csrf_token %}
+
+            <h1>Register</h1>
+
+            {% for field in form %}
+                <label for="{{ field.name }}">{{ field.label }}</label>
+                {{ field }}
+                {{ field.errors }}
+            {% endfor %}
+
+            <input type="submit" value={% translate "Register" %}>
+            
+            <a href="{% url 'login' %}">{% translate "Sign in" %}</a>
+        </form>
+    {% endblock maincontent %}
+</body>
+</html>

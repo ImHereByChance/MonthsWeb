@@ -19,7 +19,7 @@ task_service = TaskHandler(db_service=DatabaseHandler)
 def index(request):
     language_code = get_language()
     context = {
-        'username': request.user.username,
+        'user': request.user,
         'language_code': language_code
     }
     return render(request, 'taskmanager/index.html', context)
