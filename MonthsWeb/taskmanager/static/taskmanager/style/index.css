@@ -148,7 +148,7 @@ textarea {
 
 .c-daysFrame__dayButton:focus {
     outline: none;
-    border: 1px solid var(--baselight);
+    border: 1px dashed #9fbde6;
 }
 
 .c-daysFrame__dayButton:active {}
@@ -168,6 +168,8 @@ textarea {
 .--out-month {
     color: #9ec7ff;
 }
+
+.--today {border-radius: 50%;box-shadow: inset 0 0 0px 2px #578cd7;}
 
 .c-topbar__swtcMonthBt {
     height: 43px;
@@ -301,7 +303,6 @@ textarea {
 }
 
 .tp-taskitemTitle {
-    color: #1f2938;
     overflow: hidden;
     overflow-wrap: anywhere;
     font-size: 14px;
@@ -310,12 +311,10 @@ textarea {
 
 .tp-taskitemDescr {
     border-radius: 2px;
-    background-color: #ffffff52;
-    color: #202730;
+    background-color: #c9d2ef;
     overflow-wrap: anywhere;
     font-size: 14px;
     margin: 3px;
-    padding: 5px;
 }
 
 .ti-SaveTaskBt:hover path {
