@@ -20,10 +20,18 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: MonthsWeb/settings.py:93
-msgid "Russian"
-msgstr "Русский"
+#: common/templates/base/base.html:28
+msgid "Mainpage"
+msgstr "Главная"
 
-#: MonthsWeb/settings.py:94
-msgid "English"
-msgstr "English"
+#: common/templates/base/base.html:52
+msgid "log out"
+msgstr "выйти"
+
+#: common/templates/base/base.html:53
+msgid "settings"
+msgstr "настройки"
+
+#: common/templates/base/base.html:58
+msgid "Log in"
+msgstr "Войти"
