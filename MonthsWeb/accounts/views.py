@@ -35,7 +35,7 @@ class UserRegistration(View):
             return redirect('index')
 
 
-class UserDetailsChanging(UserSettingsPageForm):
+class UserDetailsChanging(UserSettingsFormHandler):
     """ A view to handle the form that in charge of changing the
     fields of the User model (excluding password).
     """
