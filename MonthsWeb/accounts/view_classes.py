@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 
 
-class UserSettingsPageForm(View):
+class UserSettingsFormHandler(View):
     """ A view to handle one of the forms (located on user-settings
     page) that in charge of changing the fields of the User or
     UserProfile models.

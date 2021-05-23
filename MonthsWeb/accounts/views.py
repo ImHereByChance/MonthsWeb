@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .forms import RegisterForm, UserDetailsChangingForm
 from .services.misc import dispatch_messages
-from .view_classes import UserSettingsPageForm 
+from .view_classes import UserSettingsFormHandler 
 
 
 class UserRegistration(View):
@@ -49,7 +49,7 @@ class UserDetailsChanging(UserSettingsPageForm):
         return super().post(request, data=request.POST, instance=request.user)
 
 
-class UserPasswordChanging(UserSettingsPageForm):
+class UserPasswordChanging(UserSettingsFormHandler):
     """ A view for processing the form that in charge of changing user
     passwords (by entering the old and new passwords).
     """
