@@ -1,0 +1,312 @@
+:root {
+    /*colors*/
+    --basedark: #718AAD;
+    --baselight: #A2C7FA;
+    --additdark: #4174BB;
+    --additlight: #579BFA;
+    --extradark: #50617A;
+    /*sizes*/
+    --xs: 0px;
+    --vs: 320px;
+    --sm: 576px;
+    --md: 768px;
+    --lg: 992px;
+    --xl: 1200px;
+    --xxl: 1400px;
+}
+
+/*MAIN */
+
+html {
+    height: 100%;
+}
+
+html, body {
+    font-family: arial;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}
+
+/*all elements in the center shoud follow these rules*/
+
+.center-area {
+    max-width: 1000px;
+}
+
+/*COMMON ELEMENTS */
+
+body {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: var(--baselight);
+    flex-direction: column;
+    margin: 0px;
+    align-items: stretch;
+}
+
+button {
+    cursor: pointer;
+}
+
+button>* {
+    pointer-events: none;
+}
+
+h1 {
+    align-self: center;
+    color: #1e4e91;
+    text-shadow: 0 0 1px #a2c7fa;
+}
+
+input[type="submit"]:disabled {
+  filter: opacity(0.5)
+}
+
+.svg-icon {
+    width: 24px;
+    height: 24px;
+    outline: none;
+    display: flex;
+}
+
+.svg-icon12 {
+    width: 12px;
+    height: 12px;
+}
+
+.svg-icon path, .svg-icon polygon, .svg-icon rect {
+    fill: var(--additdark);
+}
+
+.svg-icon12 circle, .svg-icon circle {
+    stroke: #4691f6;
+    stroke-width: 1;
+}
+
+/* MESSAGES */
+
+ul.errorlist {
+    align-self: flex-end;
+    max-width: 360px;
+    list-style: none;
+    padding: 2px;
+    margin: 0px;
+    text-align: end;
+    margin-top: 3px;
+    font-size: smaller;
+    border-radius: 3px;
+    color: darkred;
+    background: #db70934a;
+}
+
+ul.success-messages {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    color: teal;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 0;
+}
+
+errorlist li {
+    margin-bottom: 2px;
+}
+
+/*HEADER*/
+
+header {
+    height: 60px;
+    background: var(--additdark);
+    display: flex;
+    justify-content: center;
+}
+
+.header-main-area {
+    flex-basis: 1000px;
+    align-self: stretch;
+    max-width: 1000px;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0px 20px 0px 20px;
+}
+
+.header-element {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 5px;
+    align-items: center;
+    color: var(--baselight);
+    cursor: pointer;
+    margin-left: 5px;
+    position: relative;
+}
+
+.header-element .svg-icon path, .svg-icon polygon, .svg-icon rect, .svg-icon circle {
+    stroke: var(--baselight);
+    transition: 0.2s;
+}
+
+#mainpage-link {
+    margin: auto;
+    margin-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    text-decoration: none;
+}
+
+#account>a {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+#mainpage-link .svg-icon path {
+    fill: var(--baselight);
+}
+
+#switch-lang .svg-icon path {
+    stroke: var(--additdark);
+    fill: var(--baselight)
+}
+
+#switch-lang:hover .svg-icon path {
+    fill: #deecff;
+}
+
+.header-element .svg-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-element:hover path {
+    stroke: #deecff;
+    fill: #deecff;
+}
+
+#mainpage-link:hover path {
+    fill: #ffffff;
+}
+
+.header-element:hover .header-element-caption {
+    color: #deecff;
+}
+
+.header-element:hover #log-in-sign {
+    color: #deecff;
+}
+
+#calendar-icon {
+    margin-bottom: 1px;
+}
+
+.dropdown-content {
+    display: none;
+    min-width: 120px;
+    position: absolute;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    top: 56px;
+    right: 0px;
+}
+
+.dropdown-item {
+    color: var(--baselight);
+    background: var(--additdark);
+    font-weight: 600;
+    border-bottom: 1px solid #5689d640;
+    padding: 7px 8px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.dropdown-item:hover {
+    background-color: #bad3f6;
+    color: #325c95;
+}
+
+.dropdown-content button {
+    border: none;
+    display: flex;
+    outline: none;
+    font-size: inherit;
+}
+
+#account:hover .acconunt-dropdown.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: transparent;
+}
+
+#language-code {
+    font-weight: bold;
+    font-size: large;
+}
+
+#switch-lang:hover .lang-dropdown.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: transparent;
+}
+
+/* MEDIA QUERIES */
+
+/*Small devices (landscape phones, 576px and up)*/
+
+@media (max-width: 576px) {
+    .dropdown-item {
+        margin: 10px 0px;
+        align-self: flex-end;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px 0px var(--baselight);
+    }
+    .dropdown-content {
+        padding: 10px;
+        background: #ff000000;
+        box-shadow: none;
+    }
+}
+
+/*Small devices (landscape phones, 576px and up)*/
+
+@media (max-width: 576px) {
+    ul.errorlist {
+        align-self: center;
+        text-align: center;
+    }
+}
+
+/*Medium devices (tablets, 768px and up)*/
+
+@media (max-width: 768px) {}
+
+/*Large devices (desktops, 992px and up)*/
+
+@media (max-width: 992px) {}
+
+/*X-Large devices (large desktops, 1200px and up)*/
+
+@media (max-width: 1200px) {}
+
+/*XX-Large devices (larger desktops, 1400px and up)*/
+
+@media (max-width: 1400px) {}
+
+/* Vertical mobile screen(minimum) */
+
+@media (max-width: 320px) {}
+
+@media (max-height: 426px) {}
