@@ -18,11 +18,8 @@ task_service = TaskHandler(db_service=DatabaseHandler)
 @login_required
 def index(request):
     """ Index page and also the entry point for the js app. """
-    language_code = get_language()
-    context = {
-        'user': request.user,
-        'language_code': language_code
-    }
+    
+    context = {'user': request.user}
     return render(request, 'taskmanager/index.html', context)
 
 

@@ -7,9 +7,11 @@
 {% endblock title %}
 
 {% block extrahead %}
+    
     <script type="text/javascript">
+        {% get_current_language as LANGUAGE_CODE %}
         window.onload = () => {
-            launchApp(_mainContainer, {LOCALE_TAG: '{{ language_code }}'})
+            launchApp(_mainContainer, {LOCALE_TAG: '{{ LANGUAGE_CODE }}'})
         }
     </script>
     <script defer="defer" src="{% static 'taskmanager/main.720a42e8452040018109.js' %}"></script>
